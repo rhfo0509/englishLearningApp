@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "448344753914",
+    "project_id": "learneng-2407",
+    "storage_bucket": "learneng-2407.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:448344753914:android:63e3c093cbc697c6a32b43",
+        "android_client_info": {
+          "package_name": "com.englishlearningapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCmXGuyBgrttV9kXVD2Qg3FKyFLmiltDCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
