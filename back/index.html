@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EnglishLearningApp</title>
+  </head>
+  <body>
+    <h1>학습 데이터 업로드</h1>
+    <form action="/upload-excel" method="post" enctype="multipart/form-data">
+      <label for="file">Excel File:</label>
+      <input type="file" name="file" accept=".xlsx" required /><br /><br />
+
+      <label for="version">Version:</label>
+      <input type="text" name="version" required /><br /><br />
+
+      <label for="category">Category:</label>
+      <select name="category" required>
+        <optgroup label="SENTENCES">
+          <option value="5">묻고 답하기 130선</option>
+          <option value="4">핵심패턴영어 250선</option>
+          <option value="3">미국인이 자주 쓰는 500선</option>
+          <option value="10">긴 문장 만들기 2500선</option>
+          <option value="9">이디엄 300선</option>
+        </optgroup>
+        <optgroup label="SITUATION">
+          <option value="0">나의 하루 일상 300선</option>
+          <option value="3">해외여행 필수문장 500선</option>
+          <option value="2">미국 드라마 표현 600선</option>
+        </optgroup>
+        <optgroup label="WORD">
+          <option value="11">기초단어 800선</option>
+          <option value="6">기초단어 활용문장 800선</option>
+          <option value="13">중급단어 900선</option>
+          <option value="7">중급단어 활용문장 900선</option>
+          <option value="14">고급단어 1100선</option>
+          <option value="8">고급단어 활용문장 1100선</option>
+          <option value="12">주제별 기초단어 190선</option>
+        </optgroup></select
+      ><br /><br />
+
+      <label for="chapter">Chapter:</label>
+      <input type="number" name="chapter" min="0" /><br /><br />
+
+      <button type="submit">Upload</button>
+    </form>
+  </body>
+</html>
