@@ -1,7 +1,7 @@
 import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
 import React from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Header = () => {
   return (
@@ -17,7 +17,7 @@ const Header = () => {
           resizeMode="contain"
         />
         <TouchableOpacity style={styles.language}>
-          <Icon name="language" size={24} color="#1a6cb9" />
+          <Icon name="translate" size={24} color="#1a6cb9" />
           {/* <Icon name="trophy-outline" size={24} color="#fff" /> */}
         </TouchableOpacity>
       </View>
@@ -26,9 +26,18 @@ const Header = () => {
         <View style={styles.profileContent}>
           <Text style={styles.profileText}>Hello, Gildong</Text>
           <View style={styles.profileButtons}>
-            <View style={styles.profileButton}></View>
-            <View style={styles.profileButton}></View>
-            <View style={styles.profileButton}></View>
+            <View style={styles.profileButton}>
+              <Icon name="police-badge-outline" size={20} color="#fff" />
+              <Text style={{color: '#fff'}}>0</Text>
+            </View>
+            <View style={styles.profileButton}>
+              <Icon name="cash-100" size={20} color="#fff" />
+              <Text style={{color: '#fff'}}>0</Text>
+            </View>
+            <View style={styles.profileButton}>
+              <Icon name="trophy-outline" size={20} color="#fff" />
+              <Text style={{color: '#fff'}}>4402</Text>
+            </View>
           </View>
         </View>
       </View>
@@ -40,7 +49,6 @@ export default Header;
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: 'column',
     height: 200,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
@@ -89,9 +97,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   profileButton: {
-    width: 72,
+    flexDirection: 'row',
+    width: 80,
     height: 32,
-    backgroundColor: 'white',
+    backgroundColor: '#6fbaef',
     borderRadius: 16,
+    alignItems: 'center',
+    paddingHorizontal: 8,
+    // gap: 4,
+    justifyContent: 'space-between',
   },
 });

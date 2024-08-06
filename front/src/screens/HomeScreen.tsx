@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import React, {useLayoutEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../components/Header';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const HomeScreen = ({navigation}) => {
   useLayoutEffect(() => {
@@ -30,10 +30,7 @@ const HomeScreen = ({navigation}) => {
         <View style={{flexDirection: 'row'}}>
           <TouchableOpacity style={styles.learningButton}>
             <View style={styles.iconContainer}>
-              {/* <Image
-                source={require('../assets/sentence.png')}
-                style={styles.icon}
-              /> */}
+              <Image source={require('../assets/sentence.png')} />
             </View>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -49,10 +46,7 @@ const HomeScreen = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.learningButton}>
             <View style={styles.iconContainer}>
-              {/* <Image
-                source={require('../assets/situation.png')}
-                style={styles.icon}
-              /> */}
+              <Image source={require('../assets/situation.png')} />
             </View>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -68,10 +62,7 @@ const HomeScreen = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity style={styles.learningButton}>
             <View style={styles.iconContainer}>
-              {/* <Image
-                source={require('../assets/word.png')}
-                style={styles.icon}
-              /> */}
+              <Image source={require('../assets/word.png')} />
             </View>
             <LinearGradient
               start={{x: 0, y: 0}}
@@ -192,10 +183,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 12,
     height: 100,
-  },
-  icon: {
-    // width: 50,
-    // height: 50,
   },
   buttonText: {
     color: '#fff',
