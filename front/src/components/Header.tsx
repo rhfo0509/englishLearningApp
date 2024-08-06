@@ -18,28 +18,7 @@ const Header = () => {
         />
         <TouchableOpacity style={styles.language}>
           <Icon name="translate" size={24} color="#1a6cb9" />
-          {/* <Icon name="trophy-outline" size={24} color="#fff" /> */}
         </TouchableOpacity>
-      </View>
-      <View style={styles.profile}>
-        <View style={styles.profileImage}></View>
-        <View style={styles.profileContent}>
-          <Text style={styles.profileText}>Hello, Gildong</Text>
-          <View style={styles.profileButtons}>
-            <View style={styles.profileButton}>
-              <Icon name="police-badge-outline" size={20} color="#fff" />
-              <Text style={{color: '#fff'}}>0</Text>
-            </View>
-            <View style={styles.profileButton}>
-              <Icon name="cash-100" size={20} color="#fff" />
-              <Text style={{color: '#fff'}}>0</Text>
-            </View>
-            <View style={styles.profileButton}>
-              <Icon name="trophy-outline" size={20} color="#fff" />
-              <Text style={{color: '#fff'}}>4402</Text>
-            </View>
-          </View>
-        </View>
       </View>
     </LinearGradient>
   );
@@ -49,16 +28,14 @@ export default Header;
 
 const styles = StyleSheet.create({
   header: {
-    height: 200,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-    paddingTop: 24,
+    height: 72,
     paddingHorizontal: 16,
   },
   headerContent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    height: '100%',
   },
   logo: {
     width: 100,
@@ -70,41 +47,5 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 8,
     elevation: 8,
-  },
-  profile: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  profileImage: {
-    backgroundColor: 'white',
-    width: 72,
-    height: 72,
-    borderRadius: 48,
-    marginHorizontal: 4,
-  },
-  profileContent: {
-    gap: 8,
-  },
-  profileText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 24,
-  },
-  profileButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  profileButton: {
-    flexDirection: 'row',
-    width: 80,
-    height: 32,
-    backgroundColor: '#6fbaef',
-    borderRadius: 16,
-    alignItems: 'center',
-    paddingHorizontal: 8,
-    // gap: 4,
-    justifyContent: 'space-between',
   },
 });

@@ -20,21 +20,25 @@ function convertExcelToJSON(buffer, version, category, chapter) {
     data: [],
   };
 
-  json.data = data.slice(1).map((row) => {
-    let entry = {
-      num: row[2],
-      image: `${basePath}/${category}/${chapter}/images/${row[3]}.jpg`,
-      sounds: Array.from(
-        { length: 5 },
-        (_, i) => `${basePath}/${category}/${chapter}/sounds/${row[4]}_${i}.mp3`
-      ),
-    };
-    for (const [lang, i] of Object.entries(LANGUAGES)) {
-      entry[lang] = row[i];
-    }
+  json.data = data
+    .slice(1)
+    .filter((row) => row[1] === +chapter)
+    .map((row) => {
+      let entry = {
+        num: row[2],
+        image: `${basePath}/${category}/${chapter}/images/${row[3]}.jpg`,
+        sounds: Array.from(
+          { length: 5 },
+          (_, i) =>
+            `${basePath}/${category}/${chapter}/sounds/${row[4]}_${i}.mp3`
+        ),
+      };
+      for (const [lang, i] of Object.entries(LANGUAGES)) {
+        entry[lang] = row[i];
+      }
 
-    return entry;
-  });
+      return entry;
+    });
   return json;
 }
 

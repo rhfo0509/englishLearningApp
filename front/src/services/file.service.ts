@@ -1,0 +1,131 @@
+import storage from '@react-native-firebase/storage';
+import {Alert} from 'react-native';
+import RNFS from 'react-native-fs';
+
+interface FileInfo {
+  path: string;
+  url: string;
+}
+
+let startTime;
+
+const getFilesFromFirebase = async (
+  remotePath: string,
+): Promise<FileInfo[]> => {
+  const storageRef = storage().ref(remotePath);
+  try {
+    const result = await storageRef.listAll();
+    const filePromises = result.items.map(async item => {
+      const url = await item.getDownloadURL();
+      return {path: item.fullPath, url};
+    });
+    return await Promise.all(filePromises);
+  } catch (error) {
+    console.error('Error listing files from Firebase', error);
+    return [];
+  }
+};
+
+const downloadFile = async (file: FileInfo) => {
+  const localFilePath = `${RNFS.DocumentDirectoryPath}/${file.path}`;
+  const localDirPath = localFilePath.substring(
+    0,
+    localFilePath.lastIndexOf('/'),
+  );
+
+  try {
+    if (!(await RNFS.exists(localDirPath))) {
+      await RNFS.mkdir(localDirPath);
+    }
+
+    const options = {
+      fromUrl: file.url,
+      toFile: localFilePath,
+    };
+
+    const result = await RNFS.downloadFile(options).promise;
+    if (result.statusCode === 200) {
+      console.log(`File ${file.path} downloaded to:`, localFilePath);
+      return localFilePath;
+    } else {
+      console.error(`Failed to download file ${file.path}`, result);
+      return null;
+    }
+  } catch (error) {
+    console.error(`Error downloading file ${file.path}`, error);
+    return null;
+  }
+};
+
+export const downloadAllFiles = async (paths: string[] | string) => {
+  startTime = Date.now();
+  try {
+    const allFiles: FileInfo[] = [];
+
+    for (const path of paths) {
+      const files = await getFilesFromFirebase(path);
+      allFiles.push(...files);
+    }
+
+    const downloadPromises = allFiles.map(file => downloadFile(file));
+    await Promise.all(downloadPromises);
+    // Alert.alert('SUCCESS', 'All files have been downloaded');
+
+    let elapsedTime = Date.now() - startTime;
+    console.log(
+      `elapsed time: ${Math.floor(elapsedTime / 1000)}s ${
+        elapsedTime % 1000
+      }ms`,
+    );
+  } catch (error) {
+    console.error('An error occurred while downloading files', error);
+  }
+};
+
+export async function checkAndUpdateJSON(category: number, chapter: number) {
+  const remoteFilePath = `learning/${category}/${chapter}/${category}_${chapter}.json`;
+  const remoteDirPath = remoteFilePath.substring(
+    0,
+    remoteFilePath.lastIndexOf('/'),
+  );
+
+  const localFilePath = `${RNFS.DocumentDirectoryPath}/${remoteFilePath}`;
+  const localDirPath = `${RNFS.DocumentDirectoryPath}/${remoteDirPath}`;
+
+  try {
+    let localVersion: string | null = null;
+
+    if (await RNFS.exists(localFilePath)) {
+      const localData = JSON.parse(await RNFS.readFile(localFilePath, 'utf8'));
+      localVersion = localData.version;
+    }
+
+    const storageRef = storage().ref(remoteFilePath);
+    const url = await storageRef.getDownloadURL();
+    const remoteData = await fetch(url).then(response => response.json());
+    const remoteVersion = remoteData.version;
+
+    if (localVersion !== remoteVersion) {
+      if (!(await RNFS.exists(localDirPath))) {
+        await RNFS.mkdir(localDirPath);
+      }
+      await RNFS.writeFile(
+        localFilePath,
+        JSON.stringify(remoteData, null, 2),
+        'utf8',
+      );
+
+      await downloadAllFiles([
+        `${remoteDirPath}/images`,
+        `${remoteDirPath}/sounds`,
+      ]);
+      Alert.alert('SUCCESS', `JSON file updated to version ${remoteVersion}`);
+      return remoteData.data;
+    }
+
+    const localData = JSON.parse(await RNFS.readFile(localFilePath, 'utf8'));
+    return localData.data;
+  } catch (error) {
+    console.error('Error handling JSON file: ', error);
+  }
+}

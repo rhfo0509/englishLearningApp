@@ -10,6 +10,7 @@ import {
 import React, {useLayoutEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Header from '../components/Header';
+import Profile from '../components/Profile'; // Profile 컴포넌트를 import 합니다
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const HomeScreen = ({navigation}) => {
@@ -18,9 +19,11 @@ const HomeScreen = ({navigation}) => {
       header: () => <Header />,
     });
   }, [navigation]);
+
   return (
     <SafeAreaView style={styles.container}>
-      {/* <ScrollView style={styles.scrollView}> */}
+      {/* 헤더 바로 아래에 프로필 부분 추가 */}
+      <Profile />
       <View style={styles.resume}></View>
       <View>
         <View style={styles.title}>
@@ -28,7 +31,9 @@ const HomeScreen = ({navigation}) => {
           <Text style={styles.titleText}>Learning Zone</Text>
         </View>
         <View style={{flexDirection: 'row'}}>
-          <TouchableOpacity style={styles.learningButton}>
+          <TouchableOpacity
+            style={styles.learningButton}
+            onPress={() => navigation.navigate('SentencesStack')}>
             <View style={styles.iconContainer}>
               <Image source={require('../assets/sentence.png')} />
             </View>
@@ -44,7 +49,9 @@ const HomeScreen = ({navigation}) => {
               <Text style={styles.buttonSubText}>5 Categories</Text>
             </LinearGradient>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.learningButton}>
+          <TouchableOpacity
+            style={styles.learningButton}
+            onPress={() => navigation.navigate('SituationStack')}>
             <View style={styles.iconContainer}>
               <Image source={require('../assets/situation.png')} />
             </View>
@@ -60,7 +67,9 @@ const HomeScreen = ({navigation}) => {
               <Text style={styles.buttonSubText}>3 Categories</Text>
             </LinearGradient>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.learningButton}>
+          <TouchableOpacity
+            style={styles.learningButton}
+            onPress={() => navigation.navigate('WordsStack')}>
             <View style={styles.iconContainer}>
               <Image source={require('../assets/word.png')} />
             </View>
@@ -118,7 +127,6 @@ const HomeScreen = ({navigation}) => {
           </TouchableOpacity>
         </View>
       </View>
-      {/* </ScrollView> */}
     </SafeAreaView>
   );
 };
@@ -129,13 +137,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#eeeff3',
-    marginHorizontal: 16,
-  },
-  header: {
-    flexDirection: 'row',
-    height: 200,
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
+    paddingHorizontal: 16,
   },
   resume: {
     marginVertical: 24,
@@ -178,7 +180,6 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   iconContainer: {
-    // flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 12,

@@ -46,7 +46,11 @@ const SentencesStack = () => (
     <Stack.Screen name="SentenceCategory" component={SentenceCategoryScreen} />
     <Stack.Screen name="SentenceList" component={SentenceListScreen} />
     <Stack.Screen name="SentenceSubList" component={SentenceSubListScreen} />
-    <Stack.Screen name="SentenceLesson" component={SentenceLessonScreen} />
+    <Stack.Screen
+      name="SentenceLesson"
+      component={SentenceLessonScreen}
+      options={{headerShown: false}}
+    />
   </Stack.Navigator>
 );
 
@@ -58,7 +62,11 @@ const SituationStack = () => (
     />
     <Stack.Screen name="SituationList" component={SituationListScreen} />
     <Stack.Screen name="SituationSubList" component={SituationSubListScreen} />
-    <Stack.Screen name="SituationLesson" component={SituationLessonScreen} />
+    <Stack.Screen
+      name="SituationLesson"
+      component={SituationLessonScreen}
+      options={{headerShown: false}}
+    />
   </Stack.Navigator>
 );
 
@@ -67,7 +75,11 @@ const WordsStack = () => (
     <Stack.Screen name="WordsCategory" component={WordsCategoryScreen} />
     <Stack.Screen name="WordsList" component={WordsListScreen} />
     <Stack.Screen name="WordsSubList" component={WordsSubListScreen} />
-    <Stack.Screen name="WordsLesson" component={WordsLessonScreen} />
+    <Stack.Screen
+      name="WordsLesson"
+      component={WordsLessonScreen}
+      options={{headerShown: false}}
+    />
   </Stack.Navigator>
 );
 
