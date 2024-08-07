@@ -37,7 +37,7 @@ const Profile = () => {
 const styles = StyleSheet.create({
   profileContainer: {
     paddingBottom: 16,
-    paddingHorizontal: 20,
+    paddingHorizontal: 24,
     borderBottomLeftRadius: 24,
     borderBottomRightRadius: 24,
     marginHorizontal: -16,
@@ -47,9 +47,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   profileImage: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     backgroundColor: 'white',
     marginRight: 16,
   },
@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   profileText: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
   },
