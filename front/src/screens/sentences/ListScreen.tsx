@@ -52,6 +52,7 @@ const SentenceListScreen = ({navigation}) => {
         data={SENTENCES}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
@@ -74,6 +75,7 @@ const styles = StyleSheet.create({
   },
   itemCategory: {
     fontSize: 16,
+    fontWeight: '500',
     color: '#333',
   },
   itemText: {

@@ -51,7 +51,12 @@ const SubListScreen = ({navigation}) => {
   const renderItem = ({item, index}: {item: Sentence; index: number}) => (
     <TouchableOpacity
       style={styles.item}
-      onPress={() => navigation.navigate('SentenceLesson', {item})}>
+      onPress={() =>
+        navigation.navigate('SentenceLesson', {
+          index,
+          sentences,
+        })
+      }>
       <Text style={styles.en}>
         [{item.num.toString().padStart(2, '0')}] {item.en}
       </Text>
@@ -74,6 +79,7 @@ const SubListScreen = ({navigation}) => {
         data={sentences}
         renderItem={renderItem}
         keyExtractor={item => item.num.toString()}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
@@ -96,6 +102,7 @@ const styles = StyleSheet.create({
   },
   en: {
     fontSize: 16,
+    fontWeight: '500',
     color: '#333',
   },
   ko: {
