@@ -54,6 +54,7 @@ const LessonScreen = ({route, navigation}: any) => {
       navigation.navigate('SentenceLesson', {
         index: index - 1,
         sentences,
+        title,
       });
     }
   };
@@ -63,6 +64,7 @@ const LessonScreen = ({route, navigation}: any) => {
       navigation.navigate('SentenceLesson', {
         index: index + 1,
         sentences,
+        title,
       });
     }
   };
