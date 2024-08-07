@@ -11,7 +11,6 @@ import {
 import {useFocusEffect} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
 import Icon from 'react-native-vector-icons/Ionicons';
-import LinearGradient from 'react-native-linear-gradient';
 
 const {width} = Dimensions.get('window');
 
@@ -24,9 +23,10 @@ interface Sentence {
 }
 
 const LessonScreen = ({route, navigation}: any) => {
-  const {index, sentences} = route.params as {
+  const {index, sentences, title} = route.params as {
     index: number;
     sentences: Sentence[];
+    title: string;
   };
   const [playing, setPlaying] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0);
@@ -38,6 +38,15 @@ const LessonScreen = ({route, navigation}: any) => {
     } catch (error) {
       console.error('Failed to play sound.', error);
     }
+  };
+
+  const togglePlayback = () => {
+    if (playing) {
+      SoundPlayer.pause();
+    } else {
+      playSound(sentences[index].sounds[soundIndex]);
+    }
+    setPlaying(!playing);
   };
 
   const onMoveLeft = () => {
@@ -59,8 +68,10 @@ const LessonScreen = ({route, navigation}: any) => {
   };
 
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: () => true,
+    onStartShouldSetPanResponder: () => false,
+    onMoveShouldSetPanResponder: (_, gestureState) => {
+      return Math.abs(gestureState.dy) > 50;
+    },
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dy < -50) {
         onMoveRight();
@@ -98,22 +109,38 @@ const LessonScreen = ({route, navigation}: any) => {
   }, [index, playing, sentences, soundIndex]);
 
   return (
-    <View style={styles.container} {...panResponder.panHandlers}>
-      <LinearGradient
-        start={{x: 0, y: 0}}
-        end={{x: 1, y: 0}}
-        colors={['#1d6cb9', '#53c1ff']}
-        style={styles.header}>
+    <View style={styles.container}>
+      <View style={styles.header}>
         <TouchableOpacity
           style={{zIndex: 1}}
           onPress={() => navigation.goBack()}>
-          <Icon name="close-outline" size={36} color="#fff" />
+          <Icon name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.progress}>
-          {sentences[index].num + 1} / {sentences.length}
+        <Text style={styles.title}>
+          {/* {sentences[index].num + 1} / {sentences.length} */}
+          {title}
         </Text>
-      </LinearGradient>
-      <View style={styles.main}>
+        <TouchableOpacity style={{zIndex: 1}} onPress={togglePlayback}>
+          <Icon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.main} {...panResponder.panHandlers}>
+        <View style={styles.sentence}>
+          {(viewMode === '영문' || viewMode === '전체') && (
+            <Text style={styles.english}>{sentences[index].en}</Text>
+          )}
+        </View>
+        <Image
+          source={{uri: `file://${sentences[index].image}`}}
+          style={styles.image}
+        />
+        <View style={styles.sentence}>
+          {(viewMode === '뜻' || viewMode === '전체') && (
+            <Text style={styles.translation}>{sentences[index].ko}</Text>
+          )}
+        </View>
+      </View>
+      <View style={styles.footer}>
         <View style={styles.toggleButtons}>
           <TouchableOpacity
             style={[
@@ -140,34 +167,6 @@ const LessonScreen = ({route, navigation}: any) => {
             <Text style={styles.toggleButtonText}>전체</Text>
           </TouchableOpacity>
         </View>
-        <Image
-          source={{uri: `file://${sentences[index].image}`}}
-          style={styles.image}
-        />
-        <View style={styles.sentence}>
-          {(viewMode === '영문' || viewMode === '전체') && (
-            <Text style={styles.english}>{sentences[index].en}</Text>
-          )}
-          {(viewMode === '뜻' || viewMode === '전체') && (
-            <Text style={styles.translation}>{sentences[index].ko}</Text>
-          )}
-        </View>
-      </View>
-      <View style={styles.footer}>
-        <TouchableOpacity style={styles.moveButton} onPress={onMoveLeft}>
-          <Icon name="play-back-circle-outline" size={48} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.playButton}
-          onPress={() => setPlaying(prev => !prev)}>
-          <Icon
-            name={playing ? 'pause-circle-outline' : 'play-circle-outline'}
-            size={48}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.moveButton} onPress={onMoveRight}>
-          <Icon name="play-forward-circle-outline" size={48} />
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -179,22 +178,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
+    backgroundColor: '#333',
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
     height: 72,
     marginHorizontal: -16,
     paddingHorizontal: 16,
     position: 'relative',
   },
-  progress: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
+  title: {
     textAlign: 'center',
     color: '#fff',
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: '500',
   },
   image: {
@@ -231,25 +229,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   english: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: '600',
-    color: '#333',
+    color: '#fff',
     marginBottom: 32,
   },
   translation: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: '500',
+    color: '#fff',
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
     height: 72,
-  },
-  moveButton: {
-    padding: 10,
-  },
-  playButton: {
-    padding: 10,
   },
 });

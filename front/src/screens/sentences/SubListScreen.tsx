@@ -22,9 +22,10 @@ interface Sentence {
 
 const SubListScreen = ({navigation}) => {
   const route = useRoute();
-  const {category, chapter} = route.params as {
+  const {category, chapter, title} = route.params as {
     category: number;
     chapter: number;
+    title: string;
   };
   const [loading, setLoading] = useState<boolean>(true);
   const [sentences, setSentences] = useState<Sentence[]>([]);
@@ -55,6 +56,7 @@ const SubListScreen = ({navigation}) => {
         navigation.navigate('SentenceLesson', {
           index,
           sentences,
+          title,
         })
       }>
       <Text style={styles.en}>

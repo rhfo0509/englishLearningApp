@@ -5,7 +5,7 @@ import Header from '../../components/Header';
 import {SENTENCE_CATEGORIES} from '../../common/constants';
 
 interface Category {
-  no: number;
+  category: number;
   title: string;
 }
 
@@ -20,7 +20,9 @@ const CategoryScreen = ({navigation}) => {
     <TouchableOpacity
       style={styles.item}
       disabled={!!index}
-      onPress={() => navigation.navigate('SentenceList', {category: item.no})}>
+      onPress={() =>
+        navigation.navigate('SentenceList', {category: item.category})
+      }>
       <LinearGradient
         colors={['#1d6cb9', '#53c1ff']}
         style={styles.indexContainer}>
@@ -36,7 +38,7 @@ const CategoryScreen = ({navigation}) => {
         style={{marginTop: 16}}
         data={SENTENCE_CATEGORIES}
         renderItem={renderItem}
-        keyExtractor={item => item.no.toString()}
+        keyExtractor={item => item.category.toString()}
       />
     </View>
   );

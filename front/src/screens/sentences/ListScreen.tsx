@@ -2,21 +2,9 @@ import React, {useLayoutEffect} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 import Header from '../../components/Header';
+import {SENTENCES_CHAPTERS} from '../../common/constants';
 
-const SENTENCES = [
-  {
-    id: 1,
-    category: '묻고 답하기 130선',
-    text: 'What time do you go to school?',
-  },
-  {id: 2, category: '묻고 답하기 130선', text: 'How old is this building?'},
-  {id: 3, category: '묻고 답하기 130선', text: 'Which car is yours?'},
-  {id: 4, category: '묻고 답하기 130선', text: 'Are they students?'},
-  {id: 5, category: '묻고 답하기 130선', text: 'He teaches us English.'},
-  {id: 6, category: '묻고 답하기 130선', text: 'Is it rainy today?'},
-];
-
-interface Sentence {
+interface Chapter {
   id: number;
   category: string;
   text: string;
@@ -32,15 +20,17 @@ const ListScreen = ({navigation}) => {
     });
   }, [navigation]);
 
-  const renderItem = ({item, index}: {item: Sentence; index: number}) => (
+  const renderItem = ({item, index}: {item: Chapter; index: number}) => (
     <TouchableOpacity
       style={styles.item}
       onPress={() =>
-        navigation.navigate('SentenceSubList', {category, chapter: index})
+        navigation.navigate('SentenceSubList', {
+          category,
+          chapter: index,
+          title: item.category,
+        })
       }>
-      <Text style={styles.itemCategory}>
-        {item.category} [{item.id.toString().padStart(2, '0')}]
-      </Text>
+      <Text style={styles.itemCategory}>{item.category}</Text>
       <Text style={styles.itemText}>{item.text}</Text>
     </TouchableOpacity>
   );
@@ -49,7 +39,7 @@ const ListScreen = ({navigation}) => {
     <View style={styles.container}>
       <FlatList
         style={{marginTop: 16}}
-        data={SENTENCES}
+        data={SENTENCES_CHAPTERS}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
         showsVerticalScrollIndicator={false}
