@@ -1,3 +1,4 @@
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Image,
   StyleSheet,
@@ -5,14 +6,15 @@ import {
   View,
   Dimensions,
   TouchableOpacity,
+  PanResponder,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
 import Icon from 'react-native-vector-icons/Ionicons';
 import LinearGradient from 'react-native-linear-gradient';
 
 const {width} = Dimensions.get('window');
+
 interface Sentence {
   num: number;
   image: string;
@@ -21,7 +23,7 @@ interface Sentence {
   ko: string;
 }
 
-const LessonScreen = ({route, navigation}) => {
+const LessonScreen = ({route, navigation}: any) => {
   const {index, sentences} = route.params as {
     index: number;
     sentences: Sentence[];
@@ -56,6 +58,18 @@ const LessonScreen = ({route, navigation}) => {
     }
   };
 
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: () => true,
+    onPanResponderRelease: (_, gestureState) => {
+      if (gestureState.dy < -50) {
+        onMoveRight();
+      } else if (gestureState.dy > 50) {
+        onMoveLeft();
+      }
+    },
+  });
+
   useFocusEffect(
     useCallback(() => {
       if (playing) {
@@ -84,7 +98,7 @@ const LessonScreen = ({route, navigation}) => {
   }, [index, playing, sentences, soundIndex]);
 
   return (
-    <View style={styles.container}>
+    <View style={styles.container} {...panResponder.panHandlers}>
       <LinearGradient
         start={{x: 0, y: 0}}
         end={{x: 1, y: 0}}
@@ -203,7 +217,6 @@ const styles = StyleSheet.create({
   toggleButton: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    // borderWidth: 2,
     backgroundColor: '#d3d3d3',
     borderRadius: 8,
   },
