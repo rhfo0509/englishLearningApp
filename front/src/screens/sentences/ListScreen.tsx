@@ -22,7 +22,7 @@ interface Sentence {
   text: string;
 }
 
-const SentenceListScreen = ({navigation}) => {
+const ListScreen = ({navigation}) => {
   const route = useRoute();
   const {category} = route.params as {category: number};
 
@@ -58,7 +58,7 @@ const SentenceListScreen = ({navigation}) => {
   );
 };
 
-export default SentenceListScreen;
+export default ListScreen;
 
 const styles = StyleSheet.create({
   container: {
