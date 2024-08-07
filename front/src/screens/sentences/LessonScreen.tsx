@@ -104,7 +104,7 @@ const LessonScreen = ({route, navigation}) => {
           <TouchableOpacity
             style={[
               styles.toggleButton,
-              viewMode === '뜻' && {backgroundColor: '#b0c4de'},
+              viewMode === '뜻' && {backgroundColor: '#1d6cb9'},
             ]}
             onPress={() => setViewMode('뜻')}>
             <Text style={styles.toggleButtonText}>뜻</Text>
@@ -112,7 +112,7 @@ const LessonScreen = ({route, navigation}) => {
           <TouchableOpacity
             style={[
               styles.toggleButton,
-              viewMode === '영문' && {backgroundColor: '#b0c4de'},
+              viewMode === '영문' && {backgroundColor: '#1d6cb9'},
             ]}
             onPress={() => setViewMode('영문')}>
             <Text style={styles.toggleButtonText}>영문</Text>
@@ -120,7 +120,7 @@ const LessonScreen = ({route, navigation}) => {
           <TouchableOpacity
             style={[
               styles.toggleButton,
-              viewMode === '전체' && {backgroundColor: '#b0c4de'},
+              viewMode === '전체' && {backgroundColor: '#1d6cb9'},
             ]}
             onPress={() => setViewMode('전체')}>
             <Text style={styles.toggleButtonText}>전체</Text>
