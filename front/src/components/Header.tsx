@@ -1,7 +1,7 @@
-import {StyleSheet, Text, TouchableOpacity, View, Image} from 'react-native';
 import React from 'react';
+import {StyleSheet, View, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import LanguageButton from './LanguageButton';
 
 const Header = () => {
   return (
@@ -16,9 +16,7 @@ const Header = () => {
           style={styles.logo}
           resizeMode="contain"
         />
-        <TouchableOpacity style={styles.language}>
-          <Icon name="translate" size={24} color="#1a6cb9" />
-        </TouchableOpacity>
+        <LanguageButton />
       </View>
     </LinearGradient>
   );
@@ -40,12 +38,5 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 40,
-  },
-  language: {
-    marginRight: 8,
-    backgroundColor: '#fff',
-    padding: 8,
-    borderRadius: 8,
-    elevation: 8,
   },
 });
