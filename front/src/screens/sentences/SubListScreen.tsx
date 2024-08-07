@@ -67,7 +67,11 @@ const SubListScreen = ({navigation}) => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator style={styles.loading} size="large" />
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" />
+          <Text>학습 데이터 불러오는 중</Text>
+          <Text>잠시만 기다려주세요.</Text>
+        </View>
       </View>
     );
   }

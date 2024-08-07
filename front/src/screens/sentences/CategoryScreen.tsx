@@ -19,6 +19,7 @@ const CategoryScreen = ({navigation}) => {
   const renderItem = ({item, index}: {item: Category; index: number}) => (
     <TouchableOpacity
       style={styles.item}
+      disabled={!!index}
       onPress={() => navigation.navigate('SentenceList', {category: item.no})}>
       <LinearGradient
         colors={['#1d6cb9', '#53c1ff']}

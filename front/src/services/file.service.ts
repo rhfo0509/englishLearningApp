@@ -69,7 +69,7 @@ export const downloadAllFiles = async (paths: string[] | string) => {
 
     const downloadPromises = allFiles.map(file => downloadFile(file));
     await Promise.all(downloadPromises);
-    // Alert.alert('SUCCESS', 'All files have been downloaded');
+    Alert.alert('SUCCESS', 'All files have been downloaded');
 
     let elapsedTime = Date.now() - startTime;
     console.log(
@@ -84,6 +84,7 @@ export const downloadAllFiles = async (paths: string[] | string) => {
 
 export async function checkAndUpdateJSON(category: number, chapter: number) {
   const remoteFilePath = `learning/${category}/${chapter}/${category}_${chapter}.json`;
+  console.log(remoteFilePath);
   const remoteDirPath = remoteFilePath.substring(
     0,
     remoteFilePath.lastIndexOf('/'),
@@ -119,7 +120,7 @@ export async function checkAndUpdateJSON(category: number, chapter: number) {
         `${remoteDirPath}/images`,
         `${remoteDirPath}/sounds`,
       ]);
-      Alert.alert('SUCCESS', `JSON file updated to version ${remoteVersion}`);
+      // Alert.alert('SUCCESS', `JSON file updated to version ${remoteVersion}`);
       return remoteData.data;
     }
 

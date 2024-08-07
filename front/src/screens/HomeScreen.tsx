@@ -10,7 +10,7 @@ import {
 import React, {useLayoutEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import Header from '../components/Header';
-import Profile from '../components/Profile'; // Profile 컴포넌트를 import 합니다
+import Profile from '../components/Profile';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const HomeScreen = ({navigation}) => {
@@ -24,7 +24,23 @@ const HomeScreen = ({navigation}) => {
     <SafeAreaView style={styles.container}>
       {/* 헤더 바로 아래에 프로필 부분 추가 */}
       <Profile />
-      <View style={styles.resume}></View>
+      <TouchableOpacity style={styles.resume}>
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 1}}
+          colors={['#56ab2f', '#a8e063']}
+          style={{borderRadius: 24, padding: 16}}>
+          <View style={styles.resumeContent}>
+            <Icon name="history" size={36} color="#fff" />
+            <View style={{marginLeft: 16}}>
+              <Text style={styles.resumeTitle}>Continue Learning</Text>
+              <Text style={styles.resumeSubtitle}>
+                Last visited: Sentence / Lesson 5
+              </Text>
+            </View>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
       <View>
         <View style={styles.title}>
           <Icon name="menu-book" size={36} />
@@ -142,9 +158,21 @@ const styles = StyleSheet.create({
   resume: {
     marginVertical: 24,
     borderRadius: 24,
-    height: 160,
-    backgroundColor: '#fff',
     elevation: 8,
+  },
+  resumeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  resumeTitle: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  resumeSubtitle: {
+    color: '#fff',
+    fontSize: 14,
+    marginTop: 4,
   },
   title: {
     flexDirection: 'row',
