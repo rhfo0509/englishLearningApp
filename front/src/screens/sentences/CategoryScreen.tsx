@@ -24,7 +24,7 @@ const CategoryScreen = ({navigation}) => {
         navigation.navigate('SentenceList', {category: item.category})
       }>
       <LinearGradient
-        colors={['#1d6cb9', '#53c1ff']}
+        colors={['#1f6feb', '#53c1ff']}
         style={styles.indexContainer}>
         <Text style={styles.indexText}>{index + 1}</Text>
       </LinearGradient>

@@ -56,7 +56,7 @@ const HomeScreen = ({navigation}) => {
             <LinearGradient
               start={{x: 0, y: 0}}
               end={{x: 1, y: 0}}
-              colors={['#1d6cb9', '#53c1ff']}
+              colors={['#1f6feb', '#53c1ff']}
               style={[
                 styles.gradient,
                 {borderTopLeftRadius: 0, borderTopRightRadius: 0},
@@ -74,7 +74,7 @@ const HomeScreen = ({navigation}) => {
             <LinearGradient
               start={{x: 0, y: 0}}
               end={{x: 1, y: 0}}
-              colors={['#1d6cb9', '#53c1ff']}
+              colors={['#1f6feb', '#53c1ff']}
               style={[
                 styles.gradient,
                 {borderTopLeftRadius: 0, borderTopRightRadius: 0},
@@ -92,7 +92,7 @@ const HomeScreen = ({navigation}) => {
             <LinearGradient
               start={{x: 0, y: 0}}
               end={{x: 1, y: 0}}
-              colors={['#1d6cb9', '#53c1ff']}
+              colors={['#1f6feb', '#53c1ff']}
               style={[
                 styles.gradient,
                 {borderTopLeftRadius: 0, borderTopRightRadius: 0},
@@ -129,7 +129,7 @@ const HomeScreen = ({navigation}) => {
             <LinearGradient
               start={{x: 0, y: 0}}
               end={{x: 1, y: 0}}
-              colors={['#1d6cb9', '#53c1ff']}
+              colors={['#1f6feb', '#53c1ff']}
               style={styles.gradient}>
               <Text style={[styles.buttonText, {fontSize: 20}]}>
                 General Mode

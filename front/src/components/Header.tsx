@@ -8,7 +8,7 @@ const Header = () => {
     <LinearGradient
       start={{x: 0, y: 0}}
       end={{x: 1, y: 0}}
-      colors={['#1d6cb9', '#53c1ff']}
+      colors={['#1f6feb', '#53c1ff']}
       style={styles.header}>
       <View style={styles.headerContent}>
         <Image
