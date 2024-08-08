@@ -1,6 +1,6 @@
 import storage from '@react-native-firebase/storage';
-import {Alert} from 'react-native';
 import RNFS from 'react-native-fs';
+import {Alert} from 'react-native';
 
 interface FileInfo {
   path: string;
@@ -69,13 +69,18 @@ export const downloadAllFiles = async (paths: string[] | string) => {
 
     const downloadPromises = allFiles.map(file => downloadFile(file));
     await Promise.all(downloadPromises);
-    Alert.alert('SUCCESS', 'All files have been downloaded');
 
     let elapsedTime = Date.now() - startTime;
     console.log(
       `elapsed time: ${Math.floor(elapsedTime / 1000)}s ${
         elapsedTime % 1000
       }ms`,
+    );
+
+    Alert.alert(
+      '',
+      '모든 데이터가 성공적으로 다운로드되었습니다. 학습을 진행하세요!',
+      [{text: "Let's go!"}],
     );
   } catch (error) {
     console.error('An error occurred while downloading files', error);
@@ -120,7 +125,6 @@ export async function checkAndUpdateJSON(category: number, chapter: number) {
         `${remoteDirPath}/images`,
         `${remoteDirPath}/sounds`,
       ]);
-      // Alert.alert('SUCCESS', `JSON file updated to version ${remoteVersion}`);
       return remoteData.data;
     }
 

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import {useRoute} from '@react-navigation/native';
 
@@ -72,7 +73,7 @@ const SubListScreen = ({navigation}) => {
         <View style={styles.loading}>
           <ActivityIndicator size="large" />
           <Text>학습 데이터 저장 중</Text>
-          <Text>잠시만 기다려주세요.</Text>
+          <Text>잠시만 기다려주세요...</Text>
         </View>
       </View>
     );
