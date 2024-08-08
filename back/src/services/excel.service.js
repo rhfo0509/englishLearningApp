@@ -23,10 +23,10 @@ function convertExcelToJSON(buffer, version, category) {
     let entry = {
       chapter: row[2],
       num: row[3],
-      image: `${basePath}/${category}/${row[2]}/images/${row[4]}.jpg`,
+      image: `${basePath}/${category}/images/${row[4]}.jpg`,
       sounds: Array.from(
         { length: 5 },
-        (_, i) => `${basePath}/${category}/${row[2]}/sounds/${row[5]}_${i}.mp3`
+        (_, i) => `${basePath}/${category}/sounds/${row[5]}_${i}.mp3`
       ),
     };
     for (const [lang, i] of Object.entries(LANGUAGES)) {
