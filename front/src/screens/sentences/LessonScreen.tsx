@@ -30,7 +30,13 @@ const LessonScreen = ({route, navigation}: any) => {
   };
   const [playing, setPlaying] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0);
-  const [viewMode, setViewMode] = useState<'뜻' | '영문' | '전체'>('전체');
+  const [viewMode, setViewMode] = useState<{
+    english: boolean;
+    translation: boolean;
+  }>({
+    english: true,
+    translation: true,
+  });
 
   const playSound = (soundUrl: string) => {
     try {
@@ -47,6 +53,13 @@ const LessonScreen = ({route, navigation}: any) => {
       playSound(sentences[index].sounds[soundIndex]);
     }
     setPlaying(!playing);
+  };
+
+  const toggleViewMode = (mode: 'english' | 'translation') => {
+    setViewMode(prev => ({
+      ...prev,
+      [mode]: !prev[mode],
+    }));
   };
 
   const onMoveLeft = () => {
@@ -118,17 +131,14 @@ const LessonScreen = ({route, navigation}: any) => {
           onPress={() => navigation.goBack()}>
           <Icon name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
-        <Text style={styles.title}>
-          {/* {sentences[index].num + 1} / {sentences.length} */}
-          {title}
-        </Text>
+        <Text style={styles.title}>{title}</Text>
         <TouchableOpacity style={{zIndex: 1}} onPress={togglePlayback}>
           <Icon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
         </TouchableOpacity>
       </View>
       <View style={styles.main} {...panResponder.panHandlers}>
         <View style={styles.sentence}>
-          {(viewMode === '영문' || viewMode === '전체') && (
+          {viewMode.english && (
             <Text style={styles.english}>{sentences[index].en}</Text>
           )}
         </View>
@@ -137,7 +147,7 @@ const LessonScreen = ({route, navigation}: any) => {
           style={styles.image}
         />
         <View style={styles.sentence}>
-          {(viewMode === '뜻' || viewMode === '전체') && (
+          {viewMode.translation && (
             <Text style={styles.translation}>{sentences[index].ko}</Text>
           )}
         </View>
@@ -145,30 +155,22 @@ const LessonScreen = ({route, navigation}: any) => {
       <View style={styles.footer}>
         <View style={styles.toggleButtons}>
           <TouchableOpacity
-            style={[
-              styles.toggleButton,
-              viewMode === '뜻' && {backgroundColor: '#1d6cb9'},
-            ]}
-            onPress={() => setViewMode('뜻')}>
-            <Text style={styles.toggleButtonText}>뜻</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.toggleButton,
-              viewMode === '영문' && {backgroundColor: '#1d6cb9'},
-            ]}
-            onPress={() => setViewMode('영문')}>
+            style={[styles.toggleButton, {opacity: viewMode.english ? 1 : 0.5}]}
+            onPress={() => toggleViewMode('english')}>
             <Text style={styles.toggleButtonText}>영문</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={[
               styles.toggleButton,
-              viewMode === '전체' && {backgroundColor: '#1d6cb9'},
+              {opacity: viewMode.translation ? 1 : 0.5},
             ]}
-            onPress={() => setViewMode('전체')}>
-            <Text style={styles.toggleButtonText}>전체</Text>
+            onPress={() => toggleViewMode('translation')}>
+            <Text style={styles.toggleButtonText}>뜻</Text>
           </TouchableOpacity>
         </View>
+        <Text style={styles.progress}>
+          {sentences[index].num + 1} / {sentences.length}
+        </Text>
       </View>
     </View>
   );
@@ -197,33 +199,15 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '500',
   },
-  image: {
-    width: width - 32,
-    aspectRatio: 1,
-    resizeMode: 'contain',
-  },
   main: {
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
   },
-  toggleButtons: {
-    flexDirection: 'row',
-    position: 'absolute',
-    top: 16,
-    right: 0,
-    gap: 8,
-  },
-  toggleButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    backgroundColor: '#d3d3d3',
-    borderRadius: 8,
-  },
-  toggleButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '500',
+  image: {
+    width: width - 32,
+    aspectRatio: 1,
+    resizeMode: 'contain',
   },
   sentence: {
     minHeight: 120,
@@ -243,8 +227,28 @@ const styles = StyleSheet.create({
   },
   footer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
     height: 72,
+  },
+  toggleButtons: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  toggleButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#1f6feb',
+    borderRadius: 8,
+  },
+  toggleButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '500',
+  },
+  progress: {
+    color: '#fff',
+    fontSize: 16,
+    // fontWeight: '500',
   },
 });
