@@ -6,9 +6,10 @@ import {
   View,
   Modal,
   FlatList,
-  Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+
+import {LANGUAGES} from '../common/constants';
 
 interface Language {
   code: string;
@@ -17,19 +18,6 @@ interface Language {
 
 const LanguageButton = () => {
   const [visible, setVisible] = useState(false);
-
-  const languages: Language[] = [
-    {code: 'ko', label: '한국어'},
-    {code: 'ja', label: '日本語'},
-    {code: 'zh', label: '中文 (普通话)'},
-    {code: 'zh-TW', label: '中文 (繁體)'},
-    {code: 'id', label: 'Bahasa Indonesia'},
-    {code: 'ms', label: 'Bahasa Melayu'},
-    {code: 'vn', label: 'Tiếng Việt'},
-    {code: 'ru', label: 'Русский'},
-    {code: 'es', label: 'Español'},
-    {code: 'pt', label: 'Português'},
-  ];
 
   const toggleModal = () => {
     setVisible(!visible);
@@ -56,7 +44,7 @@ const LanguageButton = () => {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Select Language</Text>
             <FlatList
-              data={languages}
+              data={LANGUAGES}
               renderItem={renderLanguageItem}
               keyExtractor={item => item.code}
             />

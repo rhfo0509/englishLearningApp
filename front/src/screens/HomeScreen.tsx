@@ -67,7 +67,8 @@ const HomeScreen = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.learningButton}
-            onPress={() => navigation.navigate('SituationStack')}>
+            // onPress={() => navigation.navigate('SituationStack')}
+          >
             <View style={styles.iconContainer}>
               <Image source={require('../assets/situation.png')} />
             </View>
@@ -85,7 +86,8 @@ const HomeScreen = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.learningButton}
-            onPress={() => navigation.navigate('WordsStack')}>
+            // onPress={() => navigation.navigate('WordsStack')}
+          >
             <View style={styles.iconContainer}>
               <Image source={require('../assets/word.png')} />
             </View>
