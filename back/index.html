@@ -4,6 +4,14 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EnglishLearningApp</title>
+    <script>
+      function toggleType() {
+        const categorySelect = document.querySelector(
+          "select[name='category']"
+        );
+        categorySelect.disabled = !document.getElementById("data").checked;
+      }
+    </script>
   </head>
   <body>
     <h1>학습 데이터 업데이트</h1>
@@ -11,11 +19,38 @@
       <label for="file">Excel File:</label>
       <input type="file" name="file" accept=".xlsx" required /><br /><br />
 
+      <label>Type:</label><br />
+      <input
+        type="radio"
+        id="category"
+        name="type"
+        value="0"
+        checked
+        onclick="toggleType()"
+      />
+      <label for="category">Category</label><br />
+      <input
+        type="radio"
+        id="chapter"
+        name="type"
+        value="1"
+        onclick="toggleType()"
+      />
+      <label for="chapter">Chapter</label><br />
+      <input
+        type="radio"
+        id="data"
+        name="type"
+        value="2"
+        onclick="toggleType()"
+      />
+      <label for="data">Data</label><br /><br />
+
       <label for="version">Version:</label>
       <input type="text" name="version" required /><br /><br />
 
       <label for="category">Category:</label>
-      <select name="category" required>
+      <select name="category" disabled required>
         <optgroup label="SENTENCES">
           <option value="5">묻고 답하기 130선</option>
           <option value="4">핵심패턴영어 250선</option>

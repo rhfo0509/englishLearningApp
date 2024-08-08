@@ -1,7 +1,6 @@
 const express = require("express");
 const path = require("path");
 const multer = require("multer");
-const fs = require("fs");
 
 const {
   convertExcelToJSON,
@@ -18,15 +17,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.post("/upload-excel", upload.single("file"), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).send("No file uploaded");
-  }
-
-  const { version, category, chapter } = req.body;
+  const { type, version, category } = req.body;
 
   try {
-    const json = convertExcelToJSON(req.file.buffer, version, category);
-    await uploadJSONToFirebase(json);
+    const result = convertExcelToJSON(req.file.buffer, type, version, category);
+    await uploadJSONToFirebase(result.json, result.type);
     console.log("Successfully converted the Excel file to JSON.");
     res.send("ok");
   } catch (error) {
