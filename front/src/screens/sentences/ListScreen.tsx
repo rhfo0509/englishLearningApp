@@ -42,7 +42,7 @@ const ListScreen = ({navigation}) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await checkAndUpdateJSON(category);
+        const result = await checkAndUpdateJSON(category, navigation);
         setSentences(result);
         setLoading(false);
       } catch (error) {
@@ -50,7 +50,7 @@ const ListScreen = ({navigation}) => {
       }
     };
     fetchData();
-  }, [category]);
+  }, [category, navigation]);
 
   const renderItem = ({item, index}: {item: Chapter; index: number}) => (
     <TouchableOpacity
