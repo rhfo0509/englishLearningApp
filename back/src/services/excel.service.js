@@ -5,9 +5,9 @@ const bucket = require("../config/firebaseAdmin");
 
 const { LANGUAGES } = require("../common/constants");
 
-function convertExcelToJSON(buffer, version, category, chapter) {
+function convertExcelToJSON(buffer, version, category) {
   const workbook = XLSX.read(buffer, { type: "buffer" });
-  const sheetName = workbook.SheetNames[category];
+  const sheetName = workbook.SheetNames[+category + 2]; // 맨 앞에 카테고리, 챕터 제외 (+2)
   const sheet = workbook.Sheets[sheetName];
 
   const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
@@ -16,42 +16,38 @@ function convertExcelToJSON(buffer, version, category, chapter) {
   let json = {
     version,
     category: +category,
-    chapter: +chapter,
     data: [],
   };
 
-  json.data = data
-    .slice(1)
-    .filter((row) => row[1] === +chapter)
-    .map((row) => {
-      let entry = {
-        num: row[2],
-        image: `${basePath}/${category}/${chapter}/images/${row[3]}.jpg`,
-        sounds: Array.from(
-          { length: 5 },
-          (_, i) =>
-            `${basePath}/${category}/${chapter}/sounds/${row[4]}_${i}.mp3`
-        ),
-      };
-      for (const [lang, i] of Object.entries(LANGUAGES)) {
-        entry[lang] = row[i];
-      }
+  json.data = data.slice(1).map((row) => {
+    let entry = {
+      chapter: row[2],
+      num: row[3],
+      image: `${basePath}/${category}/${row[2]}/images/${row[4]}.jpg`,
+      sounds: Array.from(
+        { length: 5 },
+        (_, i) => `${basePath}/${category}/${row[2]}/sounds/${row[5]}_${i}.mp3`
+      ),
+    };
+    for (const [lang, i] of Object.entries(LANGUAGES)) {
+      entry[lang] = row[i];
+    }
 
-      return entry;
-    });
+    return entry;
+  });
   return json;
 }
 
 async function uploadJSONToFirebase(json) {
-  const { category, chapter } = json;
-  const fileName = `${category}_${chapter}.json`;
+  const { category } = json;
+  const fileName = `${category}.json`;
   const filePath = path.join(__dirname, "..", "uploads", fileName);
 
   fs.writeFileSync(filePath, JSON.stringify(json, null, 2));
 
   try {
     await bucket.upload(filePath, {
-      destination: `learning/${category}/${chapter}/${fileName}`,
+      destination: `learning/${category}/${fileName}`,
       metadata: { contentType: "application/json" },
     });
     console.log("JSON file saved to Firebase Storage");
