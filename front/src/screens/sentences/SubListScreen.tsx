@@ -71,7 +71,7 @@ const SubListScreen = ({navigation}) => {
       <View style={styles.container}>
         <View style={styles.loading}>
           <ActivityIndicator size="large" />
-          <Text>학습 데이터 불러오는 중</Text>
+          <Text>학습 데이터 저장 중</Text>
           <Text>잠시만 기다려주세요.</Text>
         </View>
       </View>
