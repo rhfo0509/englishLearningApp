@@ -87,8 +87,8 @@ export const downloadAllFiles = async (paths: string[] | string) => {
   }
 };
 
-export async function checkAndUpdateJSON(category: number, chapter: number) {
-  const remoteFilePath = `learning/${category}/${chapter}/${category}_${chapter}.json`;
+export async function checkAndUpdateJSON(category: number) {
+  const remoteFilePath = `learning/${category}/${category}.json`;
   console.log(remoteFilePath);
   const remoteDirPath = remoteFilePath.substring(
     0,

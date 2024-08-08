@@ -14,6 +14,7 @@ import {checkAndUpdateJSON} from '../../services/file.service';
 import Header from '../../components/Header';
 
 interface Sentence {
+  chapter: number;
   num: number;
   image: string;
   sounds: string[];
@@ -23,32 +24,16 @@ interface Sentence {
 
 const SubListScreen = ({navigation}) => {
   const route = useRoute();
-  const {category, chapter, title} = route.params as {
-    category: number;
-    chapter: number;
+  const {title, sentences} = route.params as {
     title: string;
+    sentences: Sentence[];
   };
-  const [loading, setLoading] = useState<boolean>(true);
-  const [sentences, setSentences] = useState<Sentence[]>([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => <Header />,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const result = await checkAndUpdateJSON(category, chapter);
-        setSentences(result);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error while fetching JSON file', error);
-      }
-    };
-    fetchData();
-  }, [category, chapter]);
 
   const renderItem = ({item, index}: {item: Sentence; index: number}) => (
     <TouchableOpacity
@@ -66,18 +51,6 @@ const SubListScreen = ({navigation}) => {
       <Text style={styles.ko}>{item.ko}</Text>
     </TouchableOpacity>
   );
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.loading}>
-          <ActivityIndicator size="large" />
-          <Text>학습 데이터 저장 중</Text>
-          <Text>잠시만 기다려주세요...</Text>
-        </View>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -115,10 +88,5 @@ const styles = StyleSheet.create({
   ko: {
     color: '#666',
     marginTop: 4,
-  },
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
