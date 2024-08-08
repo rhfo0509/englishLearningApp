@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import storage from '@react-native-firebase/storage';
 import RNFS from 'react-native-fs';
 
@@ -10,7 +11,7 @@ const getJSONFromFirebase = async (path: string) => {
 
     return json;
   } catch (error) {
-    console.error('Error listing files from Firebase', error);
+    console.error('Error getting JSON file from Firebase', error);
     return [];
   }
 };
@@ -45,7 +46,6 @@ export async function checkAndUpdateJSON() {
 
       const remoteVersion = remoteJSON.version;
 
-      // Update local file if versions differ
       if (localVersion !== remoteVersion) {
         if (!(await RNFS.exists(localDirPath))) {
           await RNFS.mkdir(localDirPath);
@@ -56,15 +56,14 @@ export async function checkAndUpdateJSON() {
           'utf8',
         );
         remoteJSONPath === 'data.json'
-          ? (data.category = remoteJSON.data)
-          : (data.chapter = remoteJSON.data);
-      } else {
-        const localJSON = JSON.parse(
-          await RNFS.readFile(localJSONPath, 'utf8'),
-        );
-        remoteJSONPath === 'data.json'
-          ? (data.category = localJSON.data)
-          : (data.chapter = localJSON.data);
+          ? await AsyncStorage.setItem(
+              'categories',
+              JSON.stringify(remoteJSON.data),
+            )
+          : await AsyncStorage.setItem(
+              'chapters',
+              JSON.stringify(remoteJSON.data),
+            );
       }
     } catch (error) {
       console.error(`Error handling JSON file at ${remoteJSONPath}:`, error);

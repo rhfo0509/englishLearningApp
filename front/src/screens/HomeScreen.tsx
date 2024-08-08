@@ -9,9 +9,10 @@ import {
 } from 'react-native';
 import React, {useLayoutEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+
 import Header from '../components/Header';
 import Profile from '../components/Profile';
-import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const HomeScreen = ({navigation}) => {
   useLayoutEffect(() => {
@@ -22,7 +23,6 @@ const HomeScreen = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {/* 헤더 바로 아래에 프로필 부분 추가 */}
       <Profile />
       <TouchableOpacity style={styles.resume}>
         <LinearGradient

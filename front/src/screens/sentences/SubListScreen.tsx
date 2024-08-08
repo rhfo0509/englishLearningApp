@@ -1,16 +1,7 @@
-import React, {useState, useEffect, useLayoutEffect} from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-  Alert,
-} from 'react-native';
+import React, {useLayoutEffect} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {useRoute} from '@react-navigation/native';
 
-import {checkAndUpdateJSON} from '../../services/file.service';
 import Header from '../../components/Header';
 
 interface Sentence {

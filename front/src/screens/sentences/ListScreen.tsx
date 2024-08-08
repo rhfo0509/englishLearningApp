@@ -8,14 +8,27 @@ import {
   View,
 } from 'react-native';
 import {useRoute} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import Header from '../../components/Header';
-import {SENTENCES_CHAPTERS} from '../../common/constants';
 import {checkAndUpdateJSON} from '../../services/file.service';
 
 interface Chapter {
-  id: number;
-  category: string;
-  text: string;
+  num: number;
+  category: number;
+  chapter: number;
+  ko: string;
+  type: string;
+  en: string;
+  ja: string;
+  zh: string;
+  zh_TW: string;
+  id: string;
+  ms: string;
+  vn: string;
+  ru: string;
+  es: string;
+  pt: string;
 }
 
 interface Sentence {
@@ -31,6 +44,7 @@ const ListScreen = ({navigation}) => {
   const route = useRoute();
   const {category} = route.params as {category: number};
   const [loading, setLoading] = useState<boolean>(true);
+  const [chapters, setChapters] = useState<Chapter[]>([]);
   const [sentences, setSentences] = useState<Sentence[]>([]);
 
   useLayoutEffect(() => {
@@ -40,13 +54,35 @@ const ListScreen = ({navigation}) => {
   }, [navigation]);
 
   useEffect(() => {
+    const fetchChapters = async () => {
+      try {
+        const result = await AsyncStorage.getItem('chapters');
+        if (result) {
+          const parsed: Chapter[] = JSON.parse(result);
+          const filtered = parsed.filter(
+            chapter => chapter.category === category,
+          );
+          const sorted = filtered.sort((a, b) => +a.chapter - +b.chapter);
+          setChapters(sorted);
+        } else {
+          setChapters([]);
+        }
+      } catch (error) {
+        console.error('Error while fetching JSON file', error);
+      }
+    };
+    fetchChapters();
+  }, []);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const result = await checkAndUpdateJSON(category, navigation);
         setSentences(result);
-        setLoading(false);
       } catch (error) {
         console.error('Error while fetching JSON file', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -57,12 +93,12 @@ const ListScreen = ({navigation}) => {
       style={styles.item}
       onPress={() =>
         navigation.navigate('SentenceSubList', {
-          title: item.category,
+          title: item.ko,
           sentences: sentences.filter(sentence => sentence.chapter === index),
         })
       }>
-      <Text style={styles.itemCategory}>{item.category}</Text>
-      <Text style={styles.itemText}>{item.text}</Text>
+      <Text style={styles.itemCategory}>{item.ko}</Text>
+      <Text style={styles.itemText}>{item.type}</Text>
     </TouchableOpacity>
   );
 
@@ -82,7 +118,7 @@ const ListScreen = ({navigation}) => {
     <View style={styles.container}>
       <FlatList
         style={{marginTop: 16}}
-        data={SENTENCES_CHAPTERS}
+        data={chapters}
         renderItem={renderItem}
         keyExtractor={item => item.id.toString()}
         showsVerticalScrollIndicator={false}
