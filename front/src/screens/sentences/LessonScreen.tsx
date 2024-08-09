@@ -10,7 +10,9 @@ import {
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
+import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 
 const {width} = Dimensions.get('window');
 
@@ -37,6 +39,9 @@ const LessonScreen = ({route, navigation}: any) => {
     english: true,
     translation: true,
   });
+  const [imageUri, setImageUri] = useState<string | number>(
+    `file://${sentences[index].image}`,
+  );
 
   const playSound = (soundUrl: string) => {
     try {
@@ -64,6 +69,8 @@ const LessonScreen = ({route, navigation}: any) => {
 
   const onMoveLeft = () => {
     if (index > 0) {
+      setImageUri(getRandomGif());
+
       navigation.navigate('SentenceLesson', {
         index: index - 1,
         sentences,
@@ -74,6 +81,8 @@ const LessonScreen = ({route, navigation}: any) => {
 
   const onMoveRight = () => {
     if (index < sentences.length - 1) {
+      setImageUri(getRandomGif());
+
       navigation.navigate('SentenceLesson', {
         index: index + 1,
         sentences,
@@ -123,6 +132,11 @@ const LessonScreen = ({route, navigation}: any) => {
     };
   }, [index, playing, sentences, soundIndex]);
 
+  const getRandomGif = () => {
+    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGE_PATHS.length);
+    return DEFAULT_IMAGE_PATHS[randomIndex];
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -142,9 +156,11 @@ const LessonScreen = ({route, navigation}: any) => {
             <Text style={styles.english}>{sentences[index].en}</Text>
           )}
         </View>
-        <Image
-          source={{uri: `file://${sentences[index].image}`}}
+        <FastImage
+          source={typeof imageUri === 'string' ? {uri: imageUri} : imageUri}
           style={styles.image}
+          resizeMode={FastImage.resizeMode.contain}
+          onError={() => setImageUri(getRandomGif())}
         />
         <View style={styles.sentence}>
           {viewMode.translation && (

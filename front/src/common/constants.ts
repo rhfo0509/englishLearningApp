@@ -11,3 +11,13 @@ export const LANGUAGES = [
   {code: 'es', label: 'Español'},
   {code: 'pt', label: 'Português'},
 ];
+
+export const DEFAULT_IMAGE_PATHS = [
+  require('../assets/lesson/1.gif'),
+  require('../assets/lesson/2.gif'),
+  require('../assets/lesson/3.gif'),
+  require('../assets/lesson/4.gif'),
+  require('../assets/lesson/5.gif'),
+  require('../assets/lesson/6.gif'),
+  require('../assets/lesson/7.gif'),
+];
