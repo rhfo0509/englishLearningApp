@@ -261,6 +261,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '500',
+    marginBottom: 2,
   },
   progress: {
     color: '#fff',

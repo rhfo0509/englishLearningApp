@@ -66,7 +66,6 @@ const CategoryScreen = ({navigation}) => {
   const renderItem = ({item, index}: {item: Category; index: number}) => (
     <TouchableOpacity
       style={styles.item}
-      disabled={!!index}
       onPress={() =>
         navigation.navigate('PronunciationList', {category: item.category})
       }>
