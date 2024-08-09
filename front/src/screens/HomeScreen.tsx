@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   },
   learningButton: {
     flex: 1,
-    width: 120,
+    width: 140,
     height: 160,
     marginHorizontal: 4,
     borderRadius: 24,
