@@ -39,9 +39,20 @@ const LessonScreen = ({route, navigation}: any) => {
     english: true,
     translation: true,
   });
-  const [imageUri, setImageUri] = useState<string | number>(
-    `file://${sentences[index].image}`,
-  );
+  const [imageUri, setImageUri] = useState<string | number>('');
+
+  const getRandomGif = () => {
+    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGE_PATHS.length);
+    return DEFAULT_IMAGE_PATHS[randomIndex];
+  };
+
+  useEffect(() => {
+    setImageUri(
+      sentences[index].image
+        ? `file://${sentences[index].image}`
+        : getRandomGif(),
+    );
+  }, [index, sentences]);
 
   const playSound = (soundUrl: string) => {
     try {
@@ -69,8 +80,6 @@ const LessonScreen = ({route, navigation}: any) => {
 
   const onMoveLeft = () => {
     if (index > 0) {
-      setImageUri(getRandomGif());
-
       navigation.navigate('SentenceLesson', {
         index: index - 1,
         sentences,
@@ -81,8 +90,6 @@ const LessonScreen = ({route, navigation}: any) => {
 
   const onMoveRight = () => {
     if (index < sentences.length - 1) {
-      setImageUri(getRandomGif());
-
       navigation.navigate('SentenceLesson', {
         index: index + 1,
         sentences,
@@ -132,11 +139,6 @@ const LessonScreen = ({route, navigation}: any) => {
     };
   }, [index, playing, sentences, soundIndex]);
 
-  const getRandomGif = () => {
-    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGE_PATHS.length);
-    return DEFAULT_IMAGE_PATHS[randomIndex];
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -157,7 +159,7 @@ const LessonScreen = ({route, navigation}: any) => {
           )}
         </View>
         <FastImage
-          source={typeof imageUri === 'string' ? {uri: imageUri} : imageUri}
+          source={{uri: imageUri}}
           style={styles.image}
           resizeMode={FastImage.resizeMode.contain}
           onError={() => setImageUri(getRandomGif())}
@@ -266,6 +268,5 @@ const styles = StyleSheet.create({
   progress: {
     color: '#fff',
     fontSize: 16,
-    // fontWeight: '500',
   },
 });
