@@ -9,9 +9,7 @@ interface FileInfo {
 
 let startTime;
 
-const getFilesFromFirebase = async (
-  remotePath: string,
-): Promise<FileInfo[]> => {
+const getURLfromFirebase = async (remotePath: string): Promise<FileInfo[]> => {
   const storageRef = storage().ref(remotePath);
   try {
     const result = await storageRef.listAll();
@@ -57,13 +55,13 @@ const downloadFile = async (file: FileInfo) => {
   }
 };
 
-export const downloadAllFiles = async (paths: string[] | string) => {
+export const downloadFiles = async (paths: string[] | string) => {
   startTime = Date.now();
   try {
     const allFiles: FileInfo[] = [];
 
     for (const path of paths) {
-      const files = await getFilesFromFirebase(path);
+      const files = await getURLfromFirebase(path);
       allFiles.push(...files);
     }
 
@@ -146,7 +144,7 @@ export async function checkAndUpdateJSON(category: number, navigation: any) {
         JSON.stringify(remoteData, null, 2),
         'utf8',
       );
-      await downloadAllFiles([
+      await downloadFiles([
         `${remoteDirPath}/images`,
         `${remoteDirPath}/sounds`,
       ]);
