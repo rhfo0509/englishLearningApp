@@ -5234,6 +5234,7 @@ __metadata:
     react-native-svg: ^15.4.0
     react-native-swipe-gestures: ^1.0.5
     react-native-vector-icons: ^10.1.0
+    react-native-zip-archive: ^7.0.0
     react-test-renderer: 18.2.0
     typescript: 5.0.4
   languageName: unknown
@@ -9421,6 +9422,16 @@ __metadata:
     fa6-upgrade: bin/fa6-upgrade.sh
     generate-icon: bin/generate-icon.js
   checksum: c1e1d7c7ccc110e99caaed4d57324d5331dfa91817183350d2fd4df16d2302e7363da1f7a2b87011da3936b77aac3a7bf8ee11844dd8786b8b7dbc6553494866
+  languageName: node
+  linkType: hard
+
+"react-native-zip-archive@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "react-native-zip-archive@npm:7.0.0"
+  peerDependencies:
+    react: ">=16.8.6"
+    react-native: ">=0.60.0"
+  checksum: 788e54ae9899b5ab0c3475c24ce93ca3514a1c02d14048fd34245af496a9af996be3115d50fdbb14f219d4ea8f7dcc2b483fe848fa9a1d133bbaf88fd357bcf6
   languageName: node
   linkType: hard
 
