@@ -4,6 +4,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {
   HomeStack,
   ProfileStack,
+  PronunciationStack,
   SentencesStack,
   SituationStack,
   WordsStack,
@@ -37,6 +38,11 @@ const Root = () => {
       <Stack.Screen
         name="WordsStack"
         component={WordsStack}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="PronunciationStack"
+        component={PronunciationStack}
         options={{headerShown: false}}
       />
     </Stack.Navigator>

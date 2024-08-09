@@ -31,7 +31,7 @@ interface Chapter {
   pt: string;
 }
 
-interface Sentence {
+interface Pronunciation {
   chapter: number;
   num: number;
   image: string;
@@ -45,7 +45,7 @@ const ListScreen = ({navigation}) => {
   const {category} = route.params as {category: number};
   const [loading, setLoading] = useState<boolean>(true);
   const [chapters, setChapters] = useState<Chapter[]>([]);
-  const [sentences, setSentences] = useState<Sentence[]>([]);
+  const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -78,7 +78,7 @@ const ListScreen = ({navigation}) => {
     const fetchData = async () => {
       try {
         const result = await checkAndUpdateJSON(category, navigation);
-        setSentences(result);
+        setPronunciations(result);
       } catch (error) {
         console.error('Error while fetching JSON file', error);
       } finally {
@@ -92,9 +92,11 @@ const ListScreen = ({navigation}) => {
     <TouchableOpacity
       style={styles.item}
       onPress={() =>
-        navigation.navigate('SentenceSubList', {
+        navigation.navigate('PronunciationSubList', {
           title: item.ko,
-          sentences: sentences.filter(sentence => sentence.chapter === index),
+          pronunciations: pronunciations.filter(
+            pronunciation => pronunciation.chapter === index,
+          ),
         })
       }>
       <Text style={styles.itemCategory}>{item.ko}</Text>

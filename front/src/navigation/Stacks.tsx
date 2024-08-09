@@ -18,6 +18,11 @@ import WordsListScreen from '../screens/words/ListScreen';
 import WordsSubListScreen from '../screens/words/SubListScreen';
 import WordsLessonScreen from '../screens/words/LessonScreen';
 
+import PronunciationCategoryScreen from '../screens/pronunciation/CategoryScreen';
+import PronunciationListScreen from '../screens/pronunciation/ListScreen';
+import PronunciationSubListScreen from '../screens/pronunciation/SubListScreen';
+import PronunciationLessonScreen from '../screens/pronunciation/LessonScreen';
+
 import ProfileScreen from '../screens/ProfileScreen';
 
 const Stack = createNativeStackNavigator();
@@ -70,6 +75,28 @@ const SituationStack = () => (
   </Stack.Navigator>
 );
 
+const PronunciationStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="PronunciationCategory"
+      component={PronunciationCategoryScreen}
+    />
+    <Stack.Screen
+      name="PronunciationList"
+      component={PronunciationListScreen}
+    />
+    <Stack.Screen
+      name="PronunciationSubList"
+      component={PronunciationSubListScreen}
+    />
+    <Stack.Screen
+      name="PronunciationLesson"
+      component={PronunciationLessonScreen}
+      options={{headerShown: false}}
+    />
+  </Stack.Navigator>
+);
+
 const WordsStack = () => (
   <Stack.Navigator>
     <Stack.Screen name="WordsCategory" component={WordsCategoryScreen} />
@@ -83,4 +110,11 @@ const WordsStack = () => (
   </Stack.Navigator>
 );
 
-export {HomeStack, SentencesStack, SituationStack, WordsStack, ProfileStack};
+export {
+  HomeStack,
+  ProfileStack,
+  SentencesStack,
+  SituationStack,
+  WordsStack,
+  PronunciationStack,
+};

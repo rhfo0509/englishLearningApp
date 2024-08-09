@@ -46,7 +46,7 @@ const HomeScreen = ({navigation}) => {
           <Icon name="menu-book" size={36} />
           <Text style={styles.titleText}>Learning Zone</Text>
         </View>
-        <View style={{flexDirection: 'row'}}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <TouchableOpacity
             style={styles.learningButton}
             onPress={() => navigation.navigate('SentencesStack')}>
@@ -103,7 +103,26 @@ const HomeScreen = ({navigation}) => {
               <Text style={styles.buttonSubText}>7 Categories</Text>
             </LinearGradient>
           </TouchableOpacity>
-        </View>
+          <TouchableOpacity
+            style={styles.learningButton}
+            // onPress={() => navigation.navigate('WordsStack')}
+          >
+            <View style={styles.iconContainer}>
+              <Image source={require('../assets/pronunciation.png')} />
+            </View>
+            <LinearGradient
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              colors={['#1f6feb', '#53c1ff']}
+              style={[
+                styles.gradient,
+                {borderTopLeftRadius: 0, borderTopRightRadius: 0},
+              ]}>
+              <Text style={styles.buttonText}>Pronunciation</Text>
+              <Text style={styles.buttonSubText}>2 Categories</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </ScrollView>
       </View>
       <View style={{marginTop: 12}}>
         <View style={styles.title}>
@@ -188,12 +207,13 @@ const styles = StyleSheet.create({
   },
   learningButton: {
     flex: 1,
+    width: 120,
     height: 160,
     marginHorizontal: 4,
     borderRadius: 24,
     overflow: 'hidden',
     backgroundColor: '#fff',
-    elevation: 8,
+    elevation: 4,
   },
   challengeButton: {
     flex: 1,
@@ -218,7 +238,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
-    fontSize: 16,
+    fontSize: 15,
     textAlign: 'center',
   },
   buttonSubText: {
