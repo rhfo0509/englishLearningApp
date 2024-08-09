@@ -22,12 +22,16 @@ function convertExcelToJSON(buffer, type, version, category = 0) {
         let entry = {
           chapter: row[2],
           num: row[3],
-          image: `${basePath}/learning/${category}/images/${row[4]}.jpg`,
-          sounds: Array.from(
-            { length: 5 },
-            (_, i) =>
-              `${basePath}/learning/${category}/sounds/${row[5]}_${i}.mp3`
-          ),
+          image: row[4]
+            ? `${basePath}/learning/${category}/images/${row[4]}.jpg`
+            : "",
+          sounds: row[5]
+            ? Array.from(
+                { length: 5 },
+                (_, i) =>
+                  `${basePath}/learning/${category}/sounds/${row[5]}_${i}.mp3`
+              )
+            : [],
         };
         for (const [lang, i] of Object.entries(LANGUAGES)) {
           entry[lang] = row[i];
