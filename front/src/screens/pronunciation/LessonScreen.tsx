@@ -112,7 +112,7 @@ const LessonScreen = ({route, navigation}: any) => {
         nextIndex >= 0 && nextIndex < currentIndexes.length
           ? currentIndexes[nextIndex]
           : repeatMode === 'always'
-          ? shuffle()
+          ? 0
           : index;
 
       if (newIndex !== index) {
@@ -129,7 +129,6 @@ const LessonScreen = ({route, navigation}: any) => {
       navigation,
       repeatMode,
       pronunciations,
-      shuffle,
       shuffleIndexes,
       shuffleMode,
       title,
