@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {useRoute} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Header from '../../components/Header';
@@ -40,8 +39,7 @@ interface Pronunciation {
   ko: string;
 }
 
-const ListScreen = ({navigation}) => {
-  const route = useRoute();
+const ListScreen = ({route, navigation}: any) => {
   const {category} = route.params as {category: number};
   const [loading, setLoading] = useState<boolean>(true);
   const [chapters, setChapters] = useState<Chapter[]>([]);

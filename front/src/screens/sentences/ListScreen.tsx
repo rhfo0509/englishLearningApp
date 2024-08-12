@@ -40,7 +40,7 @@ interface Sentence {
   ko: string;
 }
 
-const ListScreen = ({navigation}) => {
+const ListScreen = ({navigation}: any) => {
   const route = useRoute();
   const {category} = route.params as {category: number};
   const [loading, setLoading] = useState<boolean>(true);

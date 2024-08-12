@@ -1,6 +1,5 @@
 import React, {useLayoutEffect} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useRoute} from '@react-navigation/native';
 
 import Header from '../../components/Header';
 
@@ -13,8 +12,7 @@ interface Pronunciation {
   ko: string;
 }
 
-const SubListScreen = ({navigation}) => {
-  const route = useRoute();
+const SubListScreen = ({route, navigation}: any) => {
   const {title, pronunciations} = route.params as {
     title: string;
     pronunciations: Pronunciation[];

@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../components/Header';
 import Profile from '../components/Profile';
 
-const HomeScreen = ({navigation}) => {
+const HomeScreen = ({navigation}: any) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => <Header />,
