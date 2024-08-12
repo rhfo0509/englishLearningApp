@@ -392,7 +392,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   toggleButton: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 8,
     borderRadius: 8,
   },
@@ -405,5 +405,6 @@ const styles = StyleSheet.create({
   progress: {
     color: '#fff',
     fontSize: 16,
+    marginRight: 8,
   },
 });
