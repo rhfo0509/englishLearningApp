@@ -8,6 +8,8 @@ import {
   View,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import LinearGradient from 'react-native-linear-gradient';
+import MIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Header from '../../components/Header';
 import {checkAndUpdateJSON} from '../../services/file.service';
@@ -116,8 +118,32 @@ const ListScreen = ({route, navigation}: any) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.button}>
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          colors={['#56ab2f', '#a8e063']}
+          style={styles.gradient}>
+          <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <MIcon name="play-circle-outline" size={24} color="#fff" />
+            <Text style={styles.buttonText}>All Random</Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.button}>
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          colors={['#1f6feb', '#53c1ff']}
+          style={styles.gradient}>
+          <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <MIcon name="bookmark-outline" size={24} color="#fff" />
+            <Text style={styles.buttonText}>My BookMark</Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
       <FlatList
-        style={{marginTop: 16}}
+        style={{marginTop: 8}}
         data={chapters}
         renderItem={renderItem}
         keyExtractor={item => item.num.toString()}
@@ -150,6 +176,28 @@ const styles = StyleSheet.create({
   itemText: {
     color: '#666',
     marginTop: 4,
+  },
+  button: {
+    borderRadius: 24,
+    marginHorizontal: 4,
+  },
+  gradient: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 24,
+    padding: 12,
+    marginTop: 16,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 20,
+  },
+  buttonSubText: {
+    color: '#fff',
+    fontSize: 12,
+    textAlign: 'center',
   },
   loading: {
     flex: 1,
