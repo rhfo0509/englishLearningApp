@@ -28,7 +28,7 @@ interface Category {
   pt: string;
 }
 
-const CategoryScreen = ({navigation}) => {
+const CategoryScreen = ({navigation}: any) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
