@@ -68,7 +68,10 @@ const CategoryScreen = ({navigation}: any) => {
       style={styles.item}
       disabled={!!index}
       onPress={() =>
-        navigation.navigate('SentenceList', {category: item.category})
+        navigation.navigate('SentenceList', {
+          category: item.category,
+          title: item.ko,
+        })
       }>
       <LinearGradient
         colors={['#1f6feb', '#53c1ff']}

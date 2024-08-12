@@ -20,6 +20,7 @@ import useClick from '../../hooks/useClick';
 const {width} = Dimensions.get('window');
 
 interface Sentence {
+  tnum: number;
   num: number;
   image: string;
   sounds: string[];
@@ -28,11 +29,19 @@ interface Sentence {
 }
 
 const LessonScreen = ({route, navigation}: any) => {
-  const {index, sentences, title} = route.params as {
-    index: number;
+  const {
+    sentences,
+    title,
+    index = Math.floor(Math.random() * sentences.length),
+    from,
+  } = route.params as {
     sentences: Sentence[];
     title: string;
+    index: number;
+    from: string;
   };
+
+  const [currentIndex, setCurrentIndex] = useState<number>(index);
 
   const [playing, setPlaying] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0);
@@ -46,7 +55,7 @@ const LessonScreen = ({route, navigation}: any) => {
   const [repeatMode, setRepeatMode] = useState<'always' | 'once' | 'none'>(
     'always',
   );
-  const [shuffleMode, setShuffleMode] = useState<boolean>(false);
+  const [shuffleMode, setShuffleMode] = useState<boolean>(from === 'list');
   const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
   const [imageUri, setImageUri] = useState<string | number>('');
 
@@ -58,11 +67,11 @@ const LessonScreen = ({route, navigation}: any) => {
 
   useEffect(() => {
     setImageUri(
-      sentences[index].image
-        ? `file://${sentences[index].image}`
+      sentences[currentIndex].image
+        ? `file://${sentences[currentIndex].image}`
         : getRandomGif(),
     );
-  }, [index, sentences]);
+  }, [currentIndex, sentences]);
 
   // 사운드 재생 함수
   const playSound = (soundUrl: string) => {
@@ -80,60 +89,56 @@ const LessonScreen = ({route, navigation}: any) => {
         SoundPlayer.pause();
       } else {
         setSoundIndex(0);
-        playSound(sentences[index].sounds[0]);
+        playSound(sentences[currentIndex].sounds[0]);
       }
       return !prev;
     });
-  }, [index, sentences]);
+  }, [currentIndex, sentences]);
 
   // 셔플 목록 생성
   const shuffle = useCallback(() => {
-    const indexes = Array.from({length: sentences.length}, (_, i) => i).filter(
-      i => i !== index,
-    );
+    const indexes = Array.from({length: sentences.length}, (_, i) => i);
     for (let i = indexes.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
     }
-    console.log(indexes);
-    setShuffleIndexes([index, ...indexes]);
-  }, [index, sentences]);
+    setShuffleIndexes(indexes);
+  }, [sentences]);
 
-  // 화면 전환 함수
+  // 셔플 모드가 활성화된 경우 인덱스를 초기화
+  useEffect(() => {
+    if (shuffleMode) {
+      shuffle();
+    }
+  }, [shuffleMode, shuffle]);
+
+  // 화면 전환 로직
   const navigateToSentence = useCallback(
     (direction: 'left' | 'right') => {
       const currentIndexes = shuffleMode
         ? shuffleIndexes
         : sentences.map((_, i) => i);
-      const currentIndex = shuffleMode ? shuffleIndexes.indexOf(index) : index;
+      const currentIndexPosition = shuffleMode
+        ? shuffleIndexes.indexOf(currentIndex)
+        : currentIndex;
       const nextIndex =
-        direction === 'right' ? currentIndex + 1 : currentIndex - 1;
+        direction === 'right'
+          ? currentIndexPosition + 1
+          : currentIndexPosition - 1;
 
       const newIndex =
         nextIndex >= 0 && nextIndex < currentIndexes.length
           ? currentIndexes[nextIndex]
           : repeatMode === 'always'
           ? 0
-          : index;
+          : currentIndex;
 
-      if (newIndex !== index) {
-        navigation.navigate('SentenceLesson', {
-          index: newIndex,
-          sentences,
-          title,
-        });
-        setSoundIndex(0); // 페이지 이동 시 사운드 인덱스를 초기화
+      if (newIndex !== currentIndex) {
+        setCurrentIndex(newIndex);
+        setSoundIndex(0);
       }
     },
-    [
-      index,
-      navigation,
-      repeatMode,
-      sentences,
-      shuffleIndexes,
-      shuffleMode,
-      title,
-    ],
+    [currentIndex, repeatMode, sentences, shuffleIndexes, shuffleMode],
   );
 
   // 모드 토글 함수들
@@ -189,19 +194,20 @@ const LessonScreen = ({route, navigation}: any) => {
   useFocusEffect(
     useCallback(() => {
       if (playing) {
-        playSound(sentences[index].sounds[soundIndex]);
+        playSound(sentences[currentIndex].sounds[soundIndex]);
       }
       return () => {
         SoundPlayer.stop();
       };
-    }, [index, playing, sentences, soundIndex]),
+    }, [currentIndex, playing, sentences, soundIndex]),
   );
 
   // 사운드 재생 완료 시 처리
   useEffect(() => {
     const handlePlaybackCompletion = () => {
-      const isLastSound = soundIndex === sentences[index].sounds.length - 1;
-      const isLastSentence = index === sentences.length - 1;
+      const isLastSound =
+        soundIndex === sentences[currentIndex].sounds.length - 1;
+      const isLastSentence = currentIndex === sentences.length - 1;
 
       if (isLastSound) {
         if (isLastSentence) {
@@ -237,7 +243,7 @@ const LessonScreen = ({route, navigation}: any) => {
       onFinishPlayingSubscription.remove();
     };
   }, [
-    index,
+    currentIndex,
     navigateToSentence,
     playing,
     repeatMode,
@@ -262,7 +268,7 @@ const LessonScreen = ({route, navigation}: any) => {
       <View style={styles.main} {...panResponder.panHandlers}>
         <View style={styles.sentence}>
           {viewMode.english && (
-            <Text style={styles.english}>{sentences[index].en}</Text>
+            <Text style={styles.english}>{sentences[currentIndex].en}</Text>
           )}
         </View>
         <FastImage
@@ -273,7 +279,7 @@ const LessonScreen = ({route, navigation}: any) => {
         />
         <View style={styles.sentence}>
           {viewMode.translation && (
-            <Text style={styles.translation}>{sentences[index].ko}</Text>
+            <Text style={styles.translation}>{sentences[currentIndex].ko}</Text>
           )}
         </View>
       </View>
@@ -311,7 +317,10 @@ const LessonScreen = ({route, navigation}: any) => {
           </Pressable>
         </View>
         <Text style={styles.progress}>
-          {sentences[index].num + 1} / {sentences.length}
+          {(from === 'list'
+            ? sentences[currentIndex].tnum
+            : sentences[currentIndex].num) + 1}{' '}
+          / {sentences.length}
         </Text>
       </View>
     </View>

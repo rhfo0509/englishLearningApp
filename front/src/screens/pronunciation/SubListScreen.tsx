@@ -29,9 +29,10 @@ const SubListScreen = ({route, navigation}: any) => {
       style={styles.item}
       onPress={() =>
         navigation.navigate('PronunciationLesson', {
-          index,
           pronunciations,
           title,
+          index,
+          from: 'sublist',
         })
       }>
       <Text style={styles.en}>

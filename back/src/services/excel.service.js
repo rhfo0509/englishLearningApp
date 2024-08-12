@@ -20,6 +20,7 @@ function convertExcelToJSON(buffer, type, version, category = 0) {
       category: +category,
       data: data.slice(1).map((row) => {
         let entry = {
+          tnum: row[0],
           chapter: row[2],
           num: row[3],
           image: row[4]

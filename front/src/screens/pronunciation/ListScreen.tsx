@@ -33,6 +33,7 @@ interface Chapter {
 }
 
 interface Pronunciation {
+  tnum: number;
   chapter: number;
   num: number;
   image: string;
@@ -42,7 +43,7 @@ interface Pronunciation {
 }
 
 const ListScreen = ({route, navigation}: any) => {
-  const {category} = route.params as {category: number};
+  const {category, title} = route.params as {category: number; title: string};
   const [loading, setLoading] = useState<boolean>(true);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [pronunciations, setPronunciations] = useState<Pronunciation[]>([]);
@@ -118,7 +119,15 @@ const ListScreen = ({route, navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() =>
+          navigation.navigate('PronunciationLesson', {
+            pronunciations,
+            title,
+            from: 'list',
+          })
+        }>
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}

@@ -29,9 +29,10 @@ const SubListScreen = ({route, navigation}: any) => {
       style={styles.item}
       onPress={() =>
         navigation.navigate('SentenceLesson', {
-          index,
           sentences,
           title,
+          index,
+          from: 'sublist',
         })
       }>
       <Text style={styles.en}>

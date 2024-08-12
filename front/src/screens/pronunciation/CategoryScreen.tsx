@@ -67,7 +67,10 @@ const CategoryScreen = ({navigation}: any) => {
     <TouchableOpacity
       style={styles.item}
       onPress={() =>
-        navigation.navigate('PronunciationList', {category: item.category})
+        navigation.navigate('PronunciationList', {
+          category: item.category,
+          title: item.ko,
+        })
       }>
       <LinearGradient
         colors={['#1f6feb', '#53c1ff']}
