@@ -2,8 +2,10 @@ import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
+import Toast from 'react-native-toast-message';
 import Root from './navigation/Root';
 import {checkAndUpdateJSON} from './services/data.service';
+import toastConfig from './components/Toast';
 
 const App = () => {
   useEffect(() => {
@@ -26,6 +28,7 @@ const App = () => {
       <NavigationContainer>
         <Root />
       </NavigationContainer>
+      <Toast config={toastConfig} />
     </GestureHandlerRootView>
   );
 };

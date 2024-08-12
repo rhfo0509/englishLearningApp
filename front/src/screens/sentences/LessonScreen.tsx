@@ -11,9 +11,11 @@ import {
 import {useFocusEffect} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
 import FastImage from 'react-native-fast-image';
+import Toast from 'react-native-toast-message';
 import IIcon from 'react-native-vector-icons/Ionicons';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
+import useClick from '../../hooks/useClick';
 
 const {width} = Dimensions.get('window');
 
@@ -229,6 +231,18 @@ const LessonScreen = ({route, navigation}: any) => {
     togglePlayback,
   ]);
 
+  const handlePress = useClick(
+    togglePlayback, // Single click action
+    () => {
+      Toast.show({
+        type: 'success',
+        text1: '북마크 저장됨',
+        position: 'bottom',
+        visibilityTime: 1500,
+      });
+    }, // Double click action
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -242,7 +256,10 @@ const LessonScreen = ({route, navigation}: any) => {
           <IIcon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
         </TouchableOpacity>
       </View>
-      <View style={styles.main} {...panResponder.panHandlers}>
+      <Pressable
+        style={styles.main}
+        onPress={handlePress}
+        {...panResponder.panHandlers}>
         <View style={styles.sentence}>
           {viewMode.english && (
             <Text style={styles.english}>{sentences[index].en}</Text>
@@ -259,7 +276,7 @@ const LessonScreen = ({route, navigation}: any) => {
             <Text style={styles.translation}>{sentences[index].ko}</Text>
           )}
         </View>
-      </View>
+      </Pressable>
       <View style={styles.footer}>
         <View style={styles.toggleButtons}>
           <Pressable
