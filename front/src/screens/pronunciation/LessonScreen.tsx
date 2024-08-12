@@ -158,13 +158,28 @@ const LessonScreen = ({route, navigation}: any) => {
     }
   };
 
+  const handlePress = useClick(
+    togglePlayback, // Single click action
+    () => {
+      Toast.show({
+        type: 'success',
+        text1: '북마크 저장됨',
+        position: 'bottom',
+        visibilityTime: 1500,
+      });
+    }, // Double click action
+  );
+
   const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => false,
+    onStartShouldSetPanResponder: () => true,
     onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dy) > 50;
+      return Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
     },
     onPanResponderRelease: (_, gestureState) => {
-      if (gestureState.dy < -50) {
+      if (Math.abs(gestureState.dx) < 5 && Math.abs(gestureState.dy) < 5) {
+        // 손가락을 거의 움직이지 않았을 때
+        handlePress();
+      } else if (gestureState.dy < -50) {
         navigateToPronunciation('right');
       } else if (gestureState.dy > 50) {
         navigateToPronunciation('left');
@@ -233,18 +248,6 @@ const LessonScreen = ({route, navigation}: any) => {
     togglePlayback,
   ]);
 
-  const handlePress = useClick(
-    togglePlayback, // Single click action
-    () => {
-      Toast.show({
-        type: 'success',
-        text1: '북마크 저장됨',
-        position: 'bottom',
-        visibilityTime: 1500,
-      });
-    }, // Double click action
-  );
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -258,10 +261,7 @@ const LessonScreen = ({route, navigation}: any) => {
           <IIcon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
         </TouchableOpacity>
       </View>
-      <Pressable
-        style={styles.main}
-        onPress={handlePress}
-        {...panResponder.panHandlers}>
+      <View style={styles.main} {...panResponder.panHandlers}>
         <View style={styles.pronunciation}>
           {viewMode.english && (
             <Text style={styles.english}>{pronunciations[index].en}</Text>
@@ -278,7 +278,7 @@ const LessonScreen = ({route, navigation}: any) => {
             <Text style={styles.translation}>{pronunciations[index].ko}</Text>
           )}
         </View>
-      </Pressable>
+      </View>
       <View style={styles.footer}>
         <View style={styles.toggleButtons}>
           <Pressable
