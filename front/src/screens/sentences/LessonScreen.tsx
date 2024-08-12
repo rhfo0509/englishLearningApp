@@ -193,7 +193,7 @@ const LessonScreen = ({route, navigation}: any) => {
           } else if (repeatMode === 'always') {
             navigateToSentence('right'); // 처음으로 이동
           } else {
-            setPlaying(false); // 'none' 모드인 경우 마지막 문장에서 재생 중지
+            togglePlayback(); // 'none' 모드인 경우 마지막 문장에서 재생 중지
           }
         } else {
           if (repeatMode === 'once') {
