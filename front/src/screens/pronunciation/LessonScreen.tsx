@@ -115,30 +115,38 @@ const LessonScreen = ({route, navigation}: any) => {
   // 화면 전환 로직
   const navigateToPronunciation = useCallback(
     (direction: 'left' | 'right') => {
-      const currentIndexes = shuffleMode
+      const indexes = shuffleMode
         ? shuffleIndexes
         : pronunciations.map((_, i) => i);
-      const currentIndexPosition = shuffleMode
+      const current = shuffleMode
         ? shuffleIndexes.indexOf(currentIndex)
         : currentIndex;
-      const nextIndex =
-        direction === 'right'
-          ? currentIndexPosition + 1
-          : currentIndexPosition - 1;
+      const next = current + (direction === 'right' ? 1 : -1);
 
-      const newIndex =
-        nextIndex >= 0 && nextIndex < currentIndexes.length
-          ? currentIndexes[nextIndex]
-          : repeatMode === 'always'
-          ? 0
-          : currentIndex;
+      let newIndex = currentIndex;
+
+      if (next >= 0 && next < indexes.length) {
+        newIndex = indexes[next];
+      } else if (shuffleMode && next >= indexes.length) {
+        shuffle();
+        newIndex = shuffleIndexes[0];
+      } else if (repeatMode === 'always') {
+        newIndex = 0;
+      }
 
       if (newIndex !== currentIndex) {
         setCurrentIndex(newIndex);
         setSoundIndex(0);
       }
     },
-    [currentIndex, repeatMode, pronunciations, shuffleIndexes, shuffleMode],
+    [
+      currentIndex,
+      repeatMode,
+      pronunciations,
+      shuffle,
+      shuffleIndexes,
+      shuffleMode,
+    ],
   );
 
   // 모드 토글 함수들
