@@ -6,11 +6,13 @@ import {
   Dimensions,
   TouchableOpacity,
   PanResponder,
+  Pressable,
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
 import FastImage from 'react-native-fast-image';
-import Icon from 'react-native-vector-icons/Ionicons';
+import IIcon from 'react-native-vector-icons/Ionicons';
+import MIcon from 'react-native-vector-icons/MaterialIcons';
 import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 
 const {width} = Dimensions.get('window');
@@ -29,9 +31,9 @@ const LessonScreen = ({route, navigation}: any) => {
     pronunciations: Pronunciation[];
     title: string;
   };
+
   const [playing, setPlaying] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0);
-
   const [viewMode, setViewMode] = useState<{
     english: boolean;
     translation: boolean;
@@ -39,11 +41,28 @@ const LessonScreen = ({route, navigation}: any) => {
     english: true,
     translation: true,
   });
-
-  const [imageUri, setImageUri] = useState<string | number>(
-    `file://${pronunciations[index].image}`,
+  const [repeatMode, setRepeatMode] = useState<'always' | 'once' | 'none'>(
+    'always',
   );
+  const [shuffleMode, setShuffleMode] = useState<boolean>(false);
+  const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
+  const [imageUri, setImageUri] = useState<string | number>('');
 
+  // 초기 이미지 설정
+  const getRandomGif = () => {
+    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGE_PATHS.length);
+    return DEFAULT_IMAGE_PATHS[randomIndex];
+  };
+
+  useEffect(() => {
+    setImageUri(
+      pronunciations[index].image
+        ? `file://${pronunciations[index].image}`
+        : getRandomGif(),
+    );
+  }, [index, pronunciations]);
+
+  // 사운드 재생 함수
   const playSound = (soundUrl: string) => {
     try {
       SoundPlayer.playUrl(`file://${soundUrl}`);
@@ -52,15 +71,72 @@ const LessonScreen = ({route, navigation}: any) => {
     }
   };
 
-  const togglePlayback = () => {
-    if (playing) {
-      SoundPlayer.pause();
-    } else {
-      playSound(pronunciations[index].sounds[soundIndex]);
-    }
-    setPlaying(!playing);
-  };
+  // 사운드 재생 / 정지
+  const togglePlayback = useCallback(() => {
+    setPlaying(prev => {
+      if (prev) {
+        SoundPlayer.pause();
+      } else {
+        setSoundIndex(0);
+        playSound(pronunciations[index].sounds[0]);
+      }
+      return !prev;
+    });
+  }, [index, pronunciations]);
 
+  // 셔플 목록 생성
+  const shuffle = useCallback(() => {
+    const indexes = Array.from(
+      {length: pronunciations.length},
+      (_, i) => i,
+    ).filter(i => i !== index);
+    for (let i = indexes.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
+    }
+    console.log(indexes);
+    setShuffleIndexes([index, ...indexes]);
+  }, [index, pronunciations]);
+
+  // 화면 전환 함수
+  const navigateToPronunciation = useCallback(
+    (direction: 'left' | 'right') => {
+      const currentIndexes = shuffleMode
+        ? shuffleIndexes
+        : pronunciations.map((_, i) => i);
+      const currentIndex = shuffleMode ? shuffleIndexes.indexOf(index) : index;
+      const nextIndex =
+        direction === 'right' ? currentIndex + 1 : currentIndex - 1;
+
+      const newIndex =
+        nextIndex >= 0 && nextIndex < currentIndexes.length
+          ? currentIndexes[nextIndex]
+          : repeatMode === 'always'
+          ? shuffle()
+          : index;
+
+      if (newIndex !== index) {
+        navigation.navigate('PronunciationLesson', {
+          index: newIndex,
+          pronunciations,
+          title,
+        });
+        setSoundIndex(0); // 페이지 이동 시 사운드 인덱스를 초기화
+      }
+    },
+    [
+      index,
+      navigation,
+      repeatMode,
+      pronunciations,
+      shuffle,
+      shuffleIndexes,
+      shuffleMode,
+      title,
+    ],
+  );
+
+  // 모드 토글 함수들
   const toggleViewMode = (mode: 'english' | 'translation') => {
     setViewMode(prev => ({
       ...prev,
@@ -68,27 +144,16 @@ const LessonScreen = ({route, navigation}: any) => {
     }));
   };
 
-  const onMoveLeft = () => {
-    if (index > 0) {
-      setImageUri(getRandomGif());
-
-      navigation.navigate('PronunciationLesson', {
-        index: index - 1,
-        pronunciations,
-        title,
-      });
-    }
+  const toggleRepeatMode = () => {
+    setRepeatMode(prev =>
+      prev === 'none' ? 'once' : prev === 'once' ? 'always' : 'none',
+    );
   };
 
-  const onMoveRight = () => {
-    if (index < pronunciations.length - 1) {
-      setImageUri(getRandomGif());
-
-      navigation.navigate('PronunciationLesson', {
-        index: index + 1,
-        pronunciations,
-        title,
-      });
+  const toggleShuffleMode = () => {
+    setShuffleMode(prev => !prev);
+    if (!shuffleMode) {
+      shuffle();
     }
   };
 
@@ -99,9 +164,9 @@ const LessonScreen = ({route, navigation}: any) => {
     },
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dy < -50) {
-        onMoveRight();
+        navigateToPronunciation('right');
       } else if (gestureState.dy > 50) {
-        onMoveLeft();
+        navigateToPronunciation('left');
       }
     },
   });
@@ -117,26 +182,55 @@ const LessonScreen = ({route, navigation}: any) => {
     }, [index, playing, pronunciations, soundIndex]),
   );
 
+  // 사운드 재생 완료 시 처리
   useEffect(() => {
+    const handlePlaybackCompletion = () => {
+      const isLastSound =
+        soundIndex === pronunciations[index].sounds.length - 1;
+      const isLastPronunciation = index === pronunciations.length - 1;
+
+      if (isLastSound) {
+        if (isLastPronunciation) {
+          if (repeatMode === 'once') {
+            setSoundIndex(0); // 같은 문장에서 소리 반복
+          } else if (repeatMode === 'always') {
+            navigateToPronunciation('right'); // 처음으로 이동
+          } else {
+            setPlaying(false); // 'none' 모드인 경우 마지막 문장에서 재생 중지
+          }
+        } else {
+          if (repeatMode === 'once') {
+            setSoundIndex(0); // 같은 문장에서 소리 반복
+          } else {
+            navigateToPronunciation('right'); // 다음 문장으로 이동
+          }
+        }
+      } else {
+        setSoundIndex(prevSoundIndex => prevSoundIndex + 1);
+      }
+    };
+
     const onFinishPlayingSubscription = SoundPlayer.addEventListener(
       'FinishedPlaying',
       ({success}) => {
         if (success && playing) {
-          const nextSoundIndex =
-            (soundIndex + 1) % pronunciations[index].sounds.length;
-          setSoundIndex(nextSoundIndex);
+          handlePlaybackCompletion();
         }
       },
     );
+
     return () => {
       onFinishPlayingSubscription.remove();
     };
-  }, [index, playing, pronunciations, soundIndex]);
-
-  const getRandomGif = () => {
-    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGE_PATHS.length);
-    return DEFAULT_IMAGE_PATHS[randomIndex];
-  };
+  }, [
+    index,
+    navigateToPronunciation,
+    playing,
+    repeatMode,
+    pronunciations,
+    soundIndex,
+    togglePlayback,
+  ]);
 
   return (
     <View style={styles.container}>
@@ -144,11 +238,11 @@ const LessonScreen = ({route, navigation}: any) => {
         <TouchableOpacity
           style={{zIndex: 1}}
           onPress={() => navigation.goBack()}>
-          <Icon name="chevron-back" size={24} color="#fff" />
+          <IIcon name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.title}>{title}</Text>
         <TouchableOpacity style={{zIndex: 1}} onPress={togglePlayback}>
-          <Icon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
+          <IIcon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
         </TouchableOpacity>
       </View>
       <View style={styles.main} {...panResponder.panHandlers}>
@@ -171,19 +265,36 @@ const LessonScreen = ({route, navigation}: any) => {
       </View>
       <View style={styles.footer}>
         <View style={styles.toggleButtons}>
-          <TouchableOpacity
-            style={[styles.toggleButton, {opacity: viewMode.english ? 1 : 0.5}]}
+          <Pressable
+            style={[styles.toggleButton, {opacity: viewMode.english ? 1 : 0.3}]}
             onPress={() => toggleViewMode('english')}>
             <Text style={styles.toggleButtonText}>영문</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             style={[
               styles.toggleButton,
-              {opacity: viewMode.translation ? 1 : 0.5},
+              {opacity: viewMode.translation ? 1 : 0.3},
             ]}
             onPress={() => toggleViewMode('translation')}>
             <Text style={styles.toggleButtonText}>뜻</Text>
-          </TouchableOpacity>
+          </Pressable>
+          <Pressable
+            style={[
+              styles.toggleButton,
+              {opacity: repeatMode === 'none' ? 0.3 : 1},
+            ]}
+            onPress={toggleRepeatMode}>
+            <MIcon
+              name={repeatMode === 'once' ? 'repeat-one' : 'repeat'}
+              size={30}
+              color="#fff"
+            />
+          </Pressable>
+          <Pressable
+            style={[styles.toggleButton, {opacity: shuffleMode ? 1 : 0.3}]}
+            onPress={toggleShuffleMode}>
+            <IIcon name="shuffle" size={30} color="#fff" />
+          </Pressable>
         </View>
         <Text style={styles.progress}>
           {pronunciations[index].num + 1} / {pronunciations.length}
@@ -250,12 +361,12 @@ const styles = StyleSheet.create({
   },
   toggleButtons: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   toggleButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#1f6feb',
     borderRadius: 8,
   },
   toggleButtonText: {
@@ -267,6 +378,5 @@ const styles = StyleSheet.create({
   progress: {
     color: '#fff',
     fontSize: 16,
-    // fontWeight: '500',
   },
 });

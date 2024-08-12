@@ -1,17 +1,18 @@
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  Image,
   StyleSheet,
   Text,
   View,
   Dimensions,
   TouchableOpacity,
   PanResponder,
+  Pressable,
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
 import FastImage from 'react-native-fast-image';
-import Icon from 'react-native-vector-icons/Ionicons';
+import IIcon from 'react-native-vector-icons/Ionicons';
+import MIcon from 'react-native-vector-icons/MaterialIcons';
 import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 
 const {width} = Dimensions.get('window');
@@ -30,6 +31,7 @@ const LessonScreen = ({route, navigation}: any) => {
     sentences: Sentence[];
     title: string;
   };
+
   const [playing, setPlaying] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0);
   const [viewMode, setViewMode] = useState<{
@@ -39,8 +41,14 @@ const LessonScreen = ({route, navigation}: any) => {
     english: true,
     translation: true,
   });
+  const [repeatMode, setRepeatMode] = useState<'always' | 'once' | 'none'>(
+    'always',
+  );
+  const [shuffleMode, setShuffleMode] = useState<boolean>(false);
+  const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
   const [imageUri, setImageUri] = useState<string | number>('');
 
+  // 초기 이미지 설정
   const getRandomGif = () => {
     const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGE_PATHS.length);
     return DEFAULT_IMAGE_PATHS[randomIndex];
@@ -54,6 +62,7 @@ const LessonScreen = ({route, navigation}: any) => {
     );
   }, [index, sentences]);
 
+  // 사운드 재생 함수
   const playSound = (soundUrl: string) => {
     try {
       SoundPlayer.playUrl(`file://${soundUrl}`);
@@ -62,15 +71,70 @@ const LessonScreen = ({route, navigation}: any) => {
     }
   };
 
-  const togglePlayback = () => {
-    if (playing) {
-      SoundPlayer.pause();
-    } else {
-      playSound(sentences[index].sounds[soundIndex]);
-    }
-    setPlaying(!playing);
-  };
+  // 사운드 재생 / 정지
+  const togglePlayback = useCallback(() => {
+    setPlaying(prev => {
+      if (prev) {
+        SoundPlayer.pause();
+      } else {
+        setSoundIndex(0);
+        playSound(sentences[index].sounds[0]);
+      }
+      return !prev;
+    });
+  }, [index, sentences]);
 
+  // 셔플 목록 생성
+  const shuffle = useCallback(() => {
+    const indexes = Array.from({length: sentences.length}, (_, i) => i).filter(
+      i => i !== index,
+    );
+    for (let i = indexes.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
+    }
+    console.log(indexes);
+    setShuffleIndexes([index, ...indexes]);
+  }, [index, sentences]);
+
+  // 화면 전환 함수
+  const navigateToSentence = useCallback(
+    (direction: 'left' | 'right') => {
+      const currentIndexes = shuffleMode
+        ? shuffleIndexes
+        : sentences.map((_, i) => i);
+      const currentIndex = shuffleMode ? shuffleIndexes.indexOf(index) : index;
+      const nextIndex =
+        direction === 'right' ? currentIndex + 1 : currentIndex - 1;
+
+      const newIndex =
+        nextIndex >= 0 && nextIndex < currentIndexes.length
+          ? currentIndexes[nextIndex]
+          : repeatMode === 'always'
+          ? 0
+          : index;
+
+      if (newIndex !== index) {
+        navigation.navigate('SentenceLesson', {
+          index: newIndex,
+          sentences,
+          title,
+        });
+        setSoundIndex(0); // 페이지 이동 시 사운드 인덱스를 초기화
+      }
+    },
+    [
+      index,
+      navigation,
+      repeatMode,
+      sentences,
+      shuffleIndexes,
+      shuffleMode,
+      title,
+    ],
+  );
+
+  // 모드 토글 함수들
   const toggleViewMode = (mode: 'english' | 'translation') => {
     setViewMode(prev => ({
       ...prev,
@@ -78,23 +142,16 @@ const LessonScreen = ({route, navigation}: any) => {
     }));
   };
 
-  const onMoveLeft = () => {
-    if (index > 0) {
-      navigation.navigate('SentenceLesson', {
-        index: index - 1,
-        sentences,
-        title,
-      });
-    }
+  const toggleRepeatMode = () => {
+    setRepeatMode(prev =>
+      prev === 'none' ? 'once' : prev === 'once' ? 'always' : 'none',
+    );
   };
 
-  const onMoveRight = () => {
-    if (index < sentences.length - 1) {
-      navigation.navigate('SentenceLesson', {
-        index: index + 1,
-        sentences,
-        title,
-      });
+  const toggleShuffleMode = () => {
+    setShuffleMode(prev => !prev);
+    if (!shuffleMode) {
+      shuffle();
     }
   };
 
@@ -105,9 +162,9 @@ const LessonScreen = ({route, navigation}: any) => {
     },
     onPanResponderRelease: (_, gestureState) => {
       if (gestureState.dy < -50) {
-        onMoveRight();
+        navigateToSentence('right');
       } else if (gestureState.dy > 50) {
-        onMoveLeft();
+        navigateToSentence('left');
       }
     },
   });
@@ -123,21 +180,54 @@ const LessonScreen = ({route, navigation}: any) => {
     }, [index, playing, sentences, soundIndex]),
   );
 
+  // 사운드 재생 완료 시 처리
   useEffect(() => {
+    const handlePlaybackCompletion = () => {
+      const isLastSound = soundIndex === sentences[index].sounds.length - 1;
+      const isLastSentence = index === sentences.length - 1;
+
+      if (isLastSound) {
+        if (isLastSentence) {
+          if (repeatMode === 'once') {
+            setSoundIndex(0); // 같은 문장에서 소리 반복
+          } else if (repeatMode === 'always') {
+            navigateToSentence('right'); // 처음으로 이동
+          } else {
+            setPlaying(false); // 'none' 모드인 경우 마지막 문장에서 재생 중지
+          }
+        } else {
+          if (repeatMode === 'once') {
+            setSoundIndex(0); // 같은 문장에서 소리 반복
+          } else {
+            navigateToSentence('right'); // 다음 문장으로 이동
+          }
+        }
+      } else {
+        setSoundIndex(prevSoundIndex => prevSoundIndex + 1);
+      }
+    };
+
     const onFinishPlayingSubscription = SoundPlayer.addEventListener(
       'FinishedPlaying',
       ({success}) => {
         if (success && playing) {
-          const nextSoundIndex =
-            (soundIndex + 1) % sentences[index].sounds.length;
-          setSoundIndex(nextSoundIndex);
+          handlePlaybackCompletion();
         }
       },
     );
+
     return () => {
       onFinishPlayingSubscription.remove();
     };
-  }, [index, playing, sentences, soundIndex]);
+  }, [
+    index,
+    navigateToSentence,
+    playing,
+    repeatMode,
+    sentences,
+    soundIndex,
+    togglePlayback,
+  ]);
 
   return (
     <View style={styles.container}>
@@ -145,11 +235,11 @@ const LessonScreen = ({route, navigation}: any) => {
         <TouchableOpacity
           style={{zIndex: 1}}
           onPress={() => navigation.goBack()}>
-          <Icon name="chevron-back" size={24} color="#fff" />
+          <IIcon name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.title}>{title}</Text>
         <TouchableOpacity style={{zIndex: 1}} onPress={togglePlayback}>
-          <Icon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
+          <IIcon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
         </TouchableOpacity>
       </View>
       <View style={styles.main} {...panResponder.panHandlers}>
@@ -159,7 +249,7 @@ const LessonScreen = ({route, navigation}: any) => {
           )}
         </View>
         <FastImage
-          source={{uri: imageUri}}
+          source={typeof imageUri === 'string' ? {uri: imageUri} : imageUri}
           style={styles.image}
           resizeMode={FastImage.resizeMode.contain}
           onError={() => setImageUri(getRandomGif())}
@@ -172,19 +262,36 @@ const LessonScreen = ({route, navigation}: any) => {
       </View>
       <View style={styles.footer}>
         <View style={styles.toggleButtons}>
-          <TouchableOpacity
-            style={[styles.toggleButton, {opacity: viewMode.english ? 1 : 0.5}]}
+          <Pressable
+            style={[styles.toggleButton, {opacity: viewMode.english ? 1 : 0.3}]}
             onPress={() => toggleViewMode('english')}>
             <Text style={styles.toggleButtonText}>영문</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
+          </Pressable>
+          <Pressable
             style={[
               styles.toggleButton,
-              {opacity: viewMode.translation ? 1 : 0.5},
+              {opacity: viewMode.translation ? 1 : 0.3},
             ]}
             onPress={() => toggleViewMode('translation')}>
             <Text style={styles.toggleButtonText}>뜻</Text>
-          </TouchableOpacity>
+          </Pressable>
+          <Pressable
+            style={[
+              styles.toggleButton,
+              {opacity: repeatMode === 'none' ? 0.3 : 1},
+            ]}
+            onPress={toggleRepeatMode}>
+            <MIcon
+              name={repeatMode === 'once' ? 'repeat-one' : 'repeat'}
+              size={30}
+              color="#fff"
+            />
+          </Pressable>
+          <Pressable
+            style={[styles.toggleButton, {opacity: shuffleMode ? 1 : 0.3}]}
+            onPress={toggleShuffleMode}>
+            <IIcon name="shuffle" size={30} color="#fff" />
+          </Pressable>
         </View>
         <Text style={styles.progress}>
           {sentences[index].num + 1} / {sentences.length}
@@ -251,12 +358,12 @@ const styles = StyleSheet.create({
   },
   toggleButtons: {
     flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   toggleButton: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingVertical: 8,
-    backgroundColor: '#1f6feb',
     borderRadius: 8,
   },
   toggleButtonText: {
