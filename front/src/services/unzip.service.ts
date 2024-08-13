@@ -3,5 +3,23 @@ import RNFS from 'react-native-fs';
 import {unzip} from 'react-native-zip-archive';
 
 export const unzipFile = async (remotePath: string, localPath: string) => {
-  // TODO: 파이어베이스 스토리지에서 압축 파일을 다운받아서 로컬에서 풀기
+  try {
+    const storageRef = storage().ref(remotePath);
+    const url = await storageRef.getDownloadURL();
+
+    const options = {
+      fromUrl: url,
+      toFile: localPath,
+    };
+
+    await RNFS.downloadFile(options).promise;
+
+    const unzipPath = await unzip(localPath, localPath.replace(/\.zip$/, ''));
+    console.log(`Unzipped to ${unzipPath}`);
+
+    await RNFS.unlink(localPath);
+    console.log(`Deleted zip file at ${localPath}`);
+  } catch (error) {
+    console.error('Failed to unzip the file: ', error);
+  }
 };

@@ -6,8 +6,7 @@ const getJSONFromFirebase = async (path: string) => {
   try {
     const storageRef = storage().ref(path);
     const url = await storageRef.getDownloadURL();
-    const response = await fetch(url);
-    const json = await response.json();
+    const json = await fetch(url).then(response => response.json());
 
     return json;
   } catch (error) {

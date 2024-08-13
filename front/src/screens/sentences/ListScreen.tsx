@@ -12,7 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Header from '../../components/Header';
-import {checkAndUpdateJSON} from '../../services/file.service';
+import {checkAndUpdateJSON} from '../../services/json.service';
 
 interface Chapter {
   num: number;
