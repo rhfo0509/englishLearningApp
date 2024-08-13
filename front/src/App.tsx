@@ -15,9 +15,7 @@ const App = () => {
       } catch (error) {
         console.error('Error while fetching JSON file', error);
       } finally {
-        setTimeout(() => {
-          SplashScreen.hide();
-        }, 300);
+        SplashScreen.hide();
       }
     };
 
