@@ -5,6 +5,7 @@ import {unzip} from 'react-native-zip-archive';
 export const unzipFile = async (remotePath: string, localPath: string) => {
   try {
     const storageRef = storage().ref(remotePath);
+
     const url = await storageRef.getDownloadURL();
 
     const options = {
@@ -19,7 +20,13 @@ export const unzipFile = async (remotePath: string, localPath: string) => {
 
     await RNFS.unlink(localPath);
     console.log(`Deleted zip file at ${localPath}`);
-  } catch (error) {
-    console.error('Failed to unzip the file: ', error);
+  } catch (error: any) {
+    if (error.code === 'storage/object-not-found') {
+      console.log(
+        'The file does not exist in Firebase Storage, skipping download and unzip.',
+      );
+    } else {
+      console.error('Failed to unzip the file:', error);
+    }
   }
 };
