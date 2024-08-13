@@ -32,7 +32,7 @@ interface Chapter {
   pt: string;
 }
 
-interface Sentence {
+interface Item {
   tnum: number;
   chapter: number;
   num: number;
@@ -43,10 +43,10 @@ interface Sentence {
 }
 
 const ListScreen = ({route, navigation}: any) => {
-  const {category, title} = route.params as {category: number; title: string};
+  const {category, title} = route.params;
   const [loading, setLoading] = useState<boolean>(true);
   const [chapters, setChapters] = useState<Chapter[]>([]);
-  const [sentences, setSentences] = useState<Sentence[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -79,7 +79,7 @@ const ListScreen = ({route, navigation}: any) => {
     const fetchData = async () => {
       try {
         const result = await checkAndUpdateJSON(category, navigation);
-        setSentences(result);
+        setItems(result);
       } catch (error) {
         console.error('Error while fetching JSON file', error);
       } finally {
@@ -93,9 +93,10 @@ const ListScreen = ({route, navigation}: any) => {
     <TouchableOpacity
       style={styles.item}
       onPress={() =>
-        navigation.navigate('SentenceSubList', {
+        navigation.navigate('LessonSubList', {
           title: item.ko,
-          sentences: sentences.filter(sentence => sentence.chapter === index),
+          // eslint-disable-next-line @typescript-eslint/no-shadow
+          items: items.filter(item => item.chapter === index),
         })
       }>
       <Text style={styles.itemCategory}>{item.ko}</Text>
@@ -120,8 +121,8 @@ const ListScreen = ({route, navigation}: any) => {
       <TouchableOpacity
         style={styles.button}
         onPress={() =>
-          navigation.navigate('SentenceLesson', {
-            sentences,
+          navigation.navigate('LessonContent', {
+            items,
             title,
             from: 'list',
           })
@@ -150,7 +151,7 @@ const ListScreen = ({route, navigation}: any) => {
         </LinearGradient>
       </TouchableOpacity>
       <FlatList
-        style={{marginTop: 16}}
+        style={{marginTop: 8}}
         data={chapters}
         renderItem={renderItem}
         keyExtractor={item => item.num.toString()}

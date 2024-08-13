@@ -19,7 +19,7 @@ import useClick from '../../hooks/useClick';
 
 const {width} = Dimensions.get('window');
 
-interface Sentence {
+interface Item {
   tnum: number;
   num: number;
   image: string;
@@ -30,12 +30,12 @@ interface Sentence {
 
 const LessonScreen = ({route, navigation}: any) => {
   const {
-    sentences,
+    items,
     title,
-    index = Math.floor(Math.random() * sentences.length),
+    index = Math.floor(Math.random() * items.length),
     from,
   } = route.params as {
-    sentences: Sentence[];
+    items: Item[];
     title: string;
     index: number;
     from: string;
@@ -67,11 +67,11 @@ const LessonScreen = ({route, navigation}: any) => {
 
   useEffect(() => {
     setImageUri(
-      sentences[currentIndex].image
-        ? `file://${sentences[currentIndex].image}`
+      items[currentIndex].image
+        ? `file://${items[currentIndex].image}`
         : getRandomGif(),
     );
-  }, [currentIndex, sentences]);
+  }, [currentIndex, items]);
 
   // 사운드 재생 함수
   const playSound = (soundUrl: string) => {
@@ -89,21 +89,21 @@ const LessonScreen = ({route, navigation}: any) => {
         SoundPlayer.pause();
       } else {
         setSoundIndex(0);
-        playSound(sentences[currentIndex].sounds[0]);
+        playSound(items[currentIndex].sounds[0]);
       }
       return !prev;
     });
-  }, [currentIndex, sentences]);
+  }, [currentIndex, items]);
 
   // 셔플 목록 생성
   const shuffle = useCallback(() => {
-    const indexes = Array.from({length: sentences.length}, (_, i) => i);
+    const indexes = Array.from({length: items.length}, (_, i) => i);
     for (let i = indexes.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [indexes[i], indexes[j]] = [indexes[j], indexes[i]];
     }
     setShuffleIndexes(indexes);
-  }, [sentences]);
+  }, [items]);
 
   // 셔플 모드가 활성화된 경우 인덱스를 초기화
   useEffect(() => {
@@ -113,9 +113,9 @@ const LessonScreen = ({route, navigation}: any) => {
   }, [shuffleMode, shuffle]);
 
   // 화면 전환 로직
-  const navigateToSentence = useCallback(
+  const navigateToItem = useCallback(
     (direction: 'left' | 'right') => {
-      const indexes = shuffleMode ? shuffleIndexes : sentences.map((_, i) => i);
+      const indexes = shuffleMode ? shuffleIndexes : items.map((_, i) => i);
       const current = shuffleMode
         ? shuffleIndexes.indexOf(currentIndex)
         : currentIndex;
@@ -137,7 +137,7 @@ const LessonScreen = ({route, navigation}: any) => {
         setSoundIndex(0);
       }
     },
-    [currentIndex, repeatMode, sentences, shuffle, shuffleIndexes, shuffleMode],
+    [currentIndex, repeatMode, items, shuffle, shuffleIndexes, shuffleMode],
   );
 
   // 모드 토글 함수들
@@ -183,9 +183,9 @@ const LessonScreen = ({route, navigation}: any) => {
         // 손가락을 거의 움직이지 않았을 때
         handlePress();
       } else if (gestureState.dy < -50) {
-        navigateToSentence('right');
+        navigateToItem('right');
       } else if (gestureState.dy > 50) {
-        navigateToSentence('left');
+        navigateToItem('left');
       }
     },
   });
@@ -193,27 +193,26 @@ const LessonScreen = ({route, navigation}: any) => {
   useFocusEffect(
     useCallback(() => {
       if (playing) {
-        playSound(sentences[currentIndex].sounds[soundIndex]);
+        playSound(items[currentIndex].sounds[soundIndex]);
       }
       return () => {
         SoundPlayer.stop();
       };
-    }, [currentIndex, playing, sentences, soundIndex]),
+    }, [currentIndex, playing, items, soundIndex]),
   );
 
   // 사운드 재생 완료 시 처리
   useEffect(() => {
     const handlePlaybackCompletion = () => {
-      const isLastSound =
-        soundIndex === sentences[currentIndex].sounds.length - 1;
-      const isLastSentence = currentIndex === sentences.length - 1;
+      const isLastSound = soundIndex === items[currentIndex].sounds.length - 1;
+      const isLastItem = currentIndex === items.length - 1;
 
       if (isLastSound) {
-        if (isLastSentence) {
+        if (isLastItem) {
           if (repeatMode === 'once') {
             setSoundIndex(0); // 같은 문장에서 소리 반복
           } else if (repeatMode === 'always') {
-            navigateToSentence('right'); // 처음으로 이동
+            navigateToItem('right'); // 처음으로 이동
           } else {
             togglePlayback(); // 'none' 모드인 경우 마지막 문장에서 재생 중지
           }
@@ -221,7 +220,7 @@ const LessonScreen = ({route, navigation}: any) => {
           if (repeatMode === 'once') {
             setSoundIndex(0); // 같은 문장에서 소리 반복
           } else {
-            navigateToSentence('right'); // 다음 문장으로 이동
+            navigateToItem('right'); // 다음 문장으로 이동
           }
         }
       } else {
@@ -243,10 +242,10 @@ const LessonScreen = ({route, navigation}: any) => {
     };
   }, [
     currentIndex,
-    navigateToSentence,
+    navigateToItem,
     playing,
     repeatMode,
-    sentences,
+    items,
     soundIndex,
     togglePlayback,
   ]);
@@ -265,9 +264,9 @@ const LessonScreen = ({route, navigation}: any) => {
         </TouchableOpacity>
       </View>
       <View style={styles.main} {...panResponder.panHandlers}>
-        <View style={styles.sentence}>
+        <View style={styles.item}>
           {viewMode.english && (
-            <Text style={styles.english}>{sentences[currentIndex].en}</Text>
+            <Text style={styles.english}>{items[currentIndex].en}</Text>
           )}
         </View>
         <FastImage
@@ -276,10 +275,10 @@ const LessonScreen = ({route, navigation}: any) => {
           resizeMode={FastImage.resizeMode.contain}
           onError={() => setImageUri(getRandomGif())}
         />
-        <View style={styles.sentence}>
+        <View style={styles.item}>
           {viewMode.translation && (
             <Text style={[styles.translation, {marginBottom: 32}]}>
-              {sentences[currentIndex].ko}
+              {items[currentIndex].ko}
             </Text>
           )}
         </View>
@@ -319,9 +318,9 @@ const LessonScreen = ({route, navigation}: any) => {
         </View>
         <Text style={styles.progress}>
           {(from === 'list'
-            ? sentences[currentIndex].tnum
-            : sentences[currentIndex].num) + 1}{' '}
-          / {sentences.length}
+            ? items[currentIndex].tnum
+            : items[currentIndex].num) + 1}{' '}
+          / {items.length}
         </Text>
       </View>
     </View>
@@ -361,7 +360,7 @@ const styles = StyleSheet.create({
     aspectRatio: 1,
     resizeMode: 'contain',
   },
-  sentence: {
+  item: {
     minHeight: 120,
     justifyContent: 'center',
     alignItems: 'center',

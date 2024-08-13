@@ -49,7 +49,12 @@ const HomeScreen = ({navigation}: any) => {
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <TouchableOpacity
             style={styles.learningButton}
-            onPress={() => navigation.navigate('SentencesStack')}>
+            onPress={() =>
+              navigation.navigate('LessonStack', {
+                screen: 'LessonCategory',
+                params: {orderBy: 'A'},
+              })
+            }>
             <View style={styles.iconContainer}>
               <Image source={require('../assets/sentence.png')} />
             </View>
@@ -67,7 +72,12 @@ const HomeScreen = ({navigation}: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.learningButton}
-            // onPress={() => navigation.navigate('SituationStack')}
+            // onPress={() =>
+            //   navigation.navigate('LessonStack', {
+            //     screen: 'LessonCategory',
+            //     params: {orderBy: 'B'},
+            //   })
+            // }
           >
             <View style={styles.iconContainer}>
               <Image source={require('../assets/situation.png')} />
@@ -86,7 +96,12 @@ const HomeScreen = ({navigation}: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.learningButton}
-            // onPress={() => navigation.navigate('WordsStack')}
+            // onPress={() =>
+            //   navigation.navigate('LessonStack', {
+            //     screen: 'LessonCategory',
+            //     params: {orderBy: 'C'},
+            //   })
+            // }
           >
             <View style={styles.iconContainer}>
               <Image source={require('../assets/word.png')} />
@@ -105,7 +120,12 @@ const HomeScreen = ({navigation}: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.learningButton}
-            onPress={() => navigation.navigate('PronunciationStack')}>
+            onPress={() =>
+              navigation.navigate('LessonStack', {
+                screen: 'LessonCategory',
+                params: {orderBy: 'D'},
+              })
+            }>
             <View style={styles.iconContainer}>
               <Image source={require('../assets/pronunciation.png')} />
             </View>
