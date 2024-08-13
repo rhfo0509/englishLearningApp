@@ -289,7 +289,7 @@ const LessonScreen = ({route, navigation}: any) => {
         />
         <View style={styles.pronunciation}>
           {viewMode.translation && (
-            <Text style={styles.translation}>
+            <Text style={[styles.translation, {marginBottom: 32}]}>
               {pronunciations[currentIndex].ko}
             </Text>
           )}

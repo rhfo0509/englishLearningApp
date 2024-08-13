@@ -278,7 +278,9 @@ const LessonScreen = ({route, navigation}: any) => {
         />
         <View style={styles.sentence}>
           {viewMode.translation && (
-            <Text style={styles.translation}>{sentences[currentIndex].ko}</Text>
+            <Text style={[styles.translation, {marginBottom: 32}]}>
+              {sentences[currentIndex].ko}
+            </Text>
           )}
         </View>
       </View>
