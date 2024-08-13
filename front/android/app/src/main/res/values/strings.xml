@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">englishLearningApp</string>
+	<string name="app_name">
+		EnglishEcho
+	</string>
 </resources>
