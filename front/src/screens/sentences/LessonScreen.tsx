@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
-    backgroundColor: '#333',
+    backgroundColor: '#000',
   },
   header: {
     flexDirection: 'row',
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   english: {
     fontSize: 28,
     fontWeight: '600',
-    color: '#fff',
+    color: '#f6efbe',
     marginBottom: 32,
   },
   translation: {
