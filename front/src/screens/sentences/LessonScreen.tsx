@@ -367,8 +367,7 @@ const styles = StyleSheet.create({
   english: {
     fontSize: 28,
     fontWeight: '600',
-    color: '#f6efbe',
-    marginBottom: 32,
+    color: '#ffd400',
   },
   translation: {
     fontSize: 20,
