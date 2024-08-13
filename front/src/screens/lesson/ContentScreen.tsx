@@ -28,7 +28,7 @@ interface Item {
   ko: string;
 }
 
-const LessonScreen = ({route, navigation}: any) => {
+const ContentScreen = ({route, navigation}: any) => {
   const {
     items,
     title,
@@ -327,7 +327,7 @@ const LessonScreen = ({route, navigation}: any) => {
   );
 };
 
-export default LessonScreen;
+export default ContentScreen;
 
 const styles = StyleSheet.create({
   container: {
