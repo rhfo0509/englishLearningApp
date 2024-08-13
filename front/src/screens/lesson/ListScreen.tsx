@@ -94,6 +94,7 @@ const ListScreen = ({route, navigation}: any) => {
       style={styles.item}
       onPress={() =>
         navigation.navigate('LessonSubList', {
+          category,
           title: item.ko,
           // eslint-disable-next-line @typescript-eslint/no-shadow
           items: items.filter(item => item.chapter === index),
@@ -122,6 +123,7 @@ const ListScreen = ({route, navigation}: any) => {
         style={styles.button}
         onPress={() =>
           navigation.navigate('LessonContent', {
+            category,
             items,
             title,
             from: 'list',
@@ -138,7 +140,9 @@ const ListScreen = ({route, navigation}: any) => {
           </View>
         </LinearGradient>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.button}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate('Bookmark', {category, title})}>
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}

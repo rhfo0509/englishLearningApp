@@ -16,11 +16,13 @@ import IIcon from 'react-native-vector-icons/Ionicons';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 import useClick from '../../hooks/useClick';
+import useBookmarks from '../../hooks/useBookmarks';
 
 const {width} = Dimensions.get('window');
 
 interface Item {
   tnum: number;
+  chapter: number;
   num: number;
   image: string;
   sounds: string[];
@@ -30,11 +32,13 @@ interface Item {
 
 const ContentScreen = ({route, navigation}: any) => {
   const {
+    category,
     items,
     title,
     index = Math.floor(Math.random() * items.length),
     from,
   } = route.params as {
+    category: number;
     items: Item[];
     title: string;
     index: number;
@@ -161,16 +165,16 @@ const ContentScreen = ({route, navigation}: any) => {
     }
   };
 
+  // 북마크
+  const {bookmarks, toggleBookmark} = useBookmarks(category);
+
+  const isBookmarked = bookmarks.some(
+    bookmark => bookmark.num === items[currentIndex].num,
+  );
+
   const handlePress = useClick(
-    togglePlayback, // Single click action
-    () => {
-      Toast.show({
-        type: 'success',
-        text1: '북마크 저장됨',
-        position: 'bottom',
-        visibilityTime: 1500,
-      });
-    }, // Double click action
+    () => togglePlayback(), // Single click action
+    () => toggleBookmark(items[currentIndex]), // Double click action
   );
 
   const panResponder = PanResponder.create({
@@ -262,6 +266,13 @@ const ContentScreen = ({route, navigation}: any) => {
         <TouchableOpacity style={{zIndex: 1}} onPress={togglePlayback}>
           <IIcon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
         </TouchableOpacity>
+        <TouchableOpacity style={styles.bookmark}>
+          <IIcon
+            name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+            size={24}
+            color={isBookmarked ? '#ffd400' : '#fff'}
+          />
+        </TouchableOpacity>
       </View>
       <View style={styles.main} {...panResponder.panHandlers}>
         <View style={styles.item}>
@@ -349,6 +360,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '500',
+  },
+  bookmark: {
+    position: 'absolute',
+    top: 72,
+    right: 16,
   },
   main: {
     alignItems: 'center',

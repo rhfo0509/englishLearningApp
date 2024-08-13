@@ -8,17 +8,17 @@ function useClick(
   const [click, setClick] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      // Simple click
-      if (click === 1) {
-        actionSimpleClick();
-      }
-      setClick(0);
-    }, delay);
+    let timer: NodeJS.Timeout;
 
-    // If two clicks happen within the delay time, consider it a double-click
-    if (click === 2) {
-      actionDoubleClick();
+    if (click > 0) {
+      timer = setTimeout(() => {
+        if (click === 1) {
+          actionSimpleClick();
+        } else if (click === 2) {
+          actionDoubleClick();
+        }
+        setClick(0);
+      }, delay);
     }
 
     // Cleanup the timeout on unmount or when click changes

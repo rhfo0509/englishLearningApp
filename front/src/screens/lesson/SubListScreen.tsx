@@ -13,7 +13,7 @@ interface Item {
 }
 
 const SubListScreen = ({route, navigation}: any) => {
-  const {title, items} = route.params;
+  const {category, title, items} = route.params;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -26,6 +26,7 @@ const SubListScreen = ({route, navigation}: any) => {
       style={styles.item}
       onPress={() =>
         navigation.navigate('LessonContent', {
+          category,
           items,
           title,
           index,
