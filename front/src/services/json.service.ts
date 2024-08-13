@@ -67,12 +67,12 @@ export async function checkAndUpdateJSON(category: number, navigation: any) {
       startTime = Date.now();
 
       await unzipFile(
-        `${remoteDirPath}/images.zip`,
-        `${localDirPath}/images.zip`,
+        `${remoteDirPath}/I_${category}.zip`,
+        `${localDirPath}/I_${category}.zip`,
       );
       await unzipFile(
-        `${remoteDirPath}/sounds.zip`,
-        `${localDirPath}/sounds.zip`,
+        `${remoteDirPath}/S_${category}.zip`,
+        `${localDirPath}/S_${category}.zip`,
       );
 
       let elapsedTime = Date.now() - startTime;
