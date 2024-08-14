@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Bookmark {
@@ -14,22 +14,23 @@ interface Bookmark {
 const useBookmarks = (category: number) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
+  const loadBookmarks = useCallback(async () => {
+    try {
+      const storedData = await AsyncStorage.getItem('bookmarks');
+      if (storedData) {
+        const data = JSON.parse(storedData);
+        setBookmarks(data[category] || []);
+        console.log(data);
+      }
+    } catch (error) {
+      console.error('Failed to load bookmarks: ', error);
+    }
+  }, [category]);
+
   // Load bookmarks when the hook is used
   useEffect(() => {
-    const loadBookmarks = async () => {
-      try {
-        const storedData = await AsyncStorage.getItem('bookmarks');
-        if (storedData) {
-          const data = JSON.parse(storedData);
-          setBookmarks(data[category] || []);
-          console.log(data);
-        }
-      } catch (error) {
-        console.error('Failed to load bookmarks: ', error);
-      }
-    };
     loadBookmarks();
-  }, [category]);
+  }, [loadBookmarks]);
 
   const saveBookmarks = async (updated: Bookmark[]) => {
     try {
@@ -51,7 +52,7 @@ const useBookmarks = (category: number) => {
     await saveBookmarks(updated);
   };
 
-  return {bookmarks, toggleBookmark};
+  return {bookmarks, loadBookmarks, toggleBookmark};
 };
 
 export default useBookmarks;

@@ -1,8 +1,9 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import Header from '../../components/Header';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useBookmarks from '../../hooks/useBookmarks';
+import {useFocusEffect} from '@react-navigation/native';
 
 interface Bookmark {
   tnum: number;
@@ -16,13 +17,19 @@ interface Bookmark {
 
 const BookmarkScreen = ({route, navigation}: any) => {
   const {category, title} = route.params;
-  const {bookmarks} = useBookmarks(category);
+  const {bookmarks, loadBookmarks} = useBookmarks(category);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => <Header />,
     });
   }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadBookmarks();
+    }, [loadBookmarks]),
+  );
 
   const renderItem = ({item, index}: {item: Bookmark; index: number}) => (
     <TouchableOpacity
