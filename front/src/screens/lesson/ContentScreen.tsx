@@ -216,17 +216,17 @@ const ContentScreen = ({route, navigation}: any) => {
       if (isLastSound) {
         if (isLastItem) {
           if (repeatMode === 'once') {
-            setSoundIndex(0); // 같은 문장에서 소리 반복
+            setSoundIndex(0);
           } else if (repeatMode === 'always') {
-            navigateToItem('right'); // 처음으로 이동
+            items.length === 1 ? setSoundIndex(0) : navigateToItem('right');
           } else {
-            togglePlayback(); // 'none' 모드인 경우 마지막 문장에서 재생 중지
+            togglePlayback();
           }
         } else {
           if (repeatMode === 'once') {
-            setSoundIndex(0); // 같은 문장에서 소리 반복
+            setSoundIndex(0);
           } else {
-            navigateToItem('right'); // 다음 문장으로 이동
+            navigateToItem('right');
           }
         }
       } else {
