@@ -177,6 +177,29 @@ const HomeScreen = ({navigation}: any) => {
               <Text style={styles.buttonSubText}>2 Categories</Text>
             </LinearGradient>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.learningButton}
+            onPress={() =>
+              navigation.navigate('LessonStack', {
+                screen: 'LessonCategory',
+                params: {orderBy: 'E'},
+              })
+            }>
+            <View style={styles.iconContainer}>
+              <Image source={require('../assets/qna100.png')} />
+            </View>
+            <LinearGradient
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 0}}
+              colors={['#1f6feb', '#53c1ff']}
+              style={[
+                styles.gradient,
+                {borderTopLeftRadius: 0, borderTopRightRadius: 0},
+              ]}>
+              <Text style={styles.buttonText}>Q&A 100</Text>
+              <Text style={styles.buttonSubText}>1 Categories</Text>
+            </LinearGradient>
+          </TouchableOpacity>
         </ScrollView>
       </View>
       <View style={{marginTop: 12}}>
