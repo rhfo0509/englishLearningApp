@@ -11,12 +11,13 @@ import {
 import {useFocusEffect} from '@react-navigation/native';
 import SoundPlayer from 'react-native-sound-player';
 import FastImage from 'react-native-fast-image';
-import Toast from 'react-native-toast-message';
 import IIcon from 'react-native-vector-icons/Ionicons';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
+
 import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 import useClick from '../../hooks/useClick';
 import useBookmarks from '../../hooks/useBookmarks';
+import useLastLearned from '../../hooks/useLastLearned';
 
 const {width} = Dimensions.get('window');
 
@@ -49,6 +50,7 @@ const ContentScreen = ({route, navigation}: any) => {
 
   const [playing, setPlaying] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0);
+
   const [viewMode, setViewMode] = useState<{
     english: boolean;
     translation: boolean;
@@ -61,6 +63,7 @@ const ContentScreen = ({route, navigation}: any) => {
   );
   const [shuffleMode, setShuffleMode] = useState<boolean>(type === 'random');
   const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
+
   const [imageUri, setImageUri] = useState<string | number>('');
 
   // 초기 이미지 설정
@@ -164,6 +167,16 @@ const ContentScreen = ({route, navigation}: any) => {
       shuffle();
     }
   };
+
+  // 학습 화면에서 나가는 경우 최근 학습 데이터 저장
+  const {saveLastLearned} = useLastLearned();
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      saveLastLearned(category, items, title, currentIndex);
+    });
+
+    return unsubscribe;
+  }, [category, currentIndex, items, navigation, saveLastLearned, title]);
 
   // 북마크
   const {bookmarks, toggleBookmark} = useBookmarks(category);

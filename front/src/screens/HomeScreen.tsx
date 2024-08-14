@@ -7,24 +7,57 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import React, {useLayoutEffect} from 'react';
+import React, {useCallback, useLayoutEffect} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
+import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
 import Header from '../components/Header';
 import Profile from '../components/Profile';
+import useLastLearned from '../hooks/useLastLearned';
 
 const HomeScreen = ({navigation}: any) => {
+  const {lastLearned, loadLastLearned} = useLastLearned();
+
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => <Header />,
     });
   }, [navigation]);
 
+  useFocusEffect(
+    useCallback(() => {
+      loadLastLearned();
+    }, [loadLastLearned]),
+  );
+
+  const handleContinueLearning = () => {
+    if (lastLearned) {
+      navigation.navigate('LessonStack', {
+        screen: 'LessonContent',
+        params: {
+          category: lastLearned.category,
+          items: lastLearned.items,
+          title: lastLearned.title,
+          index: lastLearned.index,
+          type: 'normal',
+        },
+      });
+    } else {
+      Toast.show({
+        type: 'info',
+        text1: 'No recent learning data to continue',
+        position: 'bottom',
+        visibilityTime: 1500,
+      });
+    }
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <Profile />
-      <TouchableOpacity style={styles.resume}>
+      <TouchableOpacity style={styles.resume} onPress={handleContinueLearning}>
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 1}}
@@ -35,7 +68,9 @@ const HomeScreen = ({navigation}: any) => {
             <View style={{marginLeft: 16}}>
               <Text style={styles.resumeTitle}>Continue Learning</Text>
               <Text style={styles.resumeSubtitle}>
-                Last visited: Sentence / Lesson 5
+                {lastLearned
+                  ? `${lastLearned.title} / No. ${lastLearned.index + 1}`
+                  : 'No recent activity'}
               </Text>
             </View>
           </View>
