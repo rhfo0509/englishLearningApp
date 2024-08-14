@@ -169,7 +169,9 @@ const ContentScreen = ({route, navigation}: any) => {
   const {bookmarks, toggleBookmark} = useBookmarks(category);
 
   const isBookmarked = bookmarks.some(
-    bookmark => bookmark.num === items[currentIndex].num,
+    bookmark =>
+      bookmark.num === items[currentIndex].num &&
+      bookmark.chapter === items[currentIndex].chapter,
   );
 
   const handlePress = useClick(
