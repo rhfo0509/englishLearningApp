@@ -101,7 +101,8 @@ export async function checkAndUpdateLearningData(
         return null;
       }
     } else {
-      return (await readLocalJSONData(localJSONPath)).data;
+      const localJSON = await readLocalJSONData(localJSONPath);
+      return localJSON.data;
     }
   } catch (error) {
     console.error('Error handling learning JSON data update: ', error);
@@ -114,7 +115,12 @@ export async function checkAndUpdateGeneralData() {
   const remoteJSONPaths = ['data.json', 'learning/data.json'];
 
   for (const remoteJSONPath of remoteJSONPaths) {
+    const remoteDirPath = remoteJSONPath.substring(
+      0,
+      remoteJSONPath.lastIndexOf('/'),
+    );
     const localJSONPath = `${RNFS.DocumentDirectoryPath}/${remoteJSONPath}`;
+    const localDirPath = `${RNFS.DocumentDirectoryPath}/${remoteDirPath}`;
 
     try {
       const {localVersion, remoteVersion, remoteJson} = await checkJSONVersion(
@@ -123,6 +129,9 @@ export async function checkAndUpdateGeneralData() {
       );
 
       if (localVersion !== remoteVersion) {
+        if (!(await RNFS.exists(localDirPath))) {
+          await RNFS.mkdir(localDirPath);
+        }
         await writeLocalJSONData(localJSONPath, remoteJson);
 
         if (remoteJSONPath === 'data.json') {
@@ -145,5 +154,5 @@ export async function checkAndUpdateGeneralData() {
     }
   }
 
-  return null; // Return type could be adjusted based on specific requirements
+  return null;
 }
