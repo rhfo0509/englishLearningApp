@@ -328,10 +328,8 @@ const ContentScreen = ({route, navigation}: any) => {
           </Pressable>
         </View>
         <Text style={styles.progress}>
-          {(from === 'list'
-            ? items[currentIndex].tnum
-            : items[currentIndex].num) + 1}{' '}
-          / {items.length}
+          {(from === 'list' ? items[currentIndex].tnum : currentIndex) + 1} /{' '}
+          {items.length}
         </Text>
       </View>
     </View>
