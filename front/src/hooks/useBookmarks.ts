@@ -16,11 +16,9 @@ const useBookmarks = (category: number) => {
 
   const loadBookmarks = useCallback(async () => {
     try {
-      const storedData = await AsyncStorage.getItem('bookmarks');
-      if (storedData) {
-        const data = JSON.parse(storedData);
-        setBookmarks(data[category] || []);
-        console.log(data);
+      const data = await AsyncStorage.getItem('bookmarks');
+      if (data) {
+        setBookmarks(JSON.parse(data)[category]);
       }
     } catch (error) {
       console.error('Failed to load bookmarks: ', error);

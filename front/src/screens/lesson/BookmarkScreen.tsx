@@ -6,6 +6,7 @@ import MIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Header from '../../components/Header';
 import useBookmarks from '../../hooks/useBookmarks';
+import Toast from 'react-native-toast-message';
 
 interface Bookmark {
   tnum: number;
@@ -50,18 +51,27 @@ const BookmarkScreen = ({route, navigation}: any) => {
     </TouchableOpacity>
   );
 
+  const handleRandomLearning = () => {
+    if (bookmarks.length) {
+      navigation.navigate('LessonContent', {
+        category,
+        items: bookmarks,
+        title,
+        type: 'random',
+      });
+    } else {
+      Toast.show({
+        type: 'info',
+        text1: 'No bookmarks available',
+        position: 'bottom',
+        visibilityTime: 1500,
+      });
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() =>
-          navigation.navigate('LessonContent', {
-            category,
-            items: bookmarks,
-            title,
-            type: 'random',
-          })
-        }>
+      <TouchableOpacity style={styles.button} onPress={handleRandomLearning}>
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
