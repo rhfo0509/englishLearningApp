@@ -126,7 +126,7 @@ const ListScreen = ({route, navigation}: any) => {
             category,
             items,
             title,
-            from: 'list',
+            type: 'random',
           })
         }>
         <LinearGradient
@@ -205,11 +205,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 20,
-  },
-  buttonSubText: {
-    color: '#fff',
-    fontSize: 12,
-    textAlign: 'center',
   },
   loading: {
     flex: 1,

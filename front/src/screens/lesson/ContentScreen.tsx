@@ -36,13 +36,13 @@ const ContentScreen = ({route, navigation}: any) => {
     items,
     title,
     index = Math.floor(Math.random() * items.length),
-    from,
+    type,
   } = route.params as {
     category: number;
     items: Item[];
     title: string;
     index: number;
-    from: string;
+    type: string;
   };
 
   const [currentIndex, setCurrentIndex] = useState<number>(index);
@@ -57,9 +57,9 @@ const ContentScreen = ({route, navigation}: any) => {
     translation: true,
   });
   const [repeatMode, setRepeatMode] = useState<'always' | 'once' | 'none'>(
-    'always',
+    type === 'single' ? 'once' : 'always',
   );
-  const [shuffleMode, setShuffleMode] = useState<boolean>(from === 'list');
+  const [shuffleMode, setShuffleMode] = useState<boolean>(type === 'random');
   const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
   const [imageUri, setImageUri] = useState<string | number>('');
 
@@ -309,27 +309,30 @@ const ContentScreen = ({route, navigation}: any) => {
             onPress={() => toggleViewMode('translation')}>
             <Text style={styles.toggleButtonText}>뜻</Text>
           </Pressable>
-          <Pressable
-            style={[
-              styles.toggleButton,
-              {opacity: repeatMode === 'none' ? 0.3 : 1},
-            ]}
-            onPress={toggleRepeatMode}>
-            <MIcon
-              name={repeatMode === 'once' ? 'repeat-one' : 'repeat'}
-              size={30}
-              color="#fff"
-            />
-          </Pressable>
-          <Pressable
-            style={[styles.toggleButton, {opacity: shuffleMode ? 1 : 0.3}]}
-            onPress={toggleShuffleMode}>
-            <IIcon name="shuffle" size={30} color="#fff" />
-          </Pressable>
+          {type !== 'single' ? (
+            <>
+              <Pressable
+                style={[
+                  styles.toggleButton,
+                  {opacity: repeatMode === 'none' ? 0.3 : 1},
+                ]}
+                onPress={toggleRepeatMode}>
+                <MIcon
+                  name={repeatMode === 'once' ? 'repeat-one' : 'repeat'}
+                  size={30}
+                  color="#fff"
+                />
+              </Pressable>
+              <Pressable
+                style={[styles.toggleButton, {opacity: shuffleMode ? 1 : 0.3}]}
+                onPress={toggleShuffleMode}>
+                <IIcon name="shuffle" size={30} color="#fff" />
+              </Pressable>
+            </>
+          ) : null}
         </View>
         <Text style={styles.progress}>
-          {(from === 'list' ? items[currentIndex].tnum : currentIndex) + 1} /{' '}
-          {items.length}
+          {currentIndex + 1} / {items.length}
         </Text>
       </View>
     </View>

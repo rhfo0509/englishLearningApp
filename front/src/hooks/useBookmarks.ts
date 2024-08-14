@@ -48,7 +48,7 @@ const useBookmarks = (category: number) => {
     const isBookmarked = bookmarks.some(item => item.num === bookmark.num);
     const updated = isBookmarked
       ? bookmarks.filter(item => item.num !== bookmark.num)
-      : [...bookmarks, bookmark];
+      : [bookmark, ...bookmarks];
     await saveBookmarks(updated);
   };
 

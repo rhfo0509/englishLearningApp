@@ -30,7 +30,7 @@ const SubListScreen = ({route, navigation}: any) => {
           items,
           title,
           index,
-          from: 'sublist',
+          type: 'normal',
         })
       }>
       <Text style={styles.en}>

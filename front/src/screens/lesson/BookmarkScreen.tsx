@@ -1,9 +1,11 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import Header from '../../components/Header';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import useBookmarks from '../../hooks/useBookmarks';
+import React, {useCallback, useLayoutEffect} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
+import LinearGradient from 'react-native-linear-gradient';
+import MIcon from 'react-native-vector-icons/MaterialIcons';
+
+import Header from '../../components/Header';
+import useBookmarks from '../../hooks/useBookmarks';
 
 interface Bookmark {
   tnum: number;
@@ -40,7 +42,7 @@ const BookmarkScreen = ({route, navigation}: any) => {
           items: bookmarks,
           title,
           index,
-          from: 'bookmark',
+          type: 'single',
         })
       }>
       <Text style={styles.en}>{item.en}</Text>
@@ -50,6 +52,27 @@ const BookmarkScreen = ({route, navigation}: any) => {
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() =>
+          navigation.navigate('LessonContent', {
+            category,
+            items: bookmarks,
+            title,
+            type: 'random',
+          })
+        }>
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 0}}
+          colors={['#56ab2f', '#a8e063']}
+          style={styles.gradient}>
+          <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
+            <MIcon name="play-circle-outline" size={24} color="#fff" />
+            <Text style={styles.buttonText}>All Random</Text>
+          </View>
+        </LinearGradient>
+      </TouchableOpacity>
       <FlatList
         style={{marginTop: 16}}
         data={bookmarks}
@@ -68,6 +91,23 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#eeeff3',
     paddingHorizontal: 16,
+  },
+  button: {
+    borderRadius: 24,
+    marginHorizontal: 4,
+  },
+  gradient: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 24,
+    padding: 12,
+    marginTop: 16,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 20,
   },
   item: {
     backgroundColor: '#fff',
