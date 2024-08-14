@@ -18,6 +18,7 @@ import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 import useClick from '../../hooks/useClick';
 import useBookmarks from '../../hooks/useBookmarks';
 import useLastLearned from '../../hooks/useLastLearned';
+import {checkAndUpdateJSON} from '../../services/json.service';
 
 const {width} = Dimensions.get('window');
 
@@ -170,13 +171,33 @@ const ContentScreen = ({route, navigation}: any) => {
 
   // 학습 화면에서 나가는 경우 최근 학습 데이터 저장
   const {saveLastLearned} = useLastLearned();
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', () => {
-      saveLastLearned(category, items, title, currentIndex);
-    });
 
-    return unsubscribe;
+  // 이 때 학습 데이터는 카테고리가 기준
+  useEffect(() => {
+    const fetchAndSaveItems = async () => {
+      // 데이터 로드
+      const categoryItems = await checkAndUpdateJSON(category, navigation);
+      // 화면을 나갈 때 데이터 저장
+      navigation.addListener('beforeRemove', () => {
+        saveLastLearned(
+          category,
+          categoryItems,
+          title,
+          items[currentIndex].tnum,
+        );
+      });
+    };
+
+    fetchAndSaveItems();
   }, [category, currentIndex, items, navigation, saveLastLearned, title]);
+
+  // useEffect(() => {
+  //   const unsubscribe = navigation.addListener('beforeRemove', () => {
+  //     saveLastLearned(category, items, title, currentIndex);
+  //   });
+
+  //   return unsubscribe;
+  // }, [category, currentIndex, items, navigation, saveLastLearned, title]);
 
   // 북마크
   const {bookmarks, toggleBookmark} = useBookmarks(category);
