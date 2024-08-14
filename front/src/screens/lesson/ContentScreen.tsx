@@ -195,7 +195,7 @@ const ContentScreen = ({route, navigation}: any) => {
   }, [category, currentIndex, items, navigation, saveLastLearned, title]);
 
   // 북마크
-  const {bookmarks, toggleBookmark} = useBookmarks(category);
+  const {bookmarks = [], toggleBookmark} = useBookmarks(category);
 
   const isBookmarked = bookmarks.some(
     bookmark =>
