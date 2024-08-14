@@ -12,7 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Header from '../../components/Header';
-import {checkAndUpdateJSON} from '../../services/json.service';
+import {checkAndUpdateLearningData} from '../../services/data.service';
 
 interface Chapter {
   num: number;
@@ -78,7 +78,7 @@ const ListScreen = ({route, navigation}: any) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const result = await checkAndUpdateJSON(category, navigation);
+        const result = await checkAndUpdateLearningData(category, navigation);
         setItems(result);
       } catch (error) {
         console.error('Error while fetching JSON file', error);

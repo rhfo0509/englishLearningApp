@@ -26,7 +26,6 @@ const useLastLearned = () => {
       if (data) {
         setLastLearned(JSON.parse(data));
       }
-      console.log(data);
     } catch (error) {
       console.error('Failed to load last learned data: ', error);
     }

@@ -9,6 +9,7 @@ import {
   Pressable,
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
+import RNFS from 'react-native-fs';
 import SoundPlayer from 'react-native-sound-player';
 import FastImage from 'react-native-fast-image';
 import IIcon from 'react-native-vector-icons/Ionicons';
@@ -18,7 +19,7 @@ import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 import useClick from '../../hooks/useClick';
 import useBookmarks from '../../hooks/useBookmarks';
 import useLastLearned from '../../hooks/useLastLearned';
-import {checkAndUpdateJSON} from '../../services/json.service';
+import {readLocalJSONData} from '../../services/json.service';
 
 const {width} = Dimensions.get('window');
 
@@ -176,12 +177,14 @@ const ContentScreen = ({route, navigation}: any) => {
   useEffect(() => {
     const fetchAndSaveItems = async () => {
       // 데이터 로드
-      const categoryItems = await checkAndUpdateJSON(category, navigation);
+      const jsonData = await readLocalJSONData(
+        `${RNFS.DocumentDirectoryPath}/learning/${category}/${category}.json`,
+      );
       // 화면을 나갈 때 데이터 저장
       navigation.addListener('beforeRemove', () => {
         saveLastLearned(
-          category,
-          categoryItems,
+          jsonData.category,
+          jsonData.data,
           title,
           items[currentIndex].tnum,
         );
@@ -190,14 +193,6 @@ const ContentScreen = ({route, navigation}: any) => {
 
     fetchAndSaveItems();
   }, [category, currentIndex, items, navigation, saveLastLearned, title]);
-
-  // useEffect(() => {
-  //   const unsubscribe = navigation.addListener('beforeRemove', () => {
-  //     saveLastLearned(category, items, title, currentIndex);
-  //   });
-
-  //   return unsubscribe;
-  // }, [category, currentIndex, items, navigation, saveLastLearned, title]);
 
   // 북마크
   const {bookmarks, toggleBookmark} = useBookmarks(category);

@@ -33,6 +33,7 @@ const HomeScreen = ({navigation}: any) => {
   );
 
   const handleContinueLearning = () => {
+    console.log(lastLearned);
     if (lastLearned) {
       navigation.navigate('LessonStack', {
         screen: 'LessonContent',
