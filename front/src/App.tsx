@@ -4,14 +4,14 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
 import Toast from 'react-native-toast-message';
 import Root from './navigation/Root';
-import {checkAndUpdateGeneralData} from './services/data.service';
+import {fetchGeneralData} from './services/data.service';
 import toastConfig from './components/Toast';
 
 const App = () => {
   useEffect(() => {
     const initialize = async () => {
       try {
-        await checkAndUpdateGeneralData();
+        await fetchGeneralData();
       } catch (error) {
         console.error('Error while fetching JSON file', error);
       } finally {

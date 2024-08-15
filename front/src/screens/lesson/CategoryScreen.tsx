@@ -40,7 +40,8 @@ const CategoryScreen = ({route, navigation}: any) => {
   }, [navigation]);
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    // 카테고리 리스트
+    (async () => {
       try {
         const result = await AsyncStorage.getItem('categories');
         if (result) {
@@ -60,8 +61,7 @@ const CategoryScreen = ({route, navigation}: any) => {
       } finally {
         setLoading(false);
       }
-    };
-    fetchCategories();
+    })();
   }, [orderBy]);
 
   const renderItem = ({item, index}: {item: Category; index: number}) => (

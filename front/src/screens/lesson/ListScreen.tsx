@@ -12,7 +12,7 @@ import LinearGradient from 'react-native-linear-gradient';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
 
 import Header from '../../components/Header';
-import {checkAndUpdateLearningData} from '../../services/data.service';
+import {fetchLearningData} from '../../services/data.service';
 
 interface Chapter {
   num: number;
@@ -55,7 +55,8 @@ const ListScreen = ({route, navigation}: any) => {
   }, [navigation]);
 
   useEffect(() => {
-    const fetchChapters = async () => {
+    // 챕터 리스트
+    (async () => {
       try {
         const result = await AsyncStorage.getItem('chapters');
         if (result) {
@@ -71,22 +72,21 @@ const ListScreen = ({route, navigation}: any) => {
       } catch (error) {
         console.error('Error while fetching JSON file', error);
       }
-    };
-    fetchChapters();
+    })();
   }, [category]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    // 학습 데이터 리스트
+    (async () => {
       try {
-        const result = await checkAndUpdateLearningData(category, navigation);
+        const result = await fetchLearningData(category, navigation);
         setItems(result);
       } catch (error) {
         console.error('Error while fetching JSON file', error);
       } finally {
         setLoading(false);
       }
-    };
-    fetchData();
+    })();
   }, [category, navigation]);
 
   const renderItem = ({item, index}: {item: Chapter; index: number}) => (

@@ -19,7 +19,7 @@ import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 import useClick from '../../hooks/useClick';
 import useBookmarks from '../../hooks/useBookmarks';
 import useLastLearned from '../../hooks/useLastLearned';
-import {readLocalJSONData} from '../../services/json.service';
+import {readLocalJSON} from '../../services/json.service';
 
 const {width} = Dimensions.get('window');
 
@@ -170,28 +170,24 @@ const ContentScreen = ({route, navigation}: any) => {
     }
   };
 
-  // 학습 화면에서 나가는 경우 최근 학습 데이터 저장
+  // 최근 학습 데이터
   const {saveLastLearned} = useLastLearned();
 
-  // 이 때 학습 데이터는 카테고리가 기준
   useEffect(() => {
-    const fetchAndSaveItems = async () => {
-      // 데이터 로드
-      const jsonData = await readLocalJSONData(
+    // 학습 화면에서 나가는 경우 카테고리별로 최근 학습 데이터 저장
+    (async () => {
+      const json = await readLocalJSON(
         `${RNFS.DocumentDirectoryPath}/learning/${category}/${category}.json`,
       );
-      // 화면을 나갈 때 데이터 저장
       navigation.addListener('beforeRemove', () => {
         saveLastLearned(
-          jsonData.category,
-          jsonData.data,
+          json.category,
+          json.data,
           title,
           items[currentIndex].tnum,
         );
       });
-    };
-
-    fetchAndSaveItems();
+    })();
   }, [category, currentIndex, items, navigation, saveLastLearned, title]);
 
   // 북마크

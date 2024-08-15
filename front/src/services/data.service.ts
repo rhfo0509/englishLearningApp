@@ -1,8 +1,4 @@
-import {
-  checkJSONVersion,
-  readLocalJSONData,
-  writeLocalJSONData,
-} from './json.service';
+import {checkJSONVersion, readLocalJSON, writeLocalJSON} from './json.service';
 import {Alert} from 'react-native';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -67,10 +63,7 @@ async function updateLearningData(
   return true;
 }
 
-export async function checkAndUpdateLearningData(
-  category: number,
-  navigation: any,
-) {
+export async function fetchLearningData(category: number, navigation: any) {
   const remoteJSONPath = `learning/${category}/${category}.json`;
   const remoteDirPath = remoteJSONPath.slice(
     0,
@@ -94,14 +87,14 @@ export async function checkAndUpdateLearningData(
       );
 
       if (isSucceeded) {
-        await writeLocalJSONData(localJSONPath, remoteJson);
+        await writeLocalJSON(localJSONPath, remoteJson);
         return remoteJson.data;
       } else {
         navigation.goBack();
         return null;
       }
     } else {
-      const localJSON = await readLocalJSONData(localJSONPath);
+      const localJSON = await readLocalJSON(localJSONPath);
       return localJSON.data;
     }
   } catch (error) {
@@ -111,7 +104,7 @@ export async function checkAndUpdateLearningData(
   }
 }
 
-export async function checkAndUpdateGeneralData() {
+export async function fetchGeneralData() {
   const remoteJSONPaths = ['data.json', 'learning/data.json'];
 
   for (const remoteJSONPath of remoteJSONPaths) {
@@ -132,7 +125,7 @@ export async function checkAndUpdateGeneralData() {
         if (!(await RNFS.exists(localDirPath))) {
           await RNFS.mkdir(localDirPath);
         }
-        await writeLocalJSONData(localJSONPath, remoteJson);
+        await writeLocalJSON(localJSONPath, remoteJson);
 
         if (remoteJSONPath === 'data.json') {
           await AsyncStorage.setItem(
