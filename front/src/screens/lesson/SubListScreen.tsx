@@ -34,7 +34,7 @@ const SubListScreen = ({route, navigation}: any) => {
         })
       }>
       <Text style={styles.en}>
-        [{(item.num + 1).toString().padStart(2, '0')}] {item.en}
+        [{(index + 1).toString().padStart(2, '0')}] {item.en}
       </Text>
       <Text style={styles.ko}>{item.ko}</Text>
     </TouchableOpacity>
