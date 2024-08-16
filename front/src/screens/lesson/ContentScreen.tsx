@@ -116,13 +116,12 @@ const ContentScreen = ({route, navigation}: any) => {
         SoundPlayer.pause();
         showIcon('pause');
       } else {
-        setSoundIndex(0);
-        playSound(items[currentIndex].sounds[0]);
+        playSound(items[currentIndex].sounds[soundIndex]);
         showIcon('play');
       }
       return !prev;
     });
-  }, [currentIndex, items, showIcon]);
+  }, [currentIndex, items, showIcon, soundIndex]);
 
   const shuffle = useCallback(() => {
     const indexes = Array.from({length: items.length}, (_, i) => i);
