@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   PanResponder,
   Pressable,
+  Animated,
 } from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import RNFS from 'react-native-fs';
@@ -49,7 +50,6 @@ const ContentScreen = ({route, navigation}: any) => {
   };
 
   const [currentIndex, setCurrentIndex] = useState<number>(index);
-
   const [playing, setPlaying] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0);
 
@@ -60,6 +60,7 @@ const ContentScreen = ({route, navigation}: any) => {
     english: true,
     translation: true,
   });
+
   const [repeatMode, setRepeatMode] = useState<'always' | 'once' | 'none'>(
     type === 'single' ? 'once' : 'always',
   );
@@ -68,7 +69,6 @@ const ContentScreen = ({route, navigation}: any) => {
 
   const [imageUri, setImageUri] = useState<string | number>('');
 
-  // 초기 이미지 설정
   const getRandomGif = () => {
     const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGE_PATHS.length);
     return DEFAULT_IMAGE_PATHS[randomIndex];
@@ -82,7 +82,26 @@ const ContentScreen = ({route, navigation}: any) => {
     );
   }, [currentIndex, items]);
 
-  // 사운드 재생 함수
+  const [iconOpacity] = useState<Animated.Value>(new Animated.Value(0));
+  const showIcon = useCallback(
+    (icon: 'play' | 'pause') => {
+      Animated.sequence([
+        Animated.timing(iconOpacity, {
+          toValue: 1,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+        Animated.delay(500),
+        Animated.timing(iconOpacity, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    },
+    [iconOpacity],
+  );
+
   const playSound = (soundUrl: string) => {
     try {
       SoundPlayer.playUrl(`file://${soundUrl}`);
@@ -91,20 +110,20 @@ const ContentScreen = ({route, navigation}: any) => {
     }
   };
 
-  // 사운드 재생 / 정지
   const togglePlayback = useCallback(() => {
     setPlaying(prev => {
       if (prev) {
         SoundPlayer.pause();
+        showIcon('pause');
       } else {
         setSoundIndex(0);
         playSound(items[currentIndex].sounds[0]);
+        showIcon('play');
       }
       return !prev;
     });
-  }, [currentIndex, items]);
+  }, [currentIndex, items, showIcon]);
 
-  // 셔플 목록 생성
   const shuffle = useCallback(() => {
     const indexes = Array.from({length: items.length}, (_, i) => i);
     for (let i = indexes.length - 1; i > 0; i--) {
@@ -114,14 +133,12 @@ const ContentScreen = ({route, navigation}: any) => {
     setShuffleIndexes(indexes);
   }, [items]);
 
-  // 셔플 모드가 활성화된 경우 인덱스를 초기화
   useEffect(() => {
     if (shuffleMode) {
       shuffle();
     }
   }, [shuffleMode, shuffle]);
 
-  // 화면 전환 로직
   const navigateToItem = useCallback(
     (direction: 'left' | 'right') => {
       const indexes = shuffleMode ? shuffleIndexes : items.map((_, i) => i);
@@ -149,7 +166,6 @@ const ContentScreen = ({route, navigation}: any) => {
     [currentIndex, repeatMode, items, shuffle, shuffleIndexes, shuffleMode],
   );
 
-  // 모드 토글 함수들
   const toggleViewMode = (mode: 'english' | 'translation') => {
     setViewMode(prev => ({
       ...prev,
@@ -170,11 +186,9 @@ const ContentScreen = ({route, navigation}: any) => {
     }
   };
 
-  // 최근 학습 데이터
   const {saveLastLearned} = useLastLearned();
 
   useEffect(() => {
-    // 학습 화면에서 나가는 경우 카테고리별로 최근 학습 데이터 저장
     (async () => {
       const json = await readLocalJSON(
         `${RNFS.DocumentDirectoryPath}/learning/${category}/${category}.json`,
@@ -190,7 +204,6 @@ const ContentScreen = ({route, navigation}: any) => {
     })();
   }, [category, currentIndex, items, navigation, saveLastLearned, title]);
 
-  // 북마크
   const {bookmarks = [], toggleBookmark} = useBookmarks(category);
 
   const isBookmarked = bookmarks.some(
@@ -200,8 +213,8 @@ const ContentScreen = ({route, navigation}: any) => {
   );
 
   const handlePress = useClick(
-    () => togglePlayback(), // Single click action
-    () => toggleBookmark(items[currentIndex]), // Double click action
+    () => togglePlayback(),
+    () => toggleBookmark(items[currentIndex]),
   );
 
   const panResponder = PanResponder.create({
@@ -211,7 +224,6 @@ const ContentScreen = ({route, navigation}: any) => {
     },
     onPanResponderRelease: (_, gestureState) => {
       if (Math.abs(gestureState.dx) < 5 && Math.abs(gestureState.dy) < 5) {
-        // 손가락을 거의 움직이지 않았을 때
         handlePress();
       } else if (gestureState.dy < -50) {
         navigateToItem('right');
@@ -232,7 +244,6 @@ const ContentScreen = ({route, navigation}: any) => {
     }, [currentIndex, playing, items, soundIndex]),
   );
 
-  // 사운드 재생 완료 시 처리
   useEffect(() => {
     const handlePlaybackCompletion = () => {
       const isLastSound = soundIndex === items[currentIndex].sounds.length - 1;
@@ -290,9 +301,6 @@ const ContentScreen = ({route, navigation}: any) => {
           <IIcon name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.title}>{title}</Text>
-        {/* <TouchableOpacity style={{zIndex: 1}} onPress={togglePlayback}>
-          <IIcon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
-        </TouchableOpacity> */}
         <TouchableOpacity onPress={() => toggleBookmark(items[currentIndex])}>
           <IIcon
             name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
@@ -302,6 +310,9 @@ const ContentScreen = ({route, navigation}: any) => {
         </TouchableOpacity>
       </View>
       <View style={styles.main} {...panResponder.panHandlers}>
+        <Animated.View style={[styles.iconContainer, {opacity: iconOpacity}]}>
+          <IIcon name={playing ? 'pause' : 'play'} size={64} color="#fff" />
+        </Animated.View>
         <View style={styles.item}>
           {viewMode.english && (
             <Text style={styles.english}>{items[currentIndex].en}</Text>
@@ -393,6 +404,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flex: 1,
+  },
+  iconContainer: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
   image: {
     width: width - 32,
