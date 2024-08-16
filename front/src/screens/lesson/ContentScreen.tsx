@@ -290,10 +290,10 @@ const ContentScreen = ({route, navigation}: any) => {
           <IIcon name="chevron-back" size={24} color="#fff" />
         </TouchableOpacity>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity style={{zIndex: 1}} onPress={togglePlayback}>
+        {/* <TouchableOpacity style={{zIndex: 1}} onPress={togglePlayback}>
           <IIcon name={playing ? 'pause' : 'play'} size={24} color="#fff" />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.bookmark}>
+        </TouchableOpacity> */}
+        <TouchableOpacity onPress={() => toggleBookmark(items[currentIndex])}>
           <IIcon
             name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
             size={24}
@@ -388,11 +388,6 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '500',
-  },
-  bookmark: {
-    position: 'absolute',
-    top: 72,
-    right: 16,
   },
   main: {
     alignItems: 'center',
