@@ -6,9 +6,9 @@ const bucket = require("../config/firebaseAdmin");
 const { LANGUAGES } = require("../common/constants");
 
 // type = 0 : category / type = 1 : chapter / type = 2 : data
-function convertExcelToJSON(buffer, type, version, category = 0) {
+function convertExcelToJSON(buffer, type, version, category) {
   const workbook = XLSX.read(buffer, { type: "buffer" });
-  const sheetName = workbook.SheetNames[+category + +type];
+  const sheetName = workbook.SheetNames[+type];
   const sheet = workbook.Sheets[sheetName];
 
   const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
@@ -18,27 +18,30 @@ function convertExcelToJSON(buffer, type, version, category = 0) {
     let json = {
       version,
       category: +category,
-      data: data.slice(1).map((row) => {
-        let entry = {
-          tnum: row[0],
-          chapter: row[2],
-          num: row[3],
-          image: row[4]
-            ? `${basePath}/learning/${category}/images/${row[4]}.jpg`
-            : "",
-          sounds: row[5]
-            ? Array.from(
-                { length: 5 },
-                (_, i) =>
-                  `${basePath}/learning/${category}/sounds/${row[5]}_${i}.mp3`
-              )
-            : [],
-        };
-        for (const [lang, i] of Object.entries(LANGUAGES)) {
-          entry[lang] = row[i];
-        }
-        return entry;
-      }),
+      data: data
+        .slice(1)
+        .filter((row) => row[1] === +category)
+        .map((row) => {
+          let entry = {
+            tnum: row[0],
+            chapter: row[2],
+            num: row[3],
+            image: row[4]
+              ? `${basePath}/learning/${category}/images/${row[4]}.jpg`
+              : "",
+            sounds: row[5]
+              ? Array.from(
+                  { length: 5 },
+                  (_, i) =>
+                    `${basePath}/learning/${category}/sounds/${row[5]}_${i}.mp3`
+                )
+              : [],
+          };
+          for (const [lang, i] of Object.entries(LANGUAGES)) {
+            entry[lang] = row[i];
+          }
+          return entry;
+        }),
     };
     return { json, type };
   } else {
