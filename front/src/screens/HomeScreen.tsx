@@ -7,7 +7,7 @@ import {
   SafeAreaView,
   ScrollView,
 } from 'react-native';
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
@@ -16,6 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../components/Header';
 import Profile from '../components/Profile';
 import useLastLearned from '../hooks/useLastLearned';
+import {fetchGeneralData} from '../services/data.service';
 
 const HomeScreen = ({navigation}: any) => {
   const {lastLearned, loadLastLearned} = useLastLearned();
@@ -25,6 +26,16 @@ const HomeScreen = ({navigation}: any) => {
       header: () => <Header />,
     });
   }, [navigation]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await fetchGeneralData();
+      } catch (error) {
+        console.error('Error while fetching general data', error);
+      }
+    })();
+  }, []);
 
   useFocusEffect(
     useCallback(() => {

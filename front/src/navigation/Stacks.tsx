@@ -1,6 +1,9 @@
 import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
+import SignInScreen from '../screens/SignInScreen';
+import WelcomeScreen from '../screens/WelcomeScreen';
+
 import HomeScreen from '../screens/HomeScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 
@@ -11,6 +14,21 @@ import LessonContentScreen from '../screens/lesson/ContentScreen';
 import BookmarkScreen from '../screens/lesson/BookmarkScreen';
 
 const Stack = createNativeStackNavigator();
+
+const AuthStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen
+      name="SignIn"
+      component={SignInScreen}
+      options={{headerShown: false}}
+    />
+    <Stack.Screen
+      name="Welcome"
+      component={WelcomeScreen}
+      options={{headerShown: false}}
+    />
+  </Stack.Navigator>
+);
 
 const HomeStack = () => (
   <Stack.Navigator>
@@ -45,4 +63,4 @@ const LessonStack = () => (
   </Stack.Navigator>
 );
 
-export {HomeStack, ProfileStack, LessonStack};
+export {AuthStack, HomeStack, ProfileStack, LessonStack};

@@ -5,6 +5,7 @@ module.exports = {
     'react-native/no-inline-styles': 0,
     'react/no-unstable-nested-components': ['error', {allowAsProps: true}],
     '@typescript-eslint/no-unused-vars': 'off',
+    '@typescript-eslint/no-shadow': 'off',
     'prettier/prettier': [
       'error',
       {
