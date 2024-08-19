@@ -26,7 +26,6 @@ const WelcomeScreen = ({route, navigation}: any) => {
     id: uid,
     username: '',
     language: '',
-    photoURL: '',
   });
   const [language, setLanguage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -39,6 +38,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
     try {
       setLoading(true);
 
+      let photoURL = '';
       if (response?.assets) {
         const asset = response.assets[0];
         const extension = asset.fileName?.split('.').pop();
@@ -47,17 +47,14 @@ const WelcomeScreen = ({route, navigation}: any) => {
           const imgBlob = await (await fetch(asset.uri as string)).blob();
 
           await storageRef.put(imgBlob);
-          const photoURL = await storageRef.getDownloadURL();
-
-          setForm(prevForm => ({
-            ...prevForm,
-            photoURL,
-          }));
+          photoURL = await storageRef.getDownloadURL();
         }
       }
 
-      createUser(form);
-      setUser(form);
+      const user = {...form, photoURL};
+
+      createUser(user);
+      setUser(user);
     } catch (error) {
       console.error('Failed to submit profile: ', error);
     } finally {
