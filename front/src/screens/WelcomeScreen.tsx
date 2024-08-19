@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
   ActivityIndicator,
+  Keyboard,
 } from 'react-native';
 import React, {useState, useRef} from 'react';
 import Toast from 'react-native-toast-message';
@@ -100,6 +101,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
   };
 
   const handleSelectLanguage = (language: {label: string; code: string}) => {
+    Keyboard.dismiss();
     setForm(prevForm => ({
       ...prevForm,
       language: language.code,
@@ -120,10 +122,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
           onChangeText={handleChangeUsername}
           autoCapitalize="none"
           returnKeyType="next"
-          onSubmitEditing={() => {
-            inputRef.current?.blur();
-            setVisible(true);
-          }}
+          onSubmitEditing={() => setVisible(true)}
           style={styles.input}
         />
         <TouchableOpacity
