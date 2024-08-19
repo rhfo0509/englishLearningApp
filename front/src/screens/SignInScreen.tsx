@@ -172,7 +172,7 @@ const SignInScreen = ({navigation, route}: any) => {
           )}
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, {backgroundColor: '#333'}]}
+          style={[styles.button, {backgroundColor: '#000'}]}
           onPress={() => {
             setForm({
               email: '',
