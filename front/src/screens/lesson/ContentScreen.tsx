@@ -196,7 +196,12 @@ const ContentScreen = ({route, navigation}: any) => {
         `${RNFS.DocumentDirectoryPath}/learning/${category}/${category}.json`,
       );
       navigation.addListener('beforeRemove', () => {
-        saveLastLearned(json.category, json.data, title, currentIndex);
+        saveLastLearned(
+          json.category,
+          json.data,
+          title.replace(/\s\[\d+\]$/, ''), // 뒤에 [01] 부분이 있는 경우 제거
+          items[currentIndex].tnum,
+        );
       });
     })();
   }, [category, currentIndex, items, navigation, saveLastLearned, title, type]);

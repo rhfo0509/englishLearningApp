@@ -44,7 +44,6 @@ const HomeScreen = ({navigation}: any) => {
   );
 
   const handleContinueLearning = () => {
-    console.log(lastLearned);
     if (lastLearned) {
       navigation.navigate('LessonStack', {
         screen: 'LessonContent',
@@ -52,7 +51,7 @@ const HomeScreen = ({navigation}: any) => {
           category: lastLearned.category,
           items: lastLearned.items,
           title: lastLearned.title,
-          index: lastLearned.index,
+          index: lastLearned.index - lastLearned.items[0].tnum,
           type: 'normal',
         },
       });

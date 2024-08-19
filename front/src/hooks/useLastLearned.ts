@@ -2,6 +2,7 @@ import {useCallback, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Item {
+  tnum: number;
   chapter: number;
   num: number;
   image: string;
