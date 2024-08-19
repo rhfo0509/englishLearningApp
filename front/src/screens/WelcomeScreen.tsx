@@ -7,7 +7,7 @@ import {
   View,
   ActivityIndicator,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {
   ImagePickerResponse,
   launchImageLibrary,
@@ -32,6 +32,8 @@ const WelcomeScreen = ({route, navigation}: any) => {
   const [loading, setLoading] = useState(false);
   const [visible, setVisible] = useState<boolean>(false);
   const {setUser} = useUser();
+
+  const inputRef = useRef<TextInput>(null);
 
   const handleSubmit = async () => {
     try {
@@ -84,7 +86,6 @@ const WelcomeScreen = ({route, navigation}: any) => {
   };
 
   const handleSelectLanguage = (language: {label: string; code: string}) => {
-    console.log(language);
     setForm(prevForm => ({
       ...prevForm,
       language: language.code,
@@ -106,12 +107,16 @@ const WelcomeScreen = ({route, navigation}: any) => {
       </TouchableOpacity>
       <View>
         <TextInput
+          ref={inputRef}
           placeholder="Username"
           value={form.username}
           onChangeText={handleChangeUsername}
           autoCapitalize="none"
           returnKeyType="next"
-          onSubmitEditing={() => setVisible(true)}
+          onSubmitEditing={() => {
+            inputRef.current?.blur();
+            setVisible(true);
+          }}
           style={styles.input}
         />
         <TouchableOpacity
@@ -135,7 +140,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
       <LanguageModal
         visible={visible}
         onClose={() => setVisible(false)}
-        onSelect={handleSelectLanguage} // 언어 선택 시 처리
+        onSelect={handleSelectLanguage}
       />
     </SafeAreaView>
   );
