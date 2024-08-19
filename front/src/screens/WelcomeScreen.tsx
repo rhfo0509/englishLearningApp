@@ -26,7 +26,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
     id: uid,
     username: '',
     language: '',
-    photoURL: null as string | null,
+    photoURL: '',
   });
   const [language, setLanguage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -96,7 +96,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.avatar} onPress={handleSelectAvatar}>
-        <Avatar source={response?.assets?.[0]?.uri || null} size={128} />
+        <Avatar source={response?.assets?.[0]?.uri || ''} size={128} />
       </TouchableOpacity>
       <View>
         <TextInput

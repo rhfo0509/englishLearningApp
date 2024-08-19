@@ -1,4 +1,4 @@
-import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {SafeAreaView, StyleSheet, Text, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {useUser} from '../contexts/UserContext';
 import {signOut} from '../lib/auth';
@@ -12,11 +12,11 @@ const ProfileScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TouchableOpacity onPress={handleSignOut} style={styles.item}>
         <Text style={styles.itemText}>로그아웃</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 

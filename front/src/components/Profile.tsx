@@ -19,7 +19,7 @@ const Profile = () => {
         <Pressable
           onPress={() => navigation.navigate('ProfileStack' as never)}
           style={styles.profileImage}>
-          <Avatar source={user?.photoURL} size={72} />
+          <Avatar source={user?.photoURL || ''} size={72} />
         </Pressable>
         <View style={styles.profileContent}>
           <Text style={styles.profileText}>Hello, {user?.username}</Text>

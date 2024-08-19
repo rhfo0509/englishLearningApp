@@ -6,7 +6,7 @@ interface User {
   id: string;
   username: string;
   language: string;
-  photoURL: string | null;
+  photoURL: string;
 }
 
 export function createUser(user: User) {
