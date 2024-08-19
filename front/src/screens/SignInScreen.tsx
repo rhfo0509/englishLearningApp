@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
 import {signIn, signUp} from '../lib/auth';
 import {useUser} from '../contexts/UserContext';
 
@@ -34,12 +35,24 @@ const SignInScreen = ({navigation, route}: any) => {
 
   const handleSubmit = async () => {
     Keyboard.dismiss();
-    const {email, password} = form;
-    const info = {email, password};
+    const {email, password, confirmPassword} = form;
+
+    if (!email || !password || (isSignUp && !confirmPassword)) {
+      Toast.show({
+        type: 'error',
+        text1: 'Please fill in all fields.',
+        position: 'bottom',
+        visibilityTime: 1500,
+      });
+      return;
+    }
+
     setLoading(true);
 
     try {
-      const {user} = isSignUp ? await signUp(info) : await signIn(info);
+      const {user} = isSignUp
+        ? await signUp({email, password})
+        : await signIn({email, password});
       const profile = await AsyncStorage.getItem('user');
 
       if (!profile) {
@@ -55,10 +68,13 @@ const SignInScreen = ({navigation, route}: any) => {
         'auth/user-not-found': 'User not found.',
         'auth/invalid-email': 'Invalid email address.',
       };
-      Alert.alert(
-        'ERROR',
-        messages[error.code] || `${isSignUp ? 'Sign Up' : 'Sign In'} failed.`,
-      );
+      Toast.show({
+        type: 'error',
+        text1:
+          messages[error.code] || `${isSignUp ? 'Sign Up' : 'Sign In'} failed.`,
+        position: 'bottom',
+        visibilityTime: 1500,
+      });
     } finally {
       setLoading(false);
     }

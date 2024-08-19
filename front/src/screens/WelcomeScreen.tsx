@@ -8,6 +8,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import React, {useState, useRef} from 'react';
+import Toast from 'react-native-toast-message';
 import {
   ImagePickerResponse,
   launchImageLibrary,
@@ -35,6 +36,16 @@ const WelcomeScreen = ({route, navigation}: any) => {
   const inputRef = useRef<TextInput>(null);
 
   const handleSubmit = async () => {
+    if (!form.username || !form.language) {
+      Toast.show({
+        type: 'error',
+        text1: 'No recent learning data to continue',
+        position: 'bottom',
+        visibilityTime: 1500,
+      });
+      return;
+    }
+
     try {
       setLoading(true);
 
