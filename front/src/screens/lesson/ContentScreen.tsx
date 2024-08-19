@@ -188,20 +188,18 @@ const ContentScreen = ({route, navigation}: any) => {
   const {saveLastLearned} = useLastLearned();
 
   useEffect(() => {
+    if (type === 'bookmark') {
+      return;
+    }
     (async () => {
       const json = await readLocalJSON(
         `${RNFS.DocumentDirectoryPath}/learning/${category}/${category}.json`,
       );
       navigation.addListener('beforeRemove', () => {
-        saveLastLearned(
-          json.category,
-          json.data,
-          title,
-          items[currentIndex].tnum,
-        );
+        saveLastLearned(json.category, json.data, title, currentIndex);
       });
     })();
-  }, [category, currentIndex, items, navigation, saveLastLearned, title]);
+  }, [category, currentIndex, items, navigation, saveLastLearned, title, type]);
 
   const {bookmarks = [], toggleBookmark} = useBookmarks(category);
 
