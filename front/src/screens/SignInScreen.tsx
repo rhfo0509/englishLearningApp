@@ -74,11 +74,14 @@ const SignInScreen = ({navigation, route}: any) => {
         'auth/wrong-password': 'Incorrect password.',
         'auth/user-not-found': 'User not found.',
         'auth/invalid-email': 'Invalid email address.',
+        'auth/weak-password': 'Password should be at least 6 characters',
+        'auth/network-request-failed': 'Network error occurred.',
       };
       Toast.show({
         type: 'error',
         text1:
-          messages[error.code] || `${isSignUp ? 'Sign Up' : 'Sign In'} failed.`,
+          messages[error.code] ||
+          `${isSignUp ? 'Sign Up' : 'Sign In'} failed. Please try again later`,
         position: 'bottom',
         visibilityTime: 1500,
       });

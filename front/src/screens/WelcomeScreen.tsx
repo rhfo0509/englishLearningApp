@@ -20,7 +20,7 @@ import {useUser} from '../contexts/UserContext';
 import LanguageModal from '../components/LanguageModal';
 import {createUser} from '../lib/user';
 
-const WelcomeScreen = ({route, navigation}: any) => {
+const WelcomeScreen = ({route}: any) => {
   const {uid} = route.params;
   const [response, setResponse] = useState<ImagePickerResponse | null>(null);
   const [form, setForm] = useState({
@@ -39,7 +39,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
     if (!form.username || !form.language) {
       Toast.show({
         type: 'error',
-        text1: 'No recent learning data to continue',
+        text1: 'Please fill in all fields.',
         position: 'bottom',
         visibilityTime: 1500,
       });
