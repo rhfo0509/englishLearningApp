@@ -19,8 +19,9 @@ import Avatar from '../components/Avatar';
 import {useUser} from '../contexts/UserContext';
 import LanguageModal from '../components/LanguageModal';
 import {createUser} from '../lib/user';
+import {signOut} from '../lib/auth';
 
-const WelcomeScreen = ({route}: any) => {
+const WelcomeScreen = ({route, navigation}: any) => {
   const {uid} = route.params;
   const [response, setResponse] = useState<ImagePickerResponse | null>(null);
   const [form, setForm] = useState({
@@ -71,6 +72,11 @@ const WelcomeScreen = ({route}: any) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCancel = () => {
+    signOut();
+    navigation.goBack();
   };
 
   const handleChangeUsername = (username: string) => {
@@ -137,6 +143,12 @@ const WelcomeScreen = ({route}: any) => {
             <Text style={styles.buttonText}>Next</Text>
           )}
         </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, {backgroundColor: '#000'}]}
+          onPress={handleCancel}
+          disabled={loading}>
+          <Text style={styles.buttonText}>Cancel</Text>
+        </TouchableOpacity>
       </View>
       <LanguageModal
         visible={visible}
@@ -158,7 +170,7 @@ const styles = StyleSheet.create({
   },
   avatar: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 16,
   },
   input: {
     height: 48,
@@ -166,12 +178,13 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 8,
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginTop: 16,
     color: '#fff',
   },
   button: {
     backgroundColor: '#1f6feb',
     paddingVertical: 12,
+    marginTop: 16,
     borderRadius: 8,
     alignItems: 'center',
     flexDirection: 'row',

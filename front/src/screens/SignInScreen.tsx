@@ -67,6 +67,11 @@ const SignInScreen = ({navigation, route}: any) => {
       } else {
         setUser(profile);
       }
+      setForm({
+        email: '',
+        password: '',
+        confirmPassword: '',
+      });
     } catch (error: any) {
       console.log(error.code);
       const messages: {[key: string]: string} = {
@@ -212,7 +217,7 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 24,
+    marginBottom: 16,
   },
   form: {
     width: '100%',
