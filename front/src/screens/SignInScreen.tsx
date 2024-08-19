@@ -11,10 +11,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import {signIn, signUp} from '../lib/auth';
 import {useUser} from '../contexts/UserContext';
+import {getUser} from '../lib/user';
 
 const SignInScreen = ({navigation, route}: any) => {
   const passwordRef = useRef<TextInput>(null);
@@ -53,12 +53,12 @@ const SignInScreen = ({navigation, route}: any) => {
       const {user} = isSignUp
         ? await signUp({email, password})
         : await signIn({email, password});
-      const profile = await AsyncStorage.getItem('user');
+      const profile = await getUser(user.uid);
 
       if (!profile) {
         navigation.navigate('Welcome', {uid: user.uid});
       } else {
-        setUser(JSON.parse(profile));
+        setUser(profile);
       }
     } catch (error: any) {
       console.log(error.code);
