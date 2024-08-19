@@ -2979,9 +2979,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-firebase/app@npm:^20.3.0":
-  version: 20.3.0
-  resolution: "@react-native-firebase/app@npm:20.3.0"
+"@react-native-firebase/app@npm:^20.4.0":
+  version: 20.4.0
+  resolution: "@react-native-firebase/app@npm:20.4.0"
   dependencies:
     firebase: 10.12.2
     superstruct: ^0.6.2
@@ -2992,7 +2992,7 @@ __metadata:
   peerDependenciesMeta:
     expo:
       optional: true
-  checksum: 6bc4dd88c16f528a9a8224864ea03ae137c57fe152b3e2133d821ebe47656734e07e02be09ca54b56895febe215bf74ea656cef9a785b5c30f99b831e8b341e3
+  checksum: 74e70ad28f158dfa6533269a5cb629cb737c1fc0eb81e334029a2de09fe0f962fa1772431322efa967840a03663ea5b4512e63db10883f416e1dfd1f12a994e9
   languageName: node
   linkType: hard
 
@@ -5298,7 +5298,7 @@ __metadata:
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
     "@react-native-async-storage/async-storage": ^1.24.0
-    "@react-native-firebase/app": ^20.3.0
+    "@react-native-firebase/app": ^20.4.0
     "@react-native-firebase/auth": ^20.4.0
     "@react-native-firebase/firestore": ^20.4.0
     "@react-native-firebase/storage": ^20.3.0
