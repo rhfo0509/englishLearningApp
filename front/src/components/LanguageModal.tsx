@@ -18,12 +18,18 @@ interface Language {
 const LanguageModal = ({
   visible,
   onClose,
+  onSelect,
 }: {
   visible: boolean;
   onClose: () => void;
+  onSelect: (language: {label: string; code: string}) => void;
 }) => {
   const renderLanguageItem = ({item}: {item: Language}) => (
-    <TouchableOpacity>
+    <TouchableOpacity
+      onPress={() => {
+        onSelect({label: item.label, code: item.code});
+        onClose();
+      }}>
       <Text style={styles.languageItem}>{item.label}</Text>
     </TouchableOpacity>
   );

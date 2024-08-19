@@ -95,16 +95,6 @@ const SignInScreen = ({navigation, route}: any) => {
     };
   }, [navigation]);
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.loading}>
-          <ActivityIndicator size="large" />
-        </View>
-      </View>
-    );
-  }
-
   return (
     <SafeAreaView style={styles.container}>
       <Text style={styles.title}>EnglishEcho</Text>
@@ -148,7 +138,7 @@ const SignInScreen = ({navigation, route}: any) => {
           onPress={handleSubmit}
           disabled={loading}>
           {loading ? (
-            <ActivityIndicator size="small" color="#fff" />
+            <ActivityIndicator size={22} color="#fff" />
           ) : (
             <Text style={styles.buttonText}>
               {isSignUp ? 'Sign Up' : 'Sign In'}
@@ -158,6 +148,11 @@ const SignInScreen = ({navigation, route}: any) => {
         <TouchableOpacity
           style={[styles.button, {backgroundColor: '#333', marginTop: 16}]}
           onPress={() => {
+            setForm({
+              email: '',
+              password: '',
+              confirmPassword: '',
+            });
             if (isSignUp) {
               navigation.navigate('SignIn', {isSignUp: false});
             } else {
