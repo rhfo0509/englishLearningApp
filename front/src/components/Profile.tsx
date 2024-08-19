@@ -1,11 +1,13 @@
 import React from 'react';
-import {StyleSheet, Text, View, Image} from 'react-native';
+import {useNavigation} from '@react-navigation/native';
+import {Pressable, StyleSheet, Text, View} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {useUser} from '../contexts/UserContext';
 import Avatar from './Avatar';
 
 const Profile = () => {
+  const navigation = useNavigation();
   const {user} = useUser();
   return (
     <LinearGradient
@@ -14,9 +16,11 @@ const Profile = () => {
       colors={['#1f6feb', '#53c1ff']}
       style={styles.profileContainer}>
       <View style={styles.profile}>
-        <View style={styles.profileImage}>
+        <Pressable
+          onPress={() => navigation.navigate('ProfileStack' as never)}
+          style={styles.profileImage}>
           <Avatar source={user?.photoURL} size={72} />
-        </View>
+        </Pressable>
         <View style={styles.profileContent}>
           <Text style={styles.profileText}>Hello, {user?.username}</Text>
           <View style={styles.profileButtons}>
