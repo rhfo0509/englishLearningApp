@@ -2,8 +2,11 @@ import React from 'react';
 import {StyleSheet, Text, View, Image} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {useUser} from '../contexts/UserContext';
+import Avatar from './Avatar';
 
 const Profile = () => {
+  const {user} = useUser();
   return (
     <LinearGradient
       start={{x: 0, y: 0}}
@@ -11,9 +14,11 @@ const Profile = () => {
       colors={['#1f6feb', '#53c1ff']}
       style={styles.profileContainer}>
       <View style={styles.profile}>
-        <View style={styles.profileImage}></View>
+        <View style={styles.profileImage}>
+          <Avatar source={user?.photoURL} size={72} />
+        </View>
         <View style={styles.profileContent}>
-          <Text style={styles.profileText}>Hello, Gildong</Text>
+          <Text style={styles.profileText}>Hello, {user?.username}</Text>
           <View style={styles.profileButtons}>
             <View style={styles.profileButton}>
               <Icon name="police-badge-outline" size={20} color="#fff" />
