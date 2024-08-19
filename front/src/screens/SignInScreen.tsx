@@ -12,9 +12,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import Toast from 'react-native-toast-message';
+
 import {signIn, signUp} from '../lib/auth';
-import {useUser} from '../contexts/UserContext';
 import {getUser} from '../lib/user';
+import {useUser} from '../contexts/UserContext';
+import usePasswordValidation from '../hooks/usePasswordValidation';
 
 const SignInScreen = ({navigation, route}: any) => {
   const passwordRef = useRef<TextInput>(null);
@@ -28,6 +30,11 @@ const SignInScreen = ({navigation, route}: any) => {
   });
   const [loading, setLoading] = useState(false);
   const {setUser} = useUser();
+
+  const isPasswordMatch = usePasswordValidation({
+    password: form.password,
+    confirmPassword: form.confirmPassword,
+  });
 
   const handleChangeText = (name: string) => (value: string) => {
     setForm({...form, [name]: value});
@@ -138,16 +145,21 @@ const SignInScreen = ({navigation, route}: any) => {
           style={styles.input}
         />
         {isSignUp && (
-          <TextInput
-            placeholder="Confirm Password"
-            value={form.confirmPassword}
-            onChangeText={handleChangeText('confirmPassword')}
-            secureTextEntry
-            ref={confirmPasswordRef}
-            returnKeyType="done"
-            onSubmitEditing={handleSubmit}
-            style={styles.input}
-          />
+          <>
+            <TextInput
+              placeholder="Confirm Password"
+              value={form.confirmPassword}
+              onChangeText={handleChangeText('confirmPassword')}
+              secureTextEntry
+              ref={confirmPasswordRef}
+              returnKeyType="done"
+              onSubmitEditing={handleSubmit}
+              style={styles.input}
+            />
+            {form.password && form.confirmPassword && !isPasswordMatch && (
+              <Text style={{color: '#d9534f'}}>Passwords do not match</Text> // 경고 메시지 추가
+            )}
+          </>
         )}
         <TouchableOpacity
           style={styles.button}
@@ -156,13 +168,11 @@ const SignInScreen = ({navigation, route}: any) => {
           {loading ? (
             <ActivityIndicator size={22} color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>
-              {isSignUp ? 'Sign Up' : 'Sign In'}
-            </Text>
+            <Text style={styles.text}>{isSignUp ? 'Sign Up' : 'Sign In'}</Text>
           )}
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, {backgroundColor: '#333', marginTop: 16}]}
+          style={[styles.button, {backgroundColor: '#333'}]}
           onPress={() => {
             setForm({
               email: '',
@@ -176,7 +186,7 @@ const SignInScreen = ({navigation, route}: any) => {
             }
           }}
           disabled={loading}>
-          <Text style={styles.buttonText}>
+          <Text style={styles.text}>
             {isSignUp ? 'Go to Sign In' : 'Go to Sign Up'}
           </Text>
         </TouchableOpacity>
@@ -210,18 +220,19 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderRadius: 8,
     paddingHorizontal: 16,
-    marginBottom: 16,
+    marginTop: 16,
     color: '#fff',
   },
   button: {
     backgroundColor: '#1f6feb',
     paddingVertical: 12,
+    marginTop: 16,
     borderRadius: 8,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
   },
-  buttonText: {
+  text: {
     color: '#fff',
     fontSize: 16,
     fontWeight: '500',
