@@ -5,7 +5,7 @@ const Avatar = ({
   source,
   size = 32,
 }: {
-  source?: {uri: string};
+  source?: string | null;
   size: number;
 }) => {
   return (

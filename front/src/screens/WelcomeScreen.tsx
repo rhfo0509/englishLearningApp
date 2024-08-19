@@ -96,14 +96,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.avatar} onPress={handleSelectAvatar}>
-        <Avatar
-          source={
-            response?.assets?.[0]?.uri
-              ? {uri: response.assets[0].uri}
-              : undefined
-          }
-          size={128}
-        />
+        <Avatar source={response?.assets?.[0]?.uri || null} size={128} />
       </TouchableOpacity>
       <View>
         <TextInput
