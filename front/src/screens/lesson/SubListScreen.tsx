@@ -31,7 +31,10 @@ const SubListScreen = ({route, navigation}: any) => {
   );
 
   const renderItem = ({item, index}: {item: Item; index: number}) => {
-    const isBookmarked = bookmarks.some(bookmark => bookmark.num === item.num);
+    const isBookmarked = bookmarks.some(
+      bookmark =>
+        bookmark.num === item.num && bookmark.chapter === item.chapter,
+    );
     return (
       <TouchableOpacity
         style={styles.item}
