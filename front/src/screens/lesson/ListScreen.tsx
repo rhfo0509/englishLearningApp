@@ -10,6 +10,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
+import IIcon from 'react-native-vector-icons/Ionicons';
 
 import Header from '../../components/Header';
 import {fetchLearningData} from '../../services/data.service';
@@ -96,7 +97,6 @@ const ListScreen = ({route, navigation}: any) => {
         navigation.navigate('LessonSubList', {
           category,
           title: item.ko,
-          // eslint-disable-next-line @typescript-eslint/no-shadow
           items: items.filter(item => item.chapter === index),
         })
       }>
@@ -119,41 +119,45 @@ const ListScreen = ({route, navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() =>
-          navigation.navigate('LessonContent', {
-            category,
-            items,
-            title,
-            type: 'random',
-          })
-        }>
-        <LinearGradient
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}
-          colors={['#56ab2f', '#a8e063']}
-          style={styles.gradient}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <MIcon name="play-circle-outline" size={24} color="#fff" />
-            <Text style={styles.buttonText}>All Random</Text>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Bookmark', {category, title})}>
-        <LinearGradient
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 0}}
-          colors={['#1f6feb', '#53c1ff']}
-          style={styles.gradient}>
-          <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <MIcon name="bookmark-outline" size={24} color="#fff" />
-            <Text style={styles.buttonText}>My BookMark</Text>
-          </View>
-        </LinearGradient>
-      </TouchableOpacity>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() =>
+            navigation.navigate('LessonContent', {
+              category,
+              items,
+              title,
+              type: 'random',
+            })
+          }>
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={['#56ab2f', '#a8e063']}
+            style={styles.gradient}>
+            <Text style={styles.buttonText}>Random</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
+              <IIcon name="shuffle" size={24} color="#fff" />
+              <Text style={{color: '#fff'}}>Play Now</Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Bookmark', {category, title})}>
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={['#1f6feb', '#53c1ff']}
+            style={styles.gradient}>
+            <Text style={styles.buttonText}>Bookmark</Text>
+            <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
+              <IIcon name="bookmark-outline" size={24} color="#fff" />
+              <Text style={{color: '#fff'}}>Play Now</Text>
+            </View>
+          </LinearGradient>
+        </TouchableOpacity>
+      </View>
       <FlatList
         style={{marginTop: 8}}
         data={chapters}
@@ -173,6 +177,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#eeeff3',
     paddingHorizontal: 16,
   },
+  buttonContainer: {
+    flexDirection: 'row',
+    marginTop: 16,
+  },
+  button: {
+    flex: 1,
+    height: 80,
+    borderRadius: 20,
+    marginHorizontal: 4,
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 20,
+    marginLeft: 4,
+  },
+  gradient: {
+    flex: 1,
+    justifyContent: 'center',
+    borderRadius: 20,
+    paddingLeft: 24,
+    gap: 8,
+  },
   item: {
     backgroundColor: '#fff',
     padding: 16,
@@ -188,23 +215,6 @@ const styles = StyleSheet.create({
   itemText: {
     color: '#666',
     marginTop: 4,
-  },
-  button: {
-    borderRadius: 24,
-    marginHorizontal: 4,
-  },
-  gradient: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 24,
-    padding: 12,
-    marginTop: 16,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 20,
   },
   loading: {
     flex: 1,

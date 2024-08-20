@@ -214,43 +214,10 @@ const HomeScreen = ({navigation}: any) => {
       </View>
       <View style={{marginTop: 12}}>
         <View style={styles.title}>
-          <Icon name="flaky" size={36} />
-          <Text style={styles.titleText}>Challenge Zone</Text>
+          <Icon name="recommend" size={36} />
+          <Text style={styles.titleText}>Recommended</Text>
         </View>
-        <View style={{flexDirection: 'row'}}>
-          <TouchableOpacity style={styles.challengeButton}>
-            <LinearGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={['#498851', '#b6d3b6']}
-              style={styles.gradient}>
-              <Text style={[styles.buttonText, {fontSize: 20}]}>
-                Infinite Mode
-              </Text>
-              <View
-                style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
-                <Icon name="play-circle-outline" size={24} color="#fff" />
-                <Text style={styles.buttonSubText}>Play Now</Text>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.challengeButton}>
-            <LinearGradient
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              colors={['#1f6feb', '#53c1ff']}
-              style={styles.gradient}>
-              <Text style={[styles.buttonText, {fontSize: 20}]}>
-                General Mode
-              </Text>
-              <View
-                style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
-                <Icon name="play-circle-outline" size={24} color="#fff" />
-                <Text style={styles.buttonSubText}>Play Now</Text>
-              </View>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+        {/* <View style={{flexDirection: 'row'}}></View> */}
       </View>
     </SafeAreaView>
   );
@@ -267,7 +234,6 @@ const styles = StyleSheet.create({
   resume: {
     marginVertical: 24,
     borderRadius: 24,
-    elevation: 8,
   },
   resumeContent: {
     flexDirection: 'row',
@@ -301,14 +267,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     overflow: 'hidden',
     backgroundColor: '#fff',
-    elevation: 4,
-  },
-  challengeButton: {
-    flex: 1,
-    height: 100,
-    borderRadius: 24,
-    marginHorizontal: 4,
-    elevation: 8,
   },
   gradient: {
     flex: 1,

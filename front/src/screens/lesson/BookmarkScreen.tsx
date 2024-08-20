@@ -2,7 +2,7 @@ import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useCallback, useLayoutEffect} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
-import MIcon from 'react-native-vector-icons/MaterialIcons';
+import IIcon from 'react-native-vector-icons/Ionicons';
 
 import Header from '../../components/Header';
 import useBookmarks from '../../hooks/useBookmarks';
@@ -78,8 +78,8 @@ const BookmarkScreen = ({route, navigation}: any) => {
           colors={['#56ab2f', '#a8e063']}
           style={styles.gradient}>
           <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <MIcon name="play-circle-outline" size={24} color="#fff" />
-            <Text style={styles.buttonText}>All Random</Text>
+            <IIcon name="shuffle" size={24} color="#fff" />
+            <Text style={styles.buttonText}>Random</Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 24,
+    borderRadius: 8,
     padding: 12,
     marginTop: 16,
   },
