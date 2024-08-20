@@ -187,22 +187,18 @@ const ContentScreen = ({route, navigation}: any) => {
   const {saveLastLearned} = useLastLearned();
 
   useEffect(() => {
-    if (type === 'bookmark') {
+    if (type === 'bookmark' || type === 'random') {
       return;
     }
-    (async () => {
-      const json = await readLocalJSON(
-        `${RNFS.DocumentDirectoryPath}/learning/${category}/${category}.json`,
+
+    navigation.addListener('beforeRemove', () => {
+      saveLastLearned(
+        category,
+        items,
+        title, // 뒤에 [01] 부분이 있는 경우 제거
+        currentIndex,
       );
-      navigation.addListener('beforeRemove', () => {
-        saveLastLearned(
-          json.category,
-          json.data,
-          title.replace(/\s\[\d+\]$/, ''), // 뒤에 [01] 부분이 있는 경우 제거
-          items[currentIndex].tnum,
-        );
-      });
-    })();
+    });
   }, [category, currentIndex, items, navigation, saveLastLearned, title, type]);
 
   const {bookmarks = [], toggleBookmark} = useBookmarks(category);

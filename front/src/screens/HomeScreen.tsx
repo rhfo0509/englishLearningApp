@@ -51,7 +51,7 @@ const HomeScreen = ({navigation}: any) => {
           category: lastLearned.category,
           items: lastLearned.items,
           title: lastLearned.title,
-          index: lastLearned.index - lastLearned.items[0].tnum,
+          index: lastLearned.index,
           type: 'normal',
         },
       });
