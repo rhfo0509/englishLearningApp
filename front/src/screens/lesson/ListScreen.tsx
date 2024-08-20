@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     borderRadius: 20,
-    paddingLeft: 24,
+    paddingLeft: 20,
     gap: 8,
   },
   item: {
