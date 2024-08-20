@@ -24,7 +24,6 @@ import {readLocalJSON} from '../../services/json.service';
 const {width} = Dimensions.get('window');
 
 interface Item {
-  tnum: number;
   chapter: number;
   num: number;
   image: string;

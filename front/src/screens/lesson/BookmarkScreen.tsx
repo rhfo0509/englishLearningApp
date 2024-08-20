@@ -9,7 +9,6 @@ import useBookmarks from '../../hooks/useBookmarks';
 import Toast from 'react-native-toast-message';
 
 interface Bookmark {
-  tnum: number;
   chapter: number;
   num: number;
   image: string;

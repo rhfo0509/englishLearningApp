@@ -23,7 +23,6 @@ function convertExcelToJSON(buffer, type, version, category) {
         .filter((row) => row[1] === +category)
         .map((row) => {
           let entry = {
-            tnum: row[0],
             chapter: row[2],
             num: row[3],
             image: row[4]

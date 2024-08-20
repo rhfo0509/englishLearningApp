@@ -4,7 +4,6 @@ import auth from '@react-native-firebase/auth';
 const collection = firestore().collection('bookmarks');
 
 export interface Bookmark {
-  tnum: number;
   chapter: number;
   num: number;
   image: string;

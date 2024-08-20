@@ -34,7 +34,6 @@ interface Chapter {
 }
 
 interface Item {
-  tnum: number;
   chapter: number;
   num: number;
   image: string;
