@@ -5,7 +5,6 @@ const collection = firestore().collection('users');
 interface User {
   id: string;
   username: string;
-  language: string;
   photoURL: string;
 }
 

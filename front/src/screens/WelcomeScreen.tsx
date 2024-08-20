@@ -1,3 +1,4 @@
+import React, {useState, useRef} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -8,37 +9,34 @@ import {
   ActivityIndicator,
   Keyboard,
 } from 'react-native';
-import React, {useState, useRef} from 'react';
 import Toast from 'react-native-toast-message';
 import {
   ImagePickerResponse,
   launchImageLibrary,
 } from 'react-native-image-picker';
 import storage from '@react-native-firebase/storage';
+import {Picker} from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Avatar from '../components/Avatar';
 import {useUser} from '../contexts/UserContext';
-import LanguageModal from '../components/LanguageModal';
 import {createUser} from '../lib/user';
 import {signOut} from '../lib/auth';
+import {LANGUAGES} from '../common/constants';
 
 const WelcomeScreen = ({route, navigation}: any) => {
   const {uid} = route.params;
   const [response, setResponse] = useState<ImagePickerResponse | null>(null);
-  const [form, setForm] = useState({
-    id: uid,
-    username: '',
-    language: '',
-  });
-  const [language, setLanguage] = useState<string | null>(null);
+  const [username, setUsername] = useState<string>('');
+  const [language, setLanguage] = useState<string>('');
+
   const [loading, setLoading] = useState(false);
-  const [visible, setVisible] = useState<boolean>(false);
   const {setUser} = useUser();
 
   const inputRef = useRef<TextInput>(null);
 
   const handleSubmit = async () => {
-    if (!form.username || !form.language) {
+    if (!username || !language) {
       Toast.show({
         type: 'error',
         text1: 'Please fill in all fields.',
@@ -50,6 +48,12 @@ const WelcomeScreen = ({route, navigation}: any) => {
 
     try {
       setLoading(true);
+
+      const settings = {
+        voiceSpeed: 10,
+        language,
+      };
+      await AsyncStorage.setItem('settings', JSON.stringify(settings));
 
       let photoURL = '';
       if (response?.assets) {
@@ -64,7 +68,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
         }
       }
 
-      const user = {...form, photoURL};
+      const user = {id: uid, username, photoURL};
 
       createUser(user);
       setUser(user);
@@ -80,13 +84,6 @@ const WelcomeScreen = ({route, navigation}: any) => {
     navigation.goBack();
   };
 
-  const handleChangeUsername = (username: string) => {
-    setForm(prevForm => ({
-      ...prevForm,
-      username,
-    }));
-  };
-
   const handleSelectAvatar = async () => {
     const result = await launchImageLibrary({
       mediaType: 'photo',
@@ -100,15 +97,6 @@ const WelcomeScreen = ({route, navigation}: any) => {
     }
   };
 
-  const handleSelectLanguage = (language: {label: string; code: string}) => {
-    Keyboard.dismiss();
-    setForm(prevForm => ({
-      ...prevForm,
-      language: language.code,
-    }));
-    setLanguage(language.label);
-  };
-
   return (
     <SafeAreaView style={styles.container}>
       <TouchableOpacity style={styles.avatar} onPress={handleSelectAvatar}>
@@ -118,20 +106,28 @@ const WelcomeScreen = ({route, navigation}: any) => {
         <TextInput
           ref={inputRef}
           placeholder="Username"
-          value={form.username}
-          onChangeText={handleChangeUsername}
+          placeholderTextColor="#aaa"
+          value={username}
+          onChangeText={setUsername}
           autoCapitalize="none"
           returnKeyType="next"
-          onSubmitEditing={() => setVisible(true)}
           style={styles.input}
         />
-        <TouchableOpacity
-          style={[styles.input, {justifyContent: 'center'}]}
-          onPress={() => setVisible(true)}>
-          <Text style={{color: language ? '#fff' : '#aaa'}}>
-            {language || 'Select a Language'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={language}
+            style={styles.picker}
+            onValueChange={setLanguage}>
+            <Picker.Item label="Select a language" value="" />
+            {LANGUAGES.map(language => (
+              <Picker.Item
+                key={language.code}
+                label={language.label}
+                value={language.code}
+              />
+            ))}
+          </Picker>
+        </View>
         <TouchableOpacity
           style={styles.button}
           onPress={handleSubmit}
@@ -149,11 +145,6 @@ const WelcomeScreen = ({route, navigation}: any) => {
           <Text style={styles.buttonText}>Cancel</Text>
         </TouchableOpacity>
       </View>
-      <LanguageModal
-        visible={visible}
-        onClose={() => setVisible(false)}
-        onSelect={handleSelectLanguage}
-      />
     </SafeAreaView>
   );
 };
@@ -179,6 +170,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 16,
     color: '#fff',
+    fontSize: 16,
+  },
+  pickerContainer: {
+    height: 48,
+    borderColor: '#ccc',
+    borderWidth: 2,
+    borderRadius: 8,
+    justifyContent: 'center',
+    marginTop: 16,
+  },
+  picker: {
+    color: '#aaa',
+    fontSize: 16,
+    height: 48,
   },
   button: {
     backgroundColor: '#1f6feb',

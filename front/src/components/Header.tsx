@@ -3,13 +3,11 @@ import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import IIcon from 'react-native-vector-icons/Ionicons';
-import MIcon from 'react-native-vector-icons/MaterialIcons';
-import LanguageModal from './LanguageModal';
+import Settings from './Settings';
 
 const Header = () => {
   const navigation = useNavigation();
   const route = useRoute();
-  const [visible, setVisible] = useState<boolean>(false);
 
   const isHome = route.name === 'Home';
 
@@ -33,14 +31,9 @@ const Header = () => {
             style={styles.logo}
             resizeMode="contain"
           />
-          <TouchableOpacity
-            style={styles.language}
-            onPress={() => setVisible(true)}>
-            <MIcon name="language" size={32} color="#fff" />
-          </TouchableOpacity>
+          <Settings />
         </View>
       </LinearGradient>
-      <LanguageModal visible={visible} onClose={() => setVisible(false)} />
     </>
   );
 };
@@ -65,9 +58,5 @@ const styles = StyleSheet.create({
   logo: {
     width: 100,
     height: 40,
-  },
-  language: {
-    marginTop: 4,
-    marginRight: 4,
   },
 });

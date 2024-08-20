@@ -2979,6 +2979,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native-community/slider@npm:^4.5.2":
+  version: 4.5.2
+  resolution: "@react-native-community/slider@npm:4.5.2"
+  checksum: 99023660756a1a876fc3d9c1a7cec13f7e414abee3452e1e03d2794bc7f46a9d689740bed5c3889914adf6ed85a55c6017e2f0d73b5de353025ba52bba6e79e1
+  languageName: node
+  linkType: hard
+
 "@react-native-firebase/app@npm:^20.4.0":
   version: 20.4.0
   resolution: "@react-native-firebase/app@npm:20.4.0"
@@ -3026,6 +3033,16 @@ __metadata:
   peerDependencies:
     "@react-native-firebase/app": 20.3.0
   checksum: b7b8f7a9c562c5677e265e7c4c383198d4a7aa796dc28a95115e812f6e6cf67eacbdd6ad780c7687056519c6103d81ae797b9b435e184c86180279350009bd48
+  languageName: node
+  linkType: hard
+
+"@react-native-picker/picker@npm:^2.7.7":
+  version: 2.7.7
+  resolution: "@react-native-picker/picker@npm:2.7.7"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 54e38c47ca07e70586789bbabe1a57c4e30f1cd071c0d7a7a113dc65ecb10e84bacae93c0445513351e2c41a6a86f880389bdd468f2572dbf1fdbb690a444c93
   languageName: node
   linkType: hard
 
@@ -5298,10 +5315,12 @@ __metadata:
     "@babel/preset-env": ^7.20.0
     "@babel/runtime": ^7.20.0
     "@react-native-async-storage/async-storage": ^1.24.0
+    "@react-native-community/slider": ^4.5.2
     "@react-native-firebase/app": ^20.4.0
     "@react-native-firebase/auth": ^20.4.0
     "@react-native-firebase/firestore": ^20.4.0
     "@react-native-firebase/storage": ^20.3.0
+    "@react-native-picker/picker": ^2.7.7
     "@react-native/babel-preset": 0.74.86
     "@react-native/eslint-config": 0.74.86
     "@react-native/metro-config": 0.74.86

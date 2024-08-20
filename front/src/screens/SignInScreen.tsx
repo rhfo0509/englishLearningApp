@@ -230,6 +230,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginTop: 16,
     color: '#fff',
+    fontSize: 16,
   },
   button: {
     backgroundColor: '#1f6feb',

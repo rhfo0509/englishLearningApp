@@ -10,7 +10,6 @@ import React, {
 interface User {
   id: string;
   username: string;
-  language: string;
   photoURL: string;
 }
 
