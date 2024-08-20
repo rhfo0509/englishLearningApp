@@ -205,7 +205,6 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     marginVertical: 8,
-    elevation: 2,
   },
   itemCategory: {
     fontSize: 16,

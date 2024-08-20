@@ -119,7 +119,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 8,
     marginVertical: 8,
-    elevation: 2,
   },
   indexContainer: {
     width: 32,
