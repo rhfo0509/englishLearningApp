@@ -4,7 +4,6 @@ import {
   Text,
   View,
   Dimensions,
-  TouchableOpacity,
   PanResponder,
   Pressable,
   Animated,
@@ -297,19 +296,17 @@ const ContentScreen = ({route, navigation}: any) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity
-          style={{zIndex: 1}}
-          onPress={() => navigation.goBack()}>
+        <Pressable style={{zIndex: 1}} onPress={() => navigation.goBack()}>
           <IIcon name="chevron-back" size={24} color="#fff" />
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.title}>{title}</Text>
-        <TouchableOpacity onPress={() => toggleBookmark(items[currentIndex])}>
+        <Pressable onPress={() => toggleBookmark(items[currentIndex])}>
           <IIcon
             name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
             size={24}
             color={isBookmarked ? '#ffd400' : '#fff'}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
       <View style={styles.main} {...panResponder.panHandlers}>
         <Animated.View style={[styles.iconContainer, {opacity: iconOpacity}]}>

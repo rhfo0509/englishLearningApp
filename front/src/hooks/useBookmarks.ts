@@ -1,53 +1,37 @@
 import {useCallback, useEffect, useState} from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-interface Bookmark {
-  tnum: number;
-  chapter: number;
-  num: number;
-  image: string;
-  sounds: string[];
-  en: string;
-  ko: string;
-}
+import {Bookmark, getBookmarks, saveBookmarks} from '../lib/bookmarks';
 
 const useBookmarks = (category: number) => {
   const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
 
+  // 북마크를 로드하는 함수
   const loadBookmarks = useCallback(async () => {
     try {
-      const data = await AsyncStorage.getItem('bookmarks');
-      if (data) {
-        setBookmarks(JSON.parse(data)[category]);
-      }
+      const loaded = await getBookmarks(category);
+      setBookmarks(loaded);
     } catch (error) {
       console.error('Failed to load bookmarks: ', error);
     }
   }, [category]);
 
-  // Load bookmarks when the hook is used
+  // 컴포넌트가 마운트되거나 카테고리가 변경될 때 북마크를 로드
   useEffect(() => {
     loadBookmarks();
   }, [loadBookmarks]);
 
-  const saveBookmarks = async (updated: Bookmark[]) => {
-    try {
-      const storedData = await AsyncStorage.getItem('bookmarks');
-      const data = storedData ? JSON.parse(storedData) : {};
-      data[category] = updated;
-      await AsyncStorage.setItem('bookmarks', JSON.stringify(data));
-      setBookmarks(updated);
-    } catch (error) {
-      console.error('Failed to save bookmarks:', error);
-    }
-  };
-
+  // 북마크를 토글하는 함수
   const toggleBookmark = async (bookmark: Bookmark) => {
     const isBookmarked = bookmarks.some(item => item.num === bookmark.num);
     const updated = isBookmarked
       ? bookmarks.filter(item => item.num !== bookmark.num)
       : [bookmark, ...bookmarks];
-    await saveBookmarks(updated);
+
+    try {
+      await saveBookmarks(category, updated);
+      setBookmarks(updated);
+    } catch (error) {
+      console.error('Failed to save bookmarks:', error);
+    }
   };
 
   return {bookmarks, loadBookmarks, toggleBookmark};
