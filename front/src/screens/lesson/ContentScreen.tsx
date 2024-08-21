@@ -8,9 +8,7 @@ import {
   Pressable,
   Animated,
 } from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
-import RNFS from 'react-native-fs';
-import SoundPlayer from 'react-native-sound-player';
+import Sound from 'react-native-sound';
 import FastImage from 'react-native-fast-image';
 import IIcon from 'react-native-vector-icons/Ionicons';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
@@ -19,7 +17,6 @@ import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 import useClick from '../../hooks/useClick';
 import useBookmarks from '../../hooks/useBookmarks';
 import useLastLearned from '../../hooks/useLastLearned';
-import {readLocalJSON} from '../../services/json.service';
 
 const {width} = Dimensions.get('window');
 
@@ -50,6 +47,7 @@ const ContentScreen = ({route, navigation}: any) => {
   const [currentIndex, setCurrentIndex] = useState<number>(index);
   const [playing, setPlaying] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0);
+  const [currentSound, setCurrentSound] = useState<Sound | null>(null);
 
   const [viewMode, setViewMode] = useState<{
     english: boolean;
@@ -100,18 +98,20 @@ const ContentScreen = ({route, navigation}: any) => {
     [iconOpacity],
   );
 
-  const playSound = (soundUrl: string) => {
-    try {
-      SoundPlayer.playUrl(`file://${soundUrl}`);
-    } catch (error) {
-      console.error('Failed to play sound.', error);
-    }
-  };
+  const playSound = useCallback((soundUrl: string) => {
+    const sound = new Sound(`file://${soundUrl}`, '', error => {
+      if (error) {
+        console.error('Failed to load sound: ', error);
+        return;
+      }
+      setCurrentSound(sound);
+    });
+  }, []);
 
   const togglePlayback = useCallback(() => {
     setPlaying(prev => {
       if (prev) {
-        SoundPlayer.pause();
+        currentSound?.pause();
         showIcon('pause');
       } else {
         playSound(items[currentIndex].sounds[soundIndex]);
@@ -119,7 +119,7 @@ const ContentScreen = ({route, navigation}: any) => {
       }
       return !prev;
     });
-  }, [currentIndex, items, showIcon, soundIndex]);
+  }, [currentIndex, currentSound, items, playSound, showIcon, soundIndex]);
 
   const shuffle = useCallback(() => {
     const indexes = Array.from({length: items.length}, (_, i) => i);
@@ -163,6 +163,68 @@ const ContentScreen = ({route, navigation}: any) => {
     [currentIndex, repeatMode, items, shuffle, shuffleIndexes, shuffleMode],
   );
 
+  useEffect(() => {
+    const handlePlaybackCompletion = () => {
+      const isLastSound = soundIndex === items[currentIndex].sounds.length - 1;
+      const isLastItem = currentIndex === items.length - 1;
+
+      if (isLastSound) {
+        if (isLastItem) {
+          if (repeatMode === 'once') {
+            setSoundIndex(0);
+          } else if (repeatMode === 'always') {
+            items.length === 1 ? setSoundIndex(0) : navigateToItem('right');
+          } else {
+            setPlaying(false);
+          }
+        } else {
+          if (repeatMode === 'once') {
+            setSoundIndex(0);
+          } else {
+            navigateToItem('right');
+          }
+        }
+      } else {
+        setSoundIndex(prevSoundIndex => prevSoundIndex + 1);
+      }
+    };
+
+    if (currentSound) {
+      currentSound.play(success => {
+        if (success) {
+          handlePlaybackCompletion();
+        } else {
+          console.error('Failed to play sound.');
+        }
+      });
+    }
+
+    return () => {
+      if (currentSound) {
+        currentSound.stop(() => {
+          currentSound.release();
+        });
+        setCurrentSound(null);
+      }
+    };
+  }, [
+    currentSound,
+    currentIndex,
+    items,
+    navigateToItem,
+    playing,
+    repeatMode,
+    soundIndex,
+    setPlaying,
+  ]);
+
+  useEffect(() => {
+    if (playing && currentSound === null) {
+      console.log(soundIndex);
+      playSound(items[currentIndex].sounds[soundIndex]);
+    }
+  }, [playing, currentSound, currentIndex, soundIndex, items, playSound]);
+
   const toggleViewMode = (mode: 'english' | 'translation') => {
     setViewMode(prev => ({
       ...prev,
@@ -191,12 +253,7 @@ const ContentScreen = ({route, navigation}: any) => {
     }
 
     navigation.addListener('beforeRemove', () => {
-      saveLastLearned(
-        category,
-        items,
-        title, // 뒤에 [01] 부분이 있는 경우 제거
-        currentIndex,
-      );
+      saveLastLearned(category, items, title, currentIndex);
     });
   }, [category, currentIndex, items, navigation, saveLastLearned, title, type]);
 
@@ -228,65 +285,6 @@ const ContentScreen = ({route, navigation}: any) => {
       }
     },
   });
-
-  useFocusEffect(
-    useCallback(() => {
-      if (playing) {
-        playSound(items[currentIndex].sounds[soundIndex]);
-      }
-      return () => {
-        SoundPlayer.stop();
-      };
-    }, [currentIndex, playing, items, soundIndex]),
-  );
-
-  useEffect(() => {
-    const handlePlaybackCompletion = () => {
-      const isLastSound = soundIndex === items[currentIndex].sounds.length - 1;
-      const isLastItem = currentIndex === items.length - 1;
-
-      if (isLastSound) {
-        if (isLastItem) {
-          if (repeatMode === 'once') {
-            setSoundIndex(0);
-          } else if (repeatMode === 'always') {
-            items.length === 1 ? setSoundIndex(0) : navigateToItem('right');
-          } else {
-            togglePlayback();
-          }
-        } else {
-          if (repeatMode === 'once') {
-            setSoundIndex(0);
-          } else {
-            navigateToItem('right');
-          }
-        }
-      } else {
-        setSoundIndex(prevSoundIndex => prevSoundIndex + 1);
-      }
-    };
-
-    const onFinishPlayingSubscription = SoundPlayer.addEventListener(
-      'FinishedPlaying',
-      ({success}) => {
-        if (success && playing) {
-          handlePlaybackCompletion();
-        }
-      },
-    );
-
-    return () => {
-      onFinishPlayingSubscription.remove();
-    };
-  }, [
-    currentIndex,
-    navigateToItem,
-    playing,
-    repeatMode,
-    items,
-    soundIndex,
-    togglePlayback,
-  ]);
 
   return (
     <View style={styles.container}>
