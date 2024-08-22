@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Header from '../../components/Header';
 
 interface Category {
+  recommend: number;
   order_by: string;
   category: number;
   ko: string;
