@@ -132,6 +132,7 @@ const SignInScreen = ({navigation, route}: any) => {
       <View style={styles.form}>
         <TextInput
           placeholder="Email"
+          placeholderTextColor="#aaa"
           value={form.email}
           onChangeText={handleChangeText('email')}
           autoCapitalize="none"
@@ -142,9 +143,11 @@ const SignInScreen = ({navigation, route}: any) => {
         />
         <TextInput
           placeholder="Password"
+          placeholderTextColor="#aaa"
           secureTextEntry
           value={form.password}
           onChangeText={handleChangeText('password')}
+          autoCapitalize="none"
           ref={passwordRef}
           returnKeyType={isSignUp ? 'next' : 'done'}
           onSubmitEditing={() => {
@@ -156,9 +159,11 @@ const SignInScreen = ({navigation, route}: any) => {
           <>
             <TextInput
               placeholder="Confirm Password"
+              placeholderTextColor="#aaa"
               value={form.confirmPassword}
-              onChangeText={handleChangeText('confirmPassword')}
               secureTextEntry
+              onChangeText={handleChangeText('confirmPassword')}
+              autoCapitalize="none"
               ref={confirmPasswordRef}
               returnKeyType="done"
               onSubmitEditing={handleSubmit}
