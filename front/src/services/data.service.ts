@@ -34,6 +34,16 @@ async function updateLearningData(
     return false;
   }
 
+  // 최초 학습 데이터 다운로드 시 로컬 디바이스에 default image 저장
+  const parentDirPath = localDirPath.slice(0, localDirPath.lastIndexOf('/'));
+  let hasFolders = false;
+  const items = await RNFS.readDir(parentDirPath);
+
+  hasFolders = items.some(item => item.isDirectory());
+  if (!hasFolders) {
+    await fetchGeneralData(['assets/data.json']);
+  }
+
   if (!(await RNFS.exists(localDirPath))) {
     await RNFS.mkdir(localDirPath);
   }
@@ -104,13 +114,7 @@ export async function fetchLearningData(category: number, navigation: any) {
   }
 }
 
-export async function fetchGeneralData() {
-  const remoteJSONPaths = [
-    'data.json',
-    'learning/data.json',
-    'assets/data.json',
-  ];
-
+export async function fetchGeneralData(remoteJSONPaths: string[]) {
   for (const remoteJSONPath of remoteJSONPaths) {
     const remoteDirPath = remoteJSONPath.substring(
       0,
@@ -131,12 +135,12 @@ export async function fetchGeneralData() {
         }
         await writeLocalJSON(localJSONPath, remoteJson);
 
-        if (remoteJSONPath === 'data.json') {
+        if (remoteJSONPath === 'learning/category.json') {
           await AsyncStorage.setItem(
             'categories',
             JSON.stringify(remoteJson.data),
           );
-        } else if (remoteJSONPath === 'learning/data.json') {
+        } else if (remoteJSONPath === 'learning/chapter.json') {
           await AsyncStorage.setItem(
             'chapters',
             JSON.stringify(remoteJson.data),

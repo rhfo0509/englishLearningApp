@@ -6,7 +6,7 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
-  ActivityIndicator,
+  // ActivityIndicator,
   FlatList,
 } from 'react-native';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
@@ -18,7 +18,6 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import Header from '../components/Header';
 import Profile from '../components/Profile';
 import useLastLearned from '../hooks/useLastLearned';
-import {fetchGeneralData} from '../services/data.service';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface Category {
@@ -39,7 +38,7 @@ interface Category {
 }
 
 const HomeScreen = ({navigation}: any) => {
-  const [loading, setLoading] = useState<boolean>(true);
+  // const [loading, setLoading] = useState<boolean>(true);
   const [recommended, setRecommended] = useState<Category[]>([]);
   const {lastLearned, loadLastLearned} = useLastLearned();
 
@@ -52,8 +51,6 @@ const HomeScreen = ({navigation}: any) => {
   useEffect(() => {
     (async () => {
       try {
-        await fetchGeneralData();
-
         const result = await AsyncStorage.getItem('categories');
         if (result) {
           const parsed: Category[] = JSON.parse(result);
@@ -66,7 +63,7 @@ const HomeScreen = ({navigation}: any) => {
       } catch (error) {
         console.error('Error while fetching general data', error);
       } finally {
-        setLoading(false);
+        // setLoading(false);
       }
     })();
   }, []);
@@ -117,17 +114,17 @@ const HomeScreen = ({navigation}: any) => {
     </TouchableOpacity>
   );
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.loading}>
-          <ActivityIndicator size="large" />
-          <Text>데이터 가져오는 중</Text>
-          <Text>잠시만 기다려주세요...</Text>
-        </View>
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={styles.container}>
+  //       <View style={styles.loading}>
+  //         <ActivityIndicator size="large" />
+  //         <Text>데이터 가져오는 중</Text>
+  //         <Text>잠시만 기다려주세요...</Text>
+  //       </View>
+  //     </View>
+  //   );
+  // }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -388,9 +385,9 @@ const styles = StyleSheet.create({
     color: '#333',
     lineHeight: 32,
   },
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
+  // loading: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // },
 });

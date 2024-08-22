@@ -13,4 +13,4 @@ export const LANGUAGES = [
 ];
 
 export const DEFAULT_IMAGE_PATHS =
-  'file:///data/user/0/com.englishlearningapp/files/assets/lesson';
+  '/data/user/0/com.englishlearningapp/files/assets/lesson';

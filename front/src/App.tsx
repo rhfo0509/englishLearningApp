@@ -7,13 +7,22 @@ import Root from './navigation/Root';
 import toastConfig from './components/Toast';
 import {UserProvider} from './contexts/UserContext';
 import {SettingsProvider} from './contexts/SettingsContext';
+import {fetchGeneralData} from './services/data.service';
 
 const App = () => {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      SplashScreen.hide();
-    }, 500);
-    return () => clearTimeout(timer);
+    (async () => {
+      try {
+        await fetchGeneralData([
+          'learning/category.json',
+          'learning/chapter.json',
+        ]);
+      } catch (error) {
+        console.error('Failed to fetch general data', error);
+      } finally {
+        SplashScreen.hide();
+      }
+    })();
   }, []);
 
   return (

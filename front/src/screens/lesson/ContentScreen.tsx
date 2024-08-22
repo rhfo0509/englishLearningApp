@@ -67,7 +67,7 @@ const ContentScreen = ({route, navigation}: any) => {
   const [shuffleMode, setShuffleMode] = useState<boolean>(type === 'random');
   const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
 
-  const [imageUri, setImageUri] = useState<string | number>('');
+  const [imageUri, setImageUri] = useState<string>('');
   const [defaultImageCount, setDefaultImageCount] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -86,7 +86,7 @@ const ContentScreen = ({route, navigation}: any) => {
 
   const getRandomGif = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * defaultImageCount);
-    return `${DEFAULT_IMAGE_PATHS}/${randomIndex}.gif`;
+    return `file://${DEFAULT_IMAGE_PATHS}/${randomIndex}.gif`;
   }, [defaultImageCount]);
 
   useEffect(() => {
@@ -358,7 +358,7 @@ const ContentScreen = ({route, navigation}: any) => {
           )}
         </View>
         <FastImage
-          source={typeof imageUri === 'string' ? {uri: imageUri} : imageUri}
+          source={{uri: imageUri}}
           style={styles.image}
           resizeMode={FastImage.resizeMode.contain}
           onError={() => setImageUri(getRandomGif())}
