@@ -6,8 +6,9 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
-import React, {useCallback, useEffect, useLayoutEffect} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
@@ -19,6 +20,8 @@ import useLastLearned from '../hooks/useLastLearned';
 import {fetchGeneralData} from '../services/data.service';
 
 const HomeScreen = ({navigation}: any) => {
+  const [loading, setLoading] = useState<boolean>(true);
+
   const {lastLearned, loadLastLearned} = useLastLearned();
 
   useLayoutEffect(() => {
@@ -33,6 +36,8 @@ const HomeScreen = ({navigation}: any) => {
         await fetchGeneralData();
       } catch (error) {
         console.error('Error while fetching general data', error);
+      } finally {
+        setLoading(false);
       }
     })();
   }, []);
@@ -64,6 +69,18 @@ const HomeScreen = ({navigation}: any) => {
       });
     }
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" />
+          <Text>데이터 가져오는 중</Text>
+          <Text>잠시만 기다려주세요...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -118,13 +135,12 @@ const HomeScreen = ({navigation}: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.learningButton}
-            // onPress={() =>
-            //   navigation.navigate('LessonStack', {
-            //     screen: 'LessonCategory',
-            //     params: {orderBy: 'B'},
-            //   })
-            // }
-          >
+            onPress={() =>
+              navigation.navigate('LessonStack', {
+                screen: 'LessonCategory',
+                params: {orderBy: 'B'},
+              })
+            }>
             <View style={styles.iconContainer}>
               <Image source={require('../assets/situation.png')} />
             </View>
@@ -142,13 +158,12 @@ const HomeScreen = ({navigation}: any) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.learningButton}
-            // onPress={() =>
-            //   navigation.navigate('LessonStack', {
-            //     screen: 'LessonCategory',
-            //     params: {orderBy: 'C'},
-            //   })
-            // }
-          >
+            onPress={() =>
+              navigation.navigate('LessonStack', {
+                screen: 'LessonCategory',
+                params: {orderBy: 'C'},
+              })
+            }>
             <View style={styles.iconContainer}>
               <Image source={require('../assets/word.png')} />
             </View>
@@ -291,5 +306,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 12,
     textAlign: 'center',
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

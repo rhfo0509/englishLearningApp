@@ -60,9 +60,15 @@ function convertExcelToJSON(buffer, type, version, category) {
 }
 
 async function uploadJSONToFirebase(json, type) {
-  const fileName = type == 2 ? `${json.category}.json` : "data.json";
+  const fileName = +type == 2 ? `${json.category}.json` : "data.json";
   const destination =
-    type == 0 ? "" : type == 1 ? "learning/" : `learning/${json.category}/`;
+    +type == 0
+      ? ""
+      : +type == 1
+      ? "learning/"
+      : +type === 2
+      ? `learning/${json.category}/`
+      : `assets/`;
   const filePath = path.join(__dirname, "..", "uploads", fileName);
 
   fs.writeFileSync(filePath, JSON.stringify(json, null, 2));

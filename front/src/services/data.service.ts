@@ -105,7 +105,11 @@ export async function fetchLearningData(category: number, navigation: any) {
 }
 
 export async function fetchGeneralData() {
-  const remoteJSONPaths = ['data.json', 'learning/data.json'];
+  const remoteJSONPaths = [
+    'data.json',
+    'learning/data.json',
+    'assets/data.json',
+  ];
 
   for (const remoteJSONPath of remoteJSONPaths) {
     const remoteDirPath = remoteJSONPath.substring(
@@ -132,10 +136,15 @@ export async function fetchGeneralData() {
             'categories',
             JSON.stringify(remoteJson.data),
           );
-        } else {
+        } else if (remoteJSONPath === 'learning/data.json') {
           await AsyncStorage.setItem(
             'chapters',
             JSON.stringify(remoteJson.data),
+          );
+        } else {
+          await unzipFile(
+            `${remoteDirPath}/lesson.zip`,
+            `${localDirPath}/lesson.zip`,
           );
         }
       }

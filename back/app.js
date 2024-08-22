@@ -20,8 +20,17 @@ app.post("/upload-excel", upload.single("file"), async (req, res) => {
   const { type, version, category } = req.body;
 
   try {
-    const result = convertExcelToJSON(req.file.buffer, type, version, category);
-    await uploadJSONToFirebase(result.json, result.type);
+    if (+type === 3) {
+      await uploadJSONToFirebase({ version }, type);
+    } else {
+      const result = convertExcelToJSON(
+        req.file.buffer,
+        type,
+        version,
+        category
+      );
+      await uploadJSONToFirebase(result.json, result.type);
+    }
     console.log("Successfully converted the Excel file to JSON.");
     res.send("ok");
   } catch (error) {

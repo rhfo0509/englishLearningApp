@@ -7,7 +7,9 @@ import {
   PanResponder,
   Pressable,
   Animated,
+  ActivityIndicator,
 } from 'react-native';
+import RNFS from 'react-native-fs';
 import Sound from 'react-native-sound';
 import FastImage from 'react-native-fast-image';
 import IIcon from 'react-native-vector-icons/Ionicons';
@@ -17,6 +19,7 @@ import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 import useClick from '../../hooks/useClick';
 import useBookmarks from '../../hooks/useBookmarks';
 import useLastLearned from '../../hooks/useLastLearned';
+import {useSettings} from '../../contexts/SettingsContext';
 
 const {width} = Dimensions.get('window');
 
@@ -44,6 +47,7 @@ const ContentScreen = ({route, navigation}: any) => {
     type: string;
   };
 
+  const {voiceSpeed} = useSettings().settings;
   const [currentIndex, setCurrentIndex] = useState<number>(index);
   const [playing, setPlaying] = useState<boolean>(true);
   const [soundIndex, setSoundIndex] = useState<number>(0);
@@ -64,11 +68,26 @@ const ContentScreen = ({route, navigation}: any) => {
   const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
 
   const [imageUri, setImageUri] = useState<string | number>('');
+  const [defaultImageCount, setDefaultImageCount] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const getRandomGif = () => {
-    const randomIndex = Math.floor(Math.random() * DEFAULT_IMAGE_PATHS.length);
-    return DEFAULT_IMAGE_PATHS[randomIndex];
-  };
+  useEffect(() => {
+    RNFS.readDir(DEFAULT_IMAGE_PATHS)
+      .then(images => {
+        setDefaultImageCount(images.length);
+      })
+      .catch(error => {
+        console.error('Failed to fetch default images: ', error);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const getRandomGif = useCallback(() => {
+    const randomIndex = Math.floor(Math.random() * defaultImageCount);
+    return `${DEFAULT_IMAGE_PATHS}/${randomIndex}.gif`;
+  }, [defaultImageCount]);
 
   useEffect(() => {
     setImageUri(
@@ -76,7 +95,7 @@ const ContentScreen = ({route, navigation}: any) => {
         ? `file://${items[currentIndex].image}`
         : getRandomGif(),
     );
-  }, [currentIndex, items]);
+  }, [currentIndex, getRandomGif, items]);
 
   const [iconOpacity] = useState<Animated.Value>(new Animated.Value(0));
   const showIcon = useCallback(
@@ -98,15 +117,25 @@ const ContentScreen = ({route, navigation}: any) => {
     [iconOpacity],
   );
 
-  const playSound = useCallback((soundUrl: string) => {
-    const sound = new Sound(`file://${soundUrl}`, '', error => {
-      if (error) {
-        console.error('Failed to load sound: ', error);
-        return;
+  const playSound = useCallback(
+    (soundUrl: string) => {
+      if (currentSound) {
+        currentSound.stop(() => {
+          currentSound.release();
+        });
       }
-      setCurrentSound(sound);
-    });
-  }, []);
+
+      const sound = new Sound(`file://${soundUrl}`, '', error => {
+        if (error) {
+          console.error('Failed to load sound: ', error);
+          return;
+        }
+
+        setCurrentSound(sound);
+      });
+    },
+    [currentSound],
+  );
 
   const togglePlayback = useCallback(() => {
     setPlaying(prev => {
@@ -220,9 +249,17 @@ const ContentScreen = ({route, navigation}: any) => {
 
   useEffect(() => {
     if (playing && currentSound === null) {
-      console.log(soundIndex);
       playSound(items[currentIndex].sounds[soundIndex]);
     }
+
+    return () => {
+      if (currentSound) {
+        currentSound.stop(() => {
+          currentSound.release();
+          setCurrentSound(null);
+        });
+      }
+    };
   }, [playing, currentSound, currentIndex, soundIndex, items, playSound]);
 
   const toggleViewMode = (mode: 'english' | 'translation') => {
@@ -285,6 +322,16 @@ const ContentScreen = ({route, navigation}: any) => {
       }
     },
   });
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -449,5 +496,10 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     marginRight: 8,
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

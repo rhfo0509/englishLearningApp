@@ -9,6 +9,16 @@
         const categorySelect = document.querySelector(
           "select[name='category']"
         );
+        const fileInput = document.querySelector("input[name='file']");
+
+        if (document.getElementById("assets").checked) {
+          fileInput.removeAttribute("required");
+          fileInput.disabled = true;
+        } else {
+          fileInput.setAttribute("required", "true");
+          fileInput.disabled = false;
+        }
+
         categorySelect.disabled = !document.getElementById("data").checked;
       }
     </script>
@@ -44,7 +54,15 @@
         value="2"
         onclick="toggleType()"
       />
-      <label for="data">Data</label><br /><br />
+      <label for="data">Data</label><br />
+      <input
+        type="radio"
+        id="assets"
+        name="type"
+        value="3"
+        onclick="toggleType()"
+      />
+      <label for="assets">Assets</label><br /><br />
 
       <label for="version">Version:</label>
       <input type="text" name="version" required /><br /><br />
@@ -54,7 +72,7 @@
         <optgroup label="SENTENCES">
           <option value="5">묻고 답하기 130선</option>
           <option value="4">핵심패턴영어 250선</option>
-          <option value="3">미국인이 자주 쓰는 500선</option>
+          <option value="1">미국인이 자주 쓰는 500선</option>
           <option value="10">긴 문장 만들기 2500선</option>
           <option value="9">이디엄 300선</option>
         </optgroup>
