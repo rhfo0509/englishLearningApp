@@ -3,45 +3,30 @@ import {Modal, TouchableOpacity, View, Text, StyleSheet} from 'react-native';
 import IIcon from 'react-native-vector-icons/Ionicons';
 import Slider from '@react-native-community/slider';
 import {Picker} from '@react-native-picker/picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import {useSettings} from '../contexts/SettingsContext';
 import {LANGUAGES} from '../common/constants';
 
 const Settings = () => {
   const [visible, setVisible] = useState<boolean>(false);
-  const [voiceSpeed, setVoiceSpeed] = useState<number>(1.0);
-  const [language, setLanguage] = useState<string>('en');
+  const {settings, setSettings} = useSettings();
+
+  const [voiceSpeed, setVoiceSpeed] = useState<number>(settings.voiceSpeed);
+  const [language, setLanguage] = useState<string>(settings.language);
 
   useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const settings = await AsyncStorage.getItem('settings');
-        if (settings) {
-          setVoiceSpeed(JSON.parse(settings).voiceSpeed);
-          setLanguage(JSON.parse(settings).language);
-        }
-      } catch (error) {
-        console.error('Failed to load settings:', error);
-      }
-    };
-
     if (visible) {
-      loadSettings();
+      setVoiceSpeed(settings.voiceSpeed);
+      setLanguage(settings.language);
     }
-  }, [visible]);
+  }, [visible, settings]);
 
   const handleSave = async () => {
-    const settings = {
+    setSettings({
       voiceSpeed,
       language,
-    };
-    try {
-      await AsyncStorage.setItem('settings', JSON.stringify(settings));
-      setVisible(false);
-      console.log('Settings saved successfully');
-    } catch (error) {
-      console.error('Failed to save settings:', error);
-    }
+    });
+    setVisible(false);
   };
 
   return (

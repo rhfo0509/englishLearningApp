@@ -6,6 +6,7 @@ import Toast from 'react-native-toast-message';
 import Root from './navigation/Root';
 import toastConfig from './components/Toast';
 import {UserProvider} from './contexts/UserContext';
+import {SettingsProvider} from './contexts/SettingsContext';
 
 const App = () => {
   useEffect(() => {
@@ -18,10 +19,12 @@ const App = () => {
   return (
     <GestureHandlerRootView style={{flex: 1}}>
       <UserProvider>
-        <NavigationContainer>
-          <Root />
-        </NavigationContainer>
-        <Toast config={toastConfig} />
+        <SettingsProvider>
+          <NavigationContainer>
+            <Root />
+          </NavigationContainer>
+          <Toast config={toastConfig} />
+        </SettingsProvider>
       </UserProvider>
     </GestureHandlerRootView>
   );
