@@ -10,6 +10,7 @@ async function updateLearningData(
   remoteDirPath: string,
   localDirPath: string,
   category: number,
+  updateProgress: (progress: number) => void,
 ): Promise<boolean> {
   const confirmed = await new Promise<boolean>(resolve => {
     Alert.alert(
@@ -53,10 +54,12 @@ async function updateLearningData(
   await unzipFile(
     `${remoteDirPath}/I_${category}.zip`,
     `${localDirPath}/images.zip`,
+    updateProgress,
   );
   await unzipFile(
     `${remoteDirPath}/S_${category}.zip`,
     `${localDirPath}/sounds.zip`,
+    updateProgress,
   );
 
   let elapsedTime = Date.now() - startTime;
@@ -73,7 +76,11 @@ async function updateLearningData(
   return true;
 }
 
-export async function fetchLearningData(category: number, navigation: any) {
+export async function fetchLearningData(
+  category: number,
+  navigation: any,
+  updateProgress: (progress: number) => void,
+) {
   const remoteJSONPath = `learning/${category}/${category}.json`;
   const remoteDirPath = remoteJSONPath.slice(
     0,
@@ -88,12 +95,12 @@ export async function fetchLearningData(category: number, navigation: any) {
       localJSONPath,
       remoteJSONPath,
     );
-
     if (localVersion !== remoteVersion) {
       const isSucceeded = await updateLearningData(
         remoteDirPath,
         localDirPath,
         category,
+        updateProgress,
       );
 
       if (isSucceeded) {
@@ -104,7 +111,9 @@ export async function fetchLearningData(category: number, navigation: any) {
         return null;
       }
     } else {
+      updateProgress(50);
       const localJSON = await readLocalJSON(localJSONPath);
+      updateProgress(100);
       return localJSON.data;
     }
   } catch (error) {

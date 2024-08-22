@@ -14,6 +14,7 @@ import IIcon from 'react-native-vector-icons/Ionicons';
 
 import Header from '../../components/Header';
 import {fetchLearningData} from '../../services/data.service';
+import ProgressBar from '../../components/ProgressBar';
 
 interface Chapter {
   num: number;
@@ -45,6 +46,7 @@ interface Item {
 const ListScreen = ({route, navigation}: any) => {
   const {category, title} = route.params;
   const [loading, setLoading] = useState<boolean>(true);
+  const [progress, setProgress] = useState<number>(0);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [items, setItems] = useState<Item[]>([]);
 
@@ -79,7 +81,11 @@ const ListScreen = ({route, navigation}: any) => {
     // 학습 데이터 리스트
     (async () => {
       try {
-        const result = await fetchLearningData(category, navigation);
+        const result = await fetchLearningData(
+          category,
+          navigation,
+          setProgress,
+        );
         setItems(result);
       } catch (error) {
         console.error('Error while fetching JSON file', error);
@@ -108,7 +114,7 @@ const ListScreen = ({route, navigation}: any) => {
     return (
       <View style={styles.container}>
         <View style={styles.loading}>
-          <ActivityIndicator size="large" />
+          <ProgressBar totalStep={100} currStep={progress} />
           <Text>학습 데이터 저장 중</Text>
           <Text>잠시만 기다려주세요...</Text>
         </View>
