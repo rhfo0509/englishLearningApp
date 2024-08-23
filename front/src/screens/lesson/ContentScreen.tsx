@@ -64,7 +64,7 @@ const ContentScreen = ({route, navigation}: any) => {
   const [repeatMode, setRepeatMode] = useState<'always' | 'once' | 'none'>(
     type === 'single' ? 'once' : 'always',
   );
-  const [shuffleMode, setShuffleMode] = useState<boolean>(type === 'random');
+  const [shuffleMode, setShuffleMode] = useState<boolean>(false);
   const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
 
   // image

@@ -50,13 +50,14 @@ const BookmarkScreen = ({route, navigation}: any) => {
     </TouchableOpacity>
   );
 
-  const handleRandomLearning = () => {
+  const handleLearning = () => {
     if (bookmarks.length) {
       navigation.navigate('LessonContent', {
         category,
         items: bookmarks,
         title,
-        type: 'random',
+        index: 0,
+        type: 'normal',
       });
     } else {
       Toast.show({
@@ -70,15 +71,15 @@ const BookmarkScreen = ({route, navigation}: any) => {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={handleRandomLearning}>
+      <TouchableOpacity style={styles.button} onPress={handleLearning}>
         <LinearGradient
           start={{x: 0, y: 0}}
           end={{x: 1, y: 0}}
           colors={['#56ab2f', '#a8e063']}
           style={styles.gradient}>
           <View style={{flexDirection: 'row', alignItems: 'center', gap: 8}}>
-            <IIcon name="shuffle" size={24} color="#fff" />
-            <Text style={styles.buttonText}>Random</Text>
+            <IIcon name="play-circle-outline" size={24} color="#fff" />
+            <Text style={styles.buttonText}>Play All</Text>
           </View>
         </LinearGradient>
       </TouchableOpacity>

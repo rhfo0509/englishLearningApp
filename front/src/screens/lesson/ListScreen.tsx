@@ -1,15 +1,7 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {
-  ActivityIndicator,
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
-import MIcon from 'react-native-vector-icons/MaterialIcons';
 import IIcon from 'react-native-vector-icons/Ionicons';
 
 import Header from '../../components/Header';
@@ -132,7 +124,8 @@ const ListScreen = ({route, navigation}: any) => {
               category,
               items,
               title,
-              type: 'random',
+              index: 0,
+              type: 'normal',
             })
           }>
           <LinearGradient
@@ -140,9 +133,9 @@ const ListScreen = ({route, navigation}: any) => {
             end={{x: 1, y: 0}}
             colors={['#56ab2f', '#a8e063']}
             style={styles.gradient}>
-            <Text style={styles.buttonText}>Random</Text>
+            <Text style={styles.buttonText}>Play All</Text>
             <View style={{flexDirection: 'row', alignItems: 'center', gap: 4}}>
-              <IIcon name="shuffle" size={24} color="#fff" />
+              <IIcon name="play-circle-outline" size={24} color="#fff" />
               <Text style={{color: '#fff'}}>Play Now</Text>
             </View>
           </LinearGradient>
