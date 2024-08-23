@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Image, TouchableOpacity} from 'react-native';
+import React from 'react';
+import {StyleSheet, View, Image, TouchableOpacity, Text} from 'react-native';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import IIcon from 'react-native-vector-icons/Ionicons';
 import Settings from './Settings';
 
-const Header = () => {
+const Header = ({title}: {title?: string}) => {
   const navigation = useNavigation();
   const route = useRoute();
 
@@ -26,11 +26,15 @@ const Header = () => {
               <IIcon name="chevron-back" size={32} color="#fff" />
             </TouchableOpacity>
           )}
-          <Image
-            source={require('../assets/logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          {title ? (
+            <Text style={styles.title}>{title}</Text>
+          ) : (
+            <Image
+              source={require('../assets/logo.png')}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          )}
           <Settings />
         </View>
       </LinearGradient>
@@ -54,6 +58,12 @@ const styles = StyleSheet.create({
   backButton: {
     marginTop: 4,
     marginRight: 4,
+  },
+  title: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '600',
+    lineHeight: 72,
   },
   logo: {
     width: 100,

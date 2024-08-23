@@ -44,9 +44,9 @@ const ListScreen = ({route, navigation}: any) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      header: () => <Header />,
+      header: () => <Header title={title} />,
     });
-  }, [navigation]);
+  }, [navigation, title]);
 
   useEffect(() => {
     // 챕터 리스트

@@ -158,7 +158,7 @@ const HomeScreen = ({navigation}: any) => {
           onPress={() =>
             navigation.navigate('LessonStack', {
               screen: 'LessonCategory',
-              params: {categories: filteredCategories},
+              params: {categories: filteredCategories, title: button.title},
             })
           }>
           <View style={styles.iconContainer}>

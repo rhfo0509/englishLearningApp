@@ -22,13 +22,13 @@ interface Category {
 }
 
 const CategoryScreen = ({route, navigation}: any) => {
-  const {categories} = route.params;
+  const {categories, title} = route.params;
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      header: () => <Header />,
+      header: () => <Header title={title} />,
     });
-  }, [navigation]);
+  }, [navigation, title]);
 
   const renderItem = ({item, index}: {item: Category; index: number}) => (
     <TouchableOpacity
