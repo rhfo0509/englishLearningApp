@@ -6,7 +6,7 @@ import {
   Image,
   SafeAreaView,
   ScrollView,
-  // ActivityIndicator,
+  ActivityIndicator,
   FlatList,
 } from 'react-native';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
@@ -37,9 +37,38 @@ interface Category {
   pt: string;
 }
 
+const learningButtons = [
+  {
+    title: 'Sentence',
+    image: require('../assets/sentence.png'),
+    filter: 'A',
+  },
+  {
+    title: 'Situation',
+    image: require('../assets/situation.png'),
+    filter: 'B',
+  },
+  {
+    title: 'Word',
+    image: require('../assets/word.png'),
+    filter: 'C',
+  },
+  {
+    title: 'Pronunciation',
+    image: require('../assets/pronunciation.png'),
+    filter: 'D',
+  },
+  {
+    title: 'Q&A 100',
+    image: require('../assets/qna100.png'),
+    filter: 'E',
+  },
+];
+
 const HomeScreen = ({navigation}: any) => {
-  // const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [recommended, setRecommended] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const {lastLearned, loadLastLearned} = useLastLearned();
 
   useLayoutEffect(() => {
@@ -54,16 +83,18 @@ const HomeScreen = ({navigation}: any) => {
         const result = await AsyncStorage.getItem('categories');
         if (result) {
           const parsed: Category[] = JSON.parse(result);
-          const filtered = parsed.filter(category => category.recommend);
-          const sorted = filtered.sort((a, b) => a.recommend - b.recommend);
-          setRecommended(sorted);
+          setCategories(parsed);
+          const recommended = parsed
+            .filter(category => category.recommend)
+            .sort((a, b) => a.recommend - b.recommend);
+          setRecommended(recommended);
         } else {
           setRecommended([]);
         }
       } catch (error) {
         console.error('Error while fetching general data', error);
       } finally {
-        // setLoading(false);
+        setLoading(false);
       }
     })();
   }, []);
@@ -114,17 +145,52 @@ const HomeScreen = ({navigation}: any) => {
     </TouchableOpacity>
   );
 
-  // if (loading) {
-  //   return (
-  //     <View style={styles.container}>
-  //       <View style={styles.loading}>
-  //         <ActivityIndicator size="large" />
-  //         <Text>데이터 가져오는 중</Text>
-  //         <Text>잠시만 기다려주세요...</Text>
-  //       </View>
-  //     </View>
-  //   );
-  // }
+  const renderLearningButtons = () => {
+    return learningButtons.map((button, index) => {
+      const filteredCategories = categories
+        .filter(category => category.order_by.startsWith(button.filter))
+        .sort((a, b) => +a.order_by.slice(1) - +b.order_by.slice(1));
+
+      return (
+        <TouchableOpacity
+          key={index}
+          style={styles.learningButton}
+          onPress={() =>
+            navigation.navigate('LessonStack', {
+              screen: 'LessonCategory',
+              params: {categories: filteredCategories},
+            })
+          }>
+          <View style={styles.iconContainer}>
+            <Image source={button.image} />
+          </View>
+          <LinearGradient
+            start={{x: 0, y: 0}}
+            end={{x: 1, y: 0}}
+            colors={['#1f6feb', '#53c1ff']}
+            style={[
+              styles.gradient,
+              {borderTopLeftRadius: 0, borderTopRightRadius: 0},
+            ]}>
+            <Text style={styles.buttonText}>{button.title}</Text>
+            <Text style={styles.buttonSubText}>
+              {filteredCategories.length} Categories
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      );
+    });
+  };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -157,121 +223,7 @@ const HomeScreen = ({navigation}: any) => {
             <Text style={styles.titleText}>Learning Zone</Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            <TouchableOpacity
-              style={styles.learningButton}
-              onPress={() =>
-                navigation.navigate('LessonStack', {
-                  screen: 'LessonCategory',
-                  params: {orderBy: 'A'},
-                })
-              }>
-              <View style={styles.iconContainer}>
-                <Image source={require('../assets/sentence.png')} />
-              </View>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#1f6feb', '#53c1ff']}
-                style={[
-                  styles.gradient,
-                  {borderTopLeftRadius: 0, borderTopRightRadius: 0},
-                ]}>
-                <Text style={styles.buttonText}>Sentence</Text>
-                <Text style={styles.buttonSubText}>5 Categories</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.learningButton}
-              onPress={() =>
-                navigation.navigate('LessonStack', {
-                  screen: 'LessonCategory',
-                  params: {orderBy: 'B'},
-                })
-              }>
-              <View style={styles.iconContainer}>
-                <Image source={require('../assets/situation.png')} />
-              </View>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#1f6feb', '#53c1ff']}
-                style={[
-                  styles.gradient,
-                  {borderTopLeftRadius: 0, borderTopRightRadius: 0},
-                ]}>
-                <Text style={styles.buttonText}>Situation</Text>
-                <Text style={styles.buttonSubText}>3 Categories</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.learningButton}
-              onPress={() =>
-                navigation.navigate('LessonStack', {
-                  screen: 'LessonCategory',
-                  params: {orderBy: 'C'},
-                })
-              }>
-              <View style={styles.iconContainer}>
-                <Image source={require('../assets/word.png')} />
-              </View>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#1f6feb', '#53c1ff']}
-                style={[
-                  styles.gradient,
-                  {borderTopLeftRadius: 0, borderTopRightRadius: 0},
-                ]}>
-                <Text style={styles.buttonText}>Word</Text>
-                <Text style={styles.buttonSubText}>7 Categories</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.learningButton}
-              onPress={() =>
-                navigation.navigate('LessonStack', {
-                  screen: 'LessonCategory',
-                  params: {orderBy: 'D'},
-                })
-              }>
-              <View style={styles.iconContainer}>
-                <Image source={require('../assets/pronunciation.png')} />
-              </View>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#1f6feb', '#53c1ff']}
-                style={[
-                  styles.gradient,
-                  {borderTopLeftRadius: 0, borderTopRightRadius: 0},
-                ]}>
-                <Text style={styles.buttonText}>Pronunciation</Text>
-                <Text style={styles.buttonSubText}>2 Categories</Text>
-              </LinearGradient>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.learningButton}
-              onPress={() =>
-                navigation.navigate('LessonStack', {
-                  screen: 'LessonCategory',
-                  params: {orderBy: 'E'},
-                })
-              }>
-              <View style={styles.iconContainer}>
-                <Image source={require('../assets/qna100.png')} />
-              </View>
-              <LinearGradient
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                colors={['#1f6feb', '#53c1ff']}
-                style={[
-                  styles.gradient,
-                  {borderTopLeftRadius: 0, borderTopRightRadius: 0},
-                ]}>
-                <Text style={styles.buttonText}>Q&A 100</Text>
-                <Text style={styles.buttonSubText}>1 Categories</Text>
-              </LinearGradient>
-            </TouchableOpacity>
+            {renderLearningButtons()}
           </ScrollView>
         </View>
         <View style={{marginTop: 12}}>
@@ -385,9 +337,9 @@ const styles = StyleSheet.create({
     color: '#333',
     lineHeight: 32,
   },
-  // loading: {
-  //   flex: 1,
-  //   justifyContent: 'center',
-  //   alignItems: 'center',
-  // },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

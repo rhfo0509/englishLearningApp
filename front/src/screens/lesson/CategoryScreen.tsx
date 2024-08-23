@@ -1,14 +1,6 @@
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  ActivityIndicator,
-} from 'react-native';
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useLayoutEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Header from '../../components/Header';
 
@@ -30,40 +22,13 @@ interface Category {
 }
 
 const CategoryScreen = ({route, navigation}: any) => {
-  const {orderBy} = route.params;
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const {categories} = route.params;
 
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => <Header />,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    // 카테고리 리스트
-    (async () => {
-      try {
-        const result = await AsyncStorage.getItem('categories');
-        if (result) {
-          const parsed: Category[] = JSON.parse(result);
-          const filtered = parsed.filter(category =>
-            category.order_by.startsWith(orderBy),
-          );
-          const sorted = filtered.sort(
-            (a, b) => +a.order_by.slice(1) - +b.order_by.slice(1),
-          );
-          setCategories(sorted);
-        } else {
-          setCategories([]);
-        }
-      } catch (error) {
-        console.error('Error while fetching JSON file', error);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [orderBy]);
 
   const renderItem = ({item, index}: {item: Category; index: number}) => (
     <TouchableOpacity
@@ -82,16 +47,6 @@ const CategoryScreen = ({route, navigation}: any) => {
       <Text style={styles.itemText}>{item.ko}</Text>
     </TouchableOpacity>
   );
-
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.loading}>
-          <ActivityIndicator size="large" />
-        </View>
-      </View>
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -137,10 +92,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     lineHeight: 32,
-  },
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
   },
 });
