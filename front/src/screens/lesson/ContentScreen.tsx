@@ -366,7 +366,7 @@ const ContentScreen = ({route, navigation}: any) => {
         <Animated.View style={[styles.iconContainer, {opacity: iconOpacity}]}>
           <IIcon name={playing ? 'pause' : 'play'} size={64} color="#fff" />
         </Animated.View>
-        <View style={styles.item}>
+        <View style={[styles.item, {justifyContent: 'flex-end'}]}>
           {viewMode.english && (
             <Text style={styles.english}>{items[currentIndex].en}</Text>
           )}
@@ -377,7 +377,7 @@ const ContentScreen = ({route, navigation}: any) => {
           resizeMode={FastImage.resizeMode.contain}
           onError={() => setImageUri(getRandomGif())}
         />
-        <View style={styles.item}>
+        <View style={[styles.item, {justifyContent: 'flex-start'}]}>
           {viewMode.translation && (
             <Text style={[styles.translation, {marginBottom: 32}]}>
               {items[currentIndex].ko}
@@ -475,14 +475,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   english: {
-    fontSize: 28,
+    fontSize: 32,
     fontWeight: '600',
-    color: '#ffd400',
+    color: '#18ffff',
   },
   translation: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: '500',
-    color: '#fff',
+    color: '#ffd400',
   },
   footer: {
     flexDirection: 'row',
