@@ -10,7 +10,11 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import RNFS from 'react-native-fs';
-import Sound from 'react-native-sound';
+import TrackPlayer, {
+  Event,
+  State,
+  useTrackPlayerEvents,
+} from 'react-native-track-player';
 import FastImage from 'react-native-fast-image';
 import IIcon from 'react-native-vector-icons/Ionicons';
 import MIcon from 'react-native-vector-icons/MaterialIcons';
@@ -47,11 +51,8 @@ const ContentScreen = ({route, navigation}: any) => {
     type: string;
   };
 
-  const {voiceSpeed} = useSettings().settings;
+  const [loading, setLoading] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(index);
-  const [playing, setPlaying] = useState<boolean>(true);
-  const [soundIndex, setSoundIndex] = useState<number>(0);
-  const [currentSound, setCurrentSound] = useState<Sound | null>(null);
 
   const [viewMode, setViewMode] = useState<{
     english: boolean;
@@ -60,16 +61,15 @@ const ContentScreen = ({route, navigation}: any) => {
     english: true,
     translation: true,
   });
-
   const [repeatMode, setRepeatMode] = useState<'always' | 'once' | 'none'>(
     type === 'single' ? 'once' : 'always',
   );
   const [shuffleMode, setShuffleMode] = useState<boolean>(type === 'random');
   const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
 
+  // image
   const [imageUri, setImageUri] = useState<string>('');
   const [defaultImageCount, setDefaultImageCount] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     RNFS.readDir(DEFAULT_IMAGE_PATHS)
@@ -117,39 +117,110 @@ const ContentScreen = ({route, navigation}: any) => {
     [iconOpacity],
   );
 
-  const playSound = useCallback(
-    (soundUrl: string) => {
-      if (currentSound) {
-        currentSound.stop(() => {
-          currentSound.release();
+  // sound with TrackPlayer
+  const {voiceSpeed} = useSettings().settings;
+  const [playing, setPlaying] = useState<boolean>(true);
+
+  // TrackPlayer 초기화 (최초 1번)
+  useEffect(() => {
+    (async () => {
+      try {
+        await TrackPlayer.reset();
+        await TrackPlayer.setRate(voiceSpeed / 10);
+
+        const initialSounds = items[currentIndex].sounds;
+
+        for (let i = 0; i < initialSounds.length; i++) {
+          await TrackPlayer.add({
+            id: `${currentIndex}-${i}`,
+            url: `file://${initialSounds[i]}`,
+            title: items[currentIndex].en,
+            artist: 'me',
+          });
+        }
+
+        await TrackPlayer.play();
+      } catch (error) {
+        console.error('Error while initializing TrackPlayer: ', error);
+      }
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // 화면 벗어나는 경우 TrackPlayer reset
+  useEffect(() => {
+    navigation.addListener('beforeRemove', async () => {
+      await TrackPlayer.reset();
+    });
+  }, [navigation]);
+
+  // play and pause
+  const togglePlayback = useCallback(async () => {
+    const {state} = await TrackPlayer.getPlaybackState();
+
+    if (state === State.Playing) {
+      await TrackPlayer.pause();
+      setPlaying(false);
+      showIcon('pause');
+    } else if (state === State.Paused || state === State.Ready) {
+      await TrackPlayer.play();
+      setPlaying(true);
+      showIcon('play');
+    }
+  }, [showIcon, setPlaying]);
+
+  // 다음 학습 데이터에 해당하는 사운드 파일들을 재생
+  const playNextTrack = useCallback(
+    async (index: number) => {
+      await TrackPlayer.reset();
+      setCurrentIndex(index);
+
+      const nextSounds = items[index].sounds;
+      for (let i = 0; i < nextSounds.length; i++) {
+        await TrackPlayer.add({
+          id: `${index}-${i}`,
+          url: `file://${nextSounds[i]}`,
+          title: items[index].en,
         });
       }
 
-      const sound = new Sound(`file://${soundUrl}`, '', error => {
-        if (error) {
-          console.error('Failed to load sound: ', error);
-          return;
-        }
-
-        setCurrentSound(sound);
-      });
+      await TrackPlayer.play();
     },
-    [currentSound],
+    [items],
   );
 
-  const togglePlayback = useCallback(() => {
-    setPlaying(prev => {
-      if (prev) {
-        currentSound?.pause();
-        showIcon('pause');
-      } else {
-        playSound(items[currentIndex].sounds[soundIndex]);
-        showIcon('play');
-      }
-      return !prev;
-    });
-  }, [currentIndex, currentSound, items, playSound, showIcon, soundIndex]);
+  // playback queue ended
+  useTrackPlayerEvents([Event.PlaybackQueueEnded], async () => {
+    let nextIndex;
 
+    if (shuffleMode) {
+      const currentShuffleIndex = shuffleIndexes.indexOf(currentIndex);
+      nextIndex =
+        repeatMode === 'once' ? currentShuffleIndex : currentShuffleIndex + 1;
+
+      if (nextIndex >= items.length) {
+        // 셔플 인덱스의 끝에 도달하면 새로운 셔플 생성
+        shuffle();
+        nextIndex = shuffleIndexes[0];
+      } else {
+        nextIndex = shuffleIndexes[nextIndex];
+      }
+    } else {
+      nextIndex = repeatMode === 'once' ? currentIndex : currentIndex + 1;
+      if (nextIndex >= items.length) {
+        if (repeatMode === 'always') {
+          nextIndex = 0;
+        } else {
+          await TrackPlayer.reset();
+          return;
+        }
+      }
+    }
+
+    await playNextTrack(nextIndex);
+  });
+
+  // 셔플 함수
   const shuffle = useCallback(() => {
     const indexes = Array.from({length: items.length}, (_, i) => i);
     for (let i = indexes.length - 1; i > 0; i--) {
@@ -159,108 +230,67 @@ const ContentScreen = ({route, navigation}: any) => {
     setShuffleIndexes(indexes);
   }, [items]);
 
+  // 셔플 모드 전환 시 셔플 함수 실행
   useEffect(() => {
     if (shuffleMode) {
       shuffle();
     }
   }, [shuffleMode, shuffle]);
 
-  const navigateToItem = useCallback(
-    (direction: 'left' | 'right') => {
-      const indexes = shuffleMode ? shuffleIndexes : items.map((_, i) => i);
-      const current = shuffleMode
-        ? shuffleIndexes.indexOf(currentIndex)
-        : currentIndex;
-      const next = current + (direction === 'right' ? 1 : -1);
+  // 직접 화면을 위아래로 스와이프하는 경우
+  const handleScroll = useCallback(
+    async (direction: 'left' | 'right') => {
+      let nextIndex;
 
-      let newIndex = currentIndex;
+      if (shuffleMode) {
+        const currentShuffleIndex = shuffleIndexes.indexOf(currentIndex);
+        nextIndex = currentShuffleIndex + (direction === 'right' ? 1 : -1);
 
-      if (next >= 0 && next < indexes.length) {
-        newIndex = indexes[next];
-      } else if (shuffleMode && next >= indexes.length) {
-        shuffle();
-        newIndex = shuffleIndexes[0];
-      } else if (repeatMode === 'always') {
-        newIndex = 0;
-      }
-
-      if (newIndex !== currentIndex) {
-        setCurrentIndex(newIndex);
-        setSoundIndex(0);
-      }
-    },
-    [currentIndex, repeatMode, items, shuffle, shuffleIndexes, shuffleMode],
-  );
-
-  useEffect(() => {
-    const handlePlaybackCompletion = () => {
-      const isLastSound = soundIndex === items[currentIndex].sounds.length - 1;
-      const isLastItem = currentIndex === items.length - 1;
-
-      if (isLastSound) {
-        if (isLastItem) {
-          if (repeatMode === 'once') {
-            setSoundIndex(0);
-          } else if (repeatMode === 'always') {
-            items.length === 1 ? setSoundIndex(0) : navigateToItem('right');
-          } else {
-            setPlaying(false);
-          }
+        if (nextIndex < 0 || nextIndex >= items.length) {
+          shuffle();
+          nextIndex = shuffleIndexes[0];
         } else {
-          if (repeatMode === 'once') {
-            setSoundIndex(0);
-          } else {
-            navigateToItem('right');
-          }
+          nextIndex = shuffleIndexes[nextIndex];
         }
       } else {
-        setSoundIndex(prevSoundIndex => prevSoundIndex + 1);
-      }
-    };
-
-    if (currentSound) {
-      currentSound.play(success => {
-        if (success) {
-          handlePlaybackCompletion();
+        const next = currentIndex + (direction === 'right' ? 1 : -1);
+        if (next >= 0 && next < items.length) {
+          nextIndex = next;
+        } else if (repeatMode === 'always') {
+          nextIndex = 0;
         } else {
-          console.error('Failed to play sound.');
+          return;
         }
-      });
-    }
-
-    return () => {
-      if (currentSound) {
-        currentSound.stop(() => {
-          currentSound.release();
-        });
-        setCurrentSound(null);
       }
-    };
-  }, [
-    currentSound,
-    currentIndex,
-    items,
-    navigateToItem,
-    playing,
-    repeatMode,
-    soundIndex,
-    setPlaying,
-  ]);
 
-  useEffect(() => {
-    if (playing && currentSound === null) {
-      playSound(items[currentIndex].sounds[soundIndex]);
-    }
+      await playNextTrack(nextIndex);
+    },
+    [
+      currentIndex,
+      repeatMode,
+      items,
+      shuffle,
+      shuffleIndexes,
+      shuffleMode,
+      playNextTrack,
+    ],
+  );
 
-    return () => {
-      if (currentSound) {
-        currentSound.stop(() => {
-          currentSound.release();
-          setCurrentSound(null);
-        });
+  const panResponder = PanResponder.create({
+    onStartShouldSetPanResponder: () => true,
+    onMoveShouldSetPanResponder: (_, gestureState) => {
+      return Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
+    },
+    onPanResponderRelease: (_, gestureState) => {
+      if (Math.abs(gestureState.dx) < 5 && Math.abs(gestureState.dy) < 5) {
+        handlePress();
+      } else if (gestureState.dy < -50) {
+        handleScroll('right');
+      } else if (gestureState.dy > 50) {
+        handleScroll('left');
       }
-    };
-  }, [playing, currentSound, currentIndex, soundIndex, items, playSound]);
+    },
+  });
 
   const toggleViewMode = (mode: 'english' | 'translation') => {
     setViewMode(prev => ({
@@ -306,22 +336,6 @@ const ContentScreen = ({route, navigation}: any) => {
     () => togglePlayback(),
     () => toggleBookmark(items[currentIndex]),
   );
-
-  const panResponder = PanResponder.create({
-    onStartShouldSetPanResponder: () => true,
-    onMoveShouldSetPanResponder: (_, gestureState) => {
-      return Math.abs(gestureState.dx) > 5 || Math.abs(gestureState.dy) > 5;
-    },
-    onPanResponderRelease: (_, gestureState) => {
-      if (Math.abs(gestureState.dx) < 5 && Math.abs(gestureState.dy) < 5) {
-        handlePress();
-      } else if (gestureState.dy < -50) {
-        navigateToItem('right');
-      } else if (gestureState.dy > 50) {
-        navigateToItem('left');
-      }
-    },
-  });
 
   if (loading) {
     return (

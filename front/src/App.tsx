@@ -2,6 +2,7 @@ import React, {useEffect} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import SplashScreen from 'react-native-splash-screen';
+import TrackPlayer from 'react-native-track-player';
 import Toast from 'react-native-toast-message';
 import Root from './navigation/Root';
 import toastConfig from './components/Toast';
@@ -17,6 +18,7 @@ const App = () => {
           'learning/category.json',
           'learning/chapter.json',
         ]);
+        await TrackPlayer.setupPlayer();
       } catch (error) {
         console.error('Failed to fetch general data', error);
       } finally {

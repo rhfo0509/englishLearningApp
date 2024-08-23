@@ -21,7 +21,7 @@ const SettingsContext = createContext<SettingsContextType | null>(null);
 
 export const SettingsProvider = ({children}: {children: ReactNode}) => {
   const [settings, setSettings] = useState<Settings>({
-    voiceSpeed: 1.0,
+    voiceSpeed: 10,
     language: 'en',
   });
 
