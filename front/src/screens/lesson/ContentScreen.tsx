@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -70,6 +70,7 @@ const ContentScreen = ({route, navigation}: any) => {
   // image
   const [imageUri, setImageUri] = useState<string>('');
   const [defaultImageCount, setDefaultImageCount] = useState<number>(0);
+  const prevImageIndexRef = useRef<number | null>(null);
 
   useEffect(() => {
     RNFS.readDir(DEFAULT_IMAGE_PATHS)
@@ -85,7 +86,14 @@ const ContentScreen = ({route, navigation}: any) => {
   }, []);
 
   const getRandomGif = useCallback(() => {
-    const randomIndex = Math.floor(Math.random() * defaultImageCount);
+    let randomIndex;
+    do {
+      randomIndex = Math.floor(Math.random() * defaultImageCount);
+      console.log(prevImageIndexRef.current, randomIndex);
+    } while (randomIndex === prevImageIndexRef.current);
+
+    prevImageIndexRef.current = randomIndex; // 선택된 인덱스를 저장
+
     return `file://${DEFAULT_IMAGE_PATHS}/${randomIndex}.gif`;
   }, [defaultImageCount]);
 
