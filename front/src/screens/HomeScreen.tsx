@@ -8,6 +8,8 @@ import {
   ScrollView,
   ActivityIndicator,
   FlatList,
+  Alert,
+  BackHandler,
 } from 'react-native';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {useFocusEffect} from '@react-navigation/native';
@@ -127,6 +129,31 @@ const HomeScreen = ({navigation}: any) => {
     }
   };
 
+  useEffect(() => {
+    const handleBackPress = () => {
+      Alert.alert('EXIT', 'Are you sure you want to exit?', [
+        {
+          text: 'Cancel',
+          onPress: () => null,
+          style: 'cancel',
+        },
+        {
+          text: 'Exit',
+          onPress: () => {
+            BackHandler.exitApp();
+          },
+        },
+      ]);
+      return true;
+    };
+
+    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+    };
+  }, [navigation]);
+
   const renderItem = ({item, index}: {item: Category; index: number}) => (
     <TouchableOpacity
       style={styles.item}
@@ -237,6 +264,18 @@ const HomeScreen = ({navigation}: any) => {
             keyExtractor={item => item.category.toString()}
             scrollEnabled={false}
           />
+        </View>
+        <View>
+          <View style={styles.title}>
+            <Icon name="stars" size={36} />
+            <Text style={styles.titleText}>Bookmarked Categories</Text>
+          </View>
+          {/* <FlatList
+            data={recommended}
+            renderItem={renderItem}
+            keyExtractor={item => item.category.toString()}
+            scrollEnabled={false}
+          /> */}
         </View>
       </ScrollView>
     </SafeAreaView>
