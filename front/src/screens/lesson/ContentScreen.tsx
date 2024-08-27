@@ -54,8 +54,6 @@ const ContentScreen = ({route, navigation}: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(index);
   const {settings, setSettings} = useSettings();
-  const {repeatMode: initialRepeatMode, shuffleMode: initialShuffleMode} =
-    settings;
 
   const [viewMode, setViewMode] = useState<{
     english: boolean;
@@ -65,9 +63,9 @@ const ContentScreen = ({route, navigation}: any) => {
     translation: true,
   });
   const [repeatMode, setRepeatMode] = useState<'always' | 'once' | 'none'>(
-    type === 'single' ? 'once' : initialRepeatMode,
+    type === 'single' ? 'once' : settings.repeatMode,
   );
-  const [shuffleMode, setShuffleMode] = useState<boolean>(initialShuffleMode);
+  const [shuffleMode, setShuffleMode] = useState<boolean>(settings.shuffleMode);
   const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
 
   // image
@@ -129,7 +127,7 @@ const ContentScreen = ({route, navigation}: any) => {
   );
 
   // sound with TrackPlayer
-  const {voiceSpeed} = settings;
+  const [voiceSpeed, setVoiceSpeed] = useState<number>(settings.voiceSpeed);
   const [playing, setPlaying] = useState<boolean>(true);
 
   // TrackPlayer 초기화 (최초 1번)
@@ -325,6 +323,12 @@ const ContentScreen = ({route, navigation}: any) => {
     }
   };
 
+  const toggleVoiceSpeed = async () => {
+    const newVoiceSpeed = voiceSpeed === 8 ? 10 : voiceSpeed === 10 ? 12 : 8;
+    setVoiceSpeed(newVoiceSpeed);
+    await TrackPlayer.setRate(newVoiceSpeed / 10);
+  };
+
   const {saveLastLearned} = useLastLearned();
 
   useEffect(() => {
@@ -436,6 +440,11 @@ const ContentScreen = ({route, navigation}: any) => {
               </Pressable>
             </>
           ) : null}
+          <Pressable
+            style={[styles.toggleButton]}
+            onPress={() => toggleVoiceSpeed()}>
+            <Text style={styles.toggleButtonText}>{voiceSpeed / 10}x</Text>
+          </Pressable>
         </View>
         <Text style={styles.progress}>
           {currentIndex + 1} / {items.length}

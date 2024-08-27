@@ -23,6 +23,7 @@ const Settings = () => {
 
   const handleSave = async () => {
     setSettings({
+      ...settings,
       voiceSpeed,
       language,
     });
@@ -51,7 +52,7 @@ const Settings = () => {
                 style={styles.slider}
                 minimumValue={8}
                 maximumValue={12}
-                step={1}
+                step={2}
                 value={voiceSpeed}
                 onValueChange={value => setVoiceSpeed(value)}
               />
