@@ -6,14 +6,13 @@ const useBookmarks = (category: number) => {
 
   const loadBookmarks = useCallback(async () => {
     try {
-      const loaded = await getBookmarks(category);
-      setBookmarks(loaded);
+      const data = await getBookmarks(category);
+      setBookmarks(data);
     } catch (error) {
       console.error('Failed to load bookmarks: ', error);
     }
   }, [category]);
 
-  // Load bookmark data when the hook is used
   useEffect(() => {
     loadBookmarks();
   }, [loadBookmarks]);

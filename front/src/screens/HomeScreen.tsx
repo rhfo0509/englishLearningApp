@@ -21,6 +21,7 @@ import Header from '../components/Header';
 import Profile from '../components/Profile';
 import useLastLearned from '../hooks/useLastLearned';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import useBookmarkedCategories from '../hooks/useBookmarkedCategories';
 
 interface Category {
   recommend: number;
@@ -71,6 +72,11 @@ const HomeScreen = ({navigation}: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [recommended, setRecommended] = useState<Category[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const {
+    bookmarkedCategories,
+    loadBookmarkedCategories,
+    toggleBookmarkedCategory,
+  } = useBookmarkedCategories();
   const {lastLearned, loadLastLearned} = useLastLearned();
 
   useLayoutEffect(() => {
@@ -104,7 +110,8 @@ const HomeScreen = ({navigation}: any) => {
   useFocusEffect(
     useCallback(() => {
       loadLastLearned();
-    }, [loadLastLearned]),
+      loadBookmarkedCategories();
+    }, []),
   );
 
   const handleContinueLearning = () => {
@@ -156,23 +163,44 @@ const HomeScreen = ({navigation}: any) => {
     }, []),
   );
 
-  const renderItem = ({item, index}: {item: Category; index: number}) => (
-    <TouchableOpacity
-      style={styles.item}
-      onPress={() =>
-        navigation.navigate('LessonStack', {
-          screen: 'LessonList',
-          params: {category: item.category, title: item.ko},
-        })
-      }>
-      <LinearGradient
-        colors={['#1f6feb', '#53c1ff']}
-        style={styles.indexContainer}>
-        <Text style={styles.indexText}>{index + 1}</Text>
-      </LinearGradient>
-      <Text style={styles.itemText}>{item.ko}</Text>
-    </TouchableOpacity>
-  );
+  const renderItem = ({
+    item,
+    index,
+    showStar,
+  }: {
+    item: Category;
+    index: number;
+    showStar: boolean;
+  }) => {
+    const isBookmarked = bookmarkedCategories.includes(item.category);
+
+    return (
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() =>
+          navigation.navigate('LessonStack', {
+            screen: 'LessonList',
+            params: {category: item.category, title: item.ko},
+          })
+        }>
+        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+          <LinearGradient
+            colors={['#1f6feb', '#53c1ff']}
+            style={styles.indexContainer}>
+            <Text style={styles.indexText}>{index + 1}</Text>
+          </LinearGradient>
+          <Text style={styles.itemText}>{item.ko}</Text>
+        </View>
+        <TouchableOpacity
+          hitSlop={12}
+          onPress={() => toggleBookmarkedCategory(item.category)}>
+          {showStar && isBookmarked && (
+            <Icon name="star" size={24} color="#ffd700" />
+          )}
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
 
   const renderLearningButtons = () => {
     return learningButtons.map((button, index) => {
@@ -262,7 +290,9 @@ const HomeScreen = ({navigation}: any) => {
           </View>
           <FlatList
             data={recommended}
-            renderItem={renderItem}
+            renderItem={({item, index}) =>
+              renderItem({item, index, showStar: false})
+            }
             keyExtractor={item => item.category.toString()}
             scrollEnabled={false}
           />
@@ -272,12 +302,16 @@ const HomeScreen = ({navigation}: any) => {
             <Icon name="stars" size={36} />
             <Text style={styles.titleText}>Bookmarked Categories</Text>
           </View>
-          {/* <FlatList
-            data={recommended}
-            renderItem={renderItem}
+          <FlatList
+            data={categories.filter(v =>
+              bookmarkedCategories.includes(+v.category),
+            )}
+            renderItem={({item, index}) =>
+              renderItem({item, index, showStar: true})
+            }
             keyExtractor={item => item.category.toString()}
             scrollEnabled={false}
-          /> */}
+          />
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -356,6 +390,7 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
     backgroundColor: '#fff',
     borderRadius: 8,

@@ -1,8 +1,10 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useLayoutEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
+import IIcon from 'react-native-vector-icons/Ionicons';
 
 import Header from '../../components/Header';
+import useBookmarkedCategories from '../../hooks/useBookmarkedCategories';
 
 interface Category {
   recommend: number;
@@ -23,6 +25,8 @@ interface Category {
 
 const CategoryScreen = ({route, navigation}: any) => {
   const {categories, title} = route.params;
+  const {bookmarkedCategories, toggleBookmarkedCategory} =
+    useBookmarkedCategories();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -30,23 +34,38 @@ const CategoryScreen = ({route, navigation}: any) => {
     });
   }, [navigation, title]);
 
-  const renderItem = ({item, index}: {item: Category; index: number}) => (
-    <TouchableOpacity
-      style={styles.item}
-      onPress={() =>
-        navigation.navigate('LessonList', {
-          category: item.category,
-          title: item.ko,
-        })
-      }>
-      <LinearGradient
-        colors={['#1f6feb', '#53c1ff']}
-        style={styles.indexContainer}>
-        <Text style={styles.indexText}>{index + 1}</Text>
-      </LinearGradient>
-      <Text style={styles.itemText}>{item.ko}</Text>
-    </TouchableOpacity>
-  );
+  const renderItem = ({item, index}: {item: Category; index: number}) => {
+    const isBookmarked = bookmarkedCategories.includes(item.category);
+
+    return (
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() =>
+          navigation.navigate('LessonList', {
+            category: item.category,
+            title: item.ko,
+          })
+        }>
+        <View style={{flexDirection: 'row'}}>
+          <LinearGradient
+            colors={['#1f6feb', '#53c1ff']}
+            style={styles.indexContainer}>
+            <Text style={styles.indexText}>{index + 1}</Text>
+          </LinearGradient>
+          <Text style={styles.itemText}>{item.ko}</Text>
+        </View>
+        <TouchableOpacity
+          hitSlop={12}
+          onPress={() => toggleBookmarkedCategory(item.category)}>
+          <IIcon
+            name={isBookmarked ? 'star' : 'star-outline'}
+            size={24}
+            color="#ffd700"
+          />
+        </TouchableOpacity>
+      </TouchableOpacity>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -71,6 +90,7 @@ const styles = StyleSheet.create({
   item: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
     backgroundColor: '#fff',
     borderRadius: 8,
