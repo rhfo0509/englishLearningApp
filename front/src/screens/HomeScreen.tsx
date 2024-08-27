@@ -111,7 +111,7 @@ const HomeScreen = ({navigation}: any) => {
     useCallback(() => {
       loadLastLearned();
       loadBookmarkedCategories();
-    }, []),
+    }, [loadBookmarkedCategories, loadLastLearned]),
   );
 
   const handleContinueLearning = () => {

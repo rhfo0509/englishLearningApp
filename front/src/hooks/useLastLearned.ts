@@ -1,23 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {subscribeAuth} from '../lib/auth';
-import {getLastLearned} from '../lib/lastLearned';
-
-interface Item {
-  chapter: number;
-  num: number;
-  image: string;
-  sounds: string[];
-  en: string;
-  ko: string;
-}
-
-interface LastLearned {
-  category: number;
-  items: Item[];
-  title: string;
-  index: number;
-}
+// import {subscribeAuth} from '../lib/auth';
+import {Item, LastLearned, getLastLearned} from '../lib/lastLearned';
 
 const useLastLearned = () => {
   const [lastLearned, setLastLearned] = useState<LastLearned | null>(null);
@@ -47,39 +31,39 @@ const useLastLearned = () => {
     [],
   );
 
-  useEffect(() => {
-    const unsubscribe = subscribeAuth(async user => {
-      if (user) {
-        try {
-          const lastLearned = await getLastLearned();
-          if (lastLearned) {
-            setLastLearned(lastLearned);
-            await AsyncStorage.setItem(
-              'lastLearned',
-              JSON.stringify(lastLearned),
-            );
-          }
-        } catch (error) {
-          console.error(
-            'Failed to load last learned data from Firestore: ',
-            error,
-          );
-        }
-      } else {
-        try {
-          await AsyncStorage.removeItem('lastLearned');
-          setLastLearned(null);
-        } catch (error) {
-          console.error(
-            'Failed to sync last learned data to Firestore: ',
-            error,
-          );
-        }
-      }
-    });
+  // useEffect(() => {
+  //   const unsubscribe = subscribeAuth(async user => {
+  //     if (user) {
+  //       try {
+  //         const lastLearned = await getLastLearned();
+  //         if (lastLearned) {
+  //           setLastLearned(lastLearned);
+  //           await AsyncStorage.setItem(
+  //             'lastLearned',
+  //             JSON.stringify(lastLearned),
+  //           );
+  //         }
+  //       } catch (error) {
+  //         console.error(
+  //           'Failed to load last learned data from Firestore: ',
+  //           error,
+  //         );
+  //       }
+  //     } else {
+  //       try {
+  //         await AsyncStorage.removeItem('lastLearned');
+  //         setLastLearned(null);
+  //       } catch (error) {
+  //         console.error(
+  //           'Failed to sync last learned data to Firestore: ',
+  //           error,
+  //         );
+  //       }
+  //     }
+  //   });
 
-    return () => unsubscribe();
-  }, []);
+  //   return () => unsubscribe();
+  // }, []);
 
   return {
     lastLearned,

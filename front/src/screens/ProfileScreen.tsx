@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useUser} from '../contexts/UserContext';
 // import {signOut} from '../lib/auth';
-import {saveLastLearned} from '../lib/lastLearned';
+// import {saveLastLearned} from '../lib/lastLearned';
 
 const ProfileScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -20,10 +20,10 @@ const ProfileScreen = () => {
   const handleSignOut = async () => {
     try {
       setLoading(true);
-      const data = await AsyncStorage.getItem('lastLearned');
-      if (data) {
-        await saveLastLearned(JSON.parse(data));
-      }
+      // const data = await AsyncStorage.getItem('lastLearned');
+      // if (data) {
+      //   await saveLastLearned(JSON.parse(data));
+      // }
       // await signOut();
       await GoogleSignin.revokeAccess();
       await GoogleSignin.signOut();

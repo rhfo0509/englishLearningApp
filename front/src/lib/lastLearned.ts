@@ -3,7 +3,7 @@ import auth from '@react-native-firebase/auth';
 
 const collection = firestore().collection('lastLearned');
 
-interface Item {
+export interface Item {
   chapter: number;
   num: number;
   image: string;
@@ -12,7 +12,7 @@ interface Item {
   ko: string;
 }
 
-interface LastLearned {
+export interface LastLearned {
   category: number;
   items: Item[];
   title: string;
