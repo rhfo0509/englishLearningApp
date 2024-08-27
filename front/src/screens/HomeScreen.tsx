@@ -129,30 +129,32 @@ const HomeScreen = ({navigation}: any) => {
     }
   };
 
-  useEffect(() => {
-    const handleBackPress = () => {
-      Alert.alert('EXIT', 'Are you sure you want to exit?', [
-        {
-          text: 'Cancel',
-          onPress: () => null,
-          style: 'cancel',
-        },
-        {
-          text: 'Exit',
-          onPress: () => {
-            BackHandler.exitApp();
+  useFocusEffect(
+    useCallback(() => {
+      const handleBackPress = () => {
+        Alert.alert('EXIT', 'Are you sure you want to exit?', [
+          {
+            text: 'Cancel',
+            onPress: () => null,
+            style: 'cancel',
           },
-        },
-      ]);
-      return true;
-    };
+          {
+            text: 'Exit',
+            onPress: () => {
+              BackHandler.exitApp();
+            },
+          },
+        ]);
+        return true;
+      };
 
-    BackHandler.addEventListener('hardwareBackPress', handleBackPress);
+      BackHandler.addEventListener('hardwareBackPress', handleBackPress);
 
-    return () => {
-      BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
-    };
-  }, [navigation]);
+      return () => {
+        BackHandler.removeEventListener('hardwareBackPress', handleBackPress);
+      };
+    }, []),
+  );
 
   const renderItem = ({item, index}: {item: Category; index: number}) => (
     <TouchableOpacity
