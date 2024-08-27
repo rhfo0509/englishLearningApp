@@ -53,6 +53,9 @@ const ContentScreen = ({route, navigation}: any) => {
 
   const [loading, setLoading] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(index);
+  const {settings, setSettings} = useSettings();
+  const {repeatMode: initialRepeatMode, shuffleMode: initialShuffleMode} =
+    settings;
 
   const [viewMode, setViewMode] = useState<{
     english: boolean;
@@ -62,9 +65,9 @@ const ContentScreen = ({route, navigation}: any) => {
     translation: true,
   });
   const [repeatMode, setRepeatMode] = useState<'always' | 'once' | 'none'>(
-    type === 'single' ? 'once' : 'always',
+    type === 'single' ? 'once' : initialRepeatMode,
   );
-  const [shuffleMode, setShuffleMode] = useState<boolean>(false);
+  const [shuffleMode, setShuffleMode] = useState<boolean>(initialShuffleMode);
   const [shuffleIndexes, setShuffleIndexes] = useState<number[]>([]);
 
   // image
@@ -126,7 +129,7 @@ const ContentScreen = ({route, navigation}: any) => {
   );
 
   // sound with TrackPlayer
-  const {voiceSpeed} = useSettings().settings;
+  const {voiceSpeed} = settings;
   const [playing, setPlaying] = useState<boolean>(true);
 
   // TrackPlayer 초기화 (최초 1번)
@@ -155,12 +158,14 @@ const ContentScreen = ({route, navigation}: any) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // 화면 벗어나는 경우 TrackPlayer reset
+  // 화면 벗어나는 경우 settings 저장 및 TrackPlayer reset
   useEffect(() => {
-    navigation.addListener('beforeRemove', async () => {
+    const listener = navigation.addListener('beforeRemove', async () => {
+      setSettings({...settings, repeatMode, shuffleMode});
       await TrackPlayer.reset();
     });
-  }, [navigation]);
+    return () => navigation.removeListener('beforeRemove', listener);
+  }, [navigation, repeatMode, setSettings, settings, shuffleMode]);
 
   // play and pause
   const togglePlayback = useCallback(async () => {
@@ -327,9 +332,11 @@ const ContentScreen = ({route, navigation}: any) => {
       return;
     }
 
-    navigation.addListener('beforeRemove', () => {
+    const listener = navigation.addListener('beforeRemove', () => {
       saveLastLearned(category, items, title, currentIndex);
     });
+
+    return () => navigation.removeListener('beforeRemove', listener);
   }, [category, currentIndex, items, navigation, saveLastLearned, title, type]);
 
   const {bookmarks = [], toggleBookmark} = useBookmarks(category);

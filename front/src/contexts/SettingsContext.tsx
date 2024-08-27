@@ -10,6 +10,8 @@ import React, {
 interface Settings {
   voiceSpeed: number;
   language: string;
+  repeatMode: 'always' | 'once' | 'none';
+  shuffleMode: boolean;
 }
 
 interface SettingsContextType {
@@ -23,6 +25,8 @@ export const SettingsProvider = ({children}: {children: ReactNode}) => {
   const [settings, setSettings] = useState<Settings>({
     voiceSpeed: 10,
     language: 'en',
+    repeatMode: 'always',
+    shuffleMode: false,
   });
 
   useEffect(() => {
