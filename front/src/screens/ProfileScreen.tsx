@@ -1,25 +1,49 @@
-import {SafeAreaView, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import React from 'react';
+import {
+  SafeAreaView,
+  View,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import React, {useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import {useUser} from '../contexts/UserContext';
-import {signOut} from '../lib/auth';
+// import {signOut} from '../lib/auth';
 import {saveLastLearned} from '../lib/lastLearned';
 
 const ProfileScreen = () => {
+  const [loading, setLoading] = useState<boolean>(false);
   const {setUser} = useUser();
 
   const handleSignOut = async () => {
     try {
+      setLoading(true);
       const data = await AsyncStorage.getItem('lastLearned');
       if (data) {
         await saveLastLearned(JSON.parse(data));
       }
+      // await signOut();
+      await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      setUser(null);
     } catch (error) {
       console.error('Failed to handle logout: ', error);
+    } finally {
+      setLoading(false);
     }
-    await signOut();
-    setUser(null);
   };
+
+  if (loading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loading}>
+          <ActivityIndicator size="large" />
+        </View>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -45,5 +69,10 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontSize: 16,
+  },
+  loading: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
