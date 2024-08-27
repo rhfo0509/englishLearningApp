@@ -2,9 +2,11 @@ import React, {useRef, useState, useEffect} from 'react';
 import {
   Alert,
   BackHandler,
+  Image,
   SafeAreaView,
   StyleSheet,
   Text,
+  View,
   // Keyboard,
   // TextInput,
   // View,
@@ -167,7 +169,10 @@ const SignInScreen = ({navigation, route}: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.title}>EnglishEcho</Text>
+      <View style={styles.content}>
+        <Image source={require('../assets/icon.png')} />
+        <Text style={styles.title}>EnglishEcho</Text>
+      </View>
       {/* <View style={styles.form}>
         <TextInput
           placeholder="Email"
@@ -225,13 +230,15 @@ const SignInScreen = ({navigation, route}: any) => {
         </TouchableOpacity> */}
 
       {/* 구글 로그인 버튼 추가 */}
-      <GoogleSigninButton
-        style={{width: '100%', height: 64, marginTop: 16}}
-        size={GoogleSigninButton.Size.Wide}
-        color={GoogleSigninButton.Color.Light}
-        onPress={handleGoogleSignIn}
-        disabled={loading}
-      />
+      <View style={styles.buttonContainer}>
+        <GoogleSigninButton
+          style={{width: '100%', height: 64}}
+          size={GoogleSigninButton.Size.Wide}
+          color={GoogleSigninButton.Color.Light}
+          onPress={handleGoogleSignIn}
+          disabled={loading}
+        />
+      </View>
 
       {/* <TouchableOpacity
           style={[styles.button, {backgroundColor: '#000'}]}
@@ -264,14 +271,21 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#000',
     paddingHorizontal: 16,
+  },
+  content: {
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     color: '#fff',
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 16,
+    marginVertical: 16,
+  },
+  buttonContainer: {
+    marginBottom: 32,
   },
   // form: {
   //   width: '100%',
