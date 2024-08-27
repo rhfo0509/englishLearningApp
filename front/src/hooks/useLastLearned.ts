@@ -1,5 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {subscribeAuth} from '../lib/auth';
+import {getUser, updateUser} from '../lib/user';
 
 interface Item {
   chapter: number;
@@ -31,11 +33,6 @@ const useLastLearned = () => {
     }
   }, []);
 
-  // Load last learned data when the hook is used
-  useEffect(() => {
-    loadLastLearned();
-  }, [loadLastLearned]);
-
   const saveLastLearned = useCallback(
     async (category: number, items: Item[], title: string, index: number) => {
       try {
@@ -49,6 +46,40 @@ const useLastLearned = () => {
     },
     [],
   );
+
+  useEffect(() => {
+    const unsubscribe = subscribeAuth(async user => {
+      if (user) {
+        try {
+          const userData = await getUser(user.uid);
+          if (userData?.lastLearned) {
+            setLastLearned(userData.lastLearned);
+            await AsyncStorage.setItem(
+              'lastLearned',
+              JSON.stringify(userData.lastLearned),
+            );
+          }
+        } catch (error) {
+          console.error(
+            'Failed to load last learned data from Firestore: ',
+            error,
+          );
+        }
+      } else {
+        try {
+          await AsyncStorage.removeItem('lastLearned');
+          setLastLearned(null);
+        } catch (error) {
+          console.error(
+            'Failed to sync last learned data to Firestore: ',
+            error,
+          );
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   return {
     lastLearned,
