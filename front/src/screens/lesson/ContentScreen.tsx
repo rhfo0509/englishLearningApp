@@ -379,7 +379,7 @@ const ContentScreen = ({route, navigation}: any) => {
       </View>
       <View style={styles.main} {...panResponder.panHandlers}>
         <Animated.View style={[styles.iconContainer, {opacity: iconOpacity}]}>
-          <IIcon name={playing ? 'pause' : 'play'} size={64} color="#fff" />
+          <IIcon name={playing ? 'play' : 'pause'} size={64} color="#fff" />
         </Animated.View>
         <View style={[styles.item, {justifyContent: 'flex-end'}]}>
           {viewMode.english && (
