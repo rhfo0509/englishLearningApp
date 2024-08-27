@@ -2,27 +2,10 @@ import firestore from '@react-native-firebase/firestore';
 
 const collection = firestore().collection('users');
 
-interface Item {
-  chapter: number;
-  num: number;
-  image: string;
-  sounds: string[];
-  en: string;
-  ko: string;
-}
-
-interface LastLearned {
-  category: number;
-  items: Item[];
-  title: string;
-  index: number;
-}
-
 interface User {
   id: string;
   username: string;
   photoURL: string;
-  lastLearned?: LastLearned;
 }
 
 export function createUser(user: User) {

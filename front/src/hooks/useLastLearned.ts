@@ -1,7 +1,7 @@
 import {useCallback, useEffect, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {subscribeAuth} from '../lib/auth';
-import {getUser, updateUser} from '../lib/user';
+import {getLastLearned} from '../lib/lastLearned';
 
 interface Item {
   chapter: number;
@@ -51,12 +51,12 @@ const useLastLearned = () => {
     const unsubscribe = subscribeAuth(async user => {
       if (user) {
         try {
-          const userData = await getUser(user.uid);
-          if (userData?.lastLearned) {
-            setLastLearned(userData.lastLearned);
+          const lastLearned = await getLastLearned();
+          if (lastLearned) {
+            setLastLearned(lastLearned);
             await AsyncStorage.setItem(
               'lastLearned',
-              JSON.stringify(userData.lastLearned),
+              JSON.stringify(lastLearned),
             );
           }
         } catch (error) {
