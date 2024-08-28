@@ -23,6 +23,7 @@ import {DEFAULT_IMAGE_PATHS} from '../../common/constants';
 import useClick from '../../hooks/useClick';
 import useBookmarks from '../../hooks/useBookmarks';
 import useLastLearned from '../../hooks/useLastLearned';
+import useLearned from '../../hooks/useLearned';
 import {useSettings} from '../../contexts/SettingsContext';
 
 const {width} = Dimensions.get('window');
@@ -51,6 +52,7 @@ const ContentScreen = ({route, navigation}: any) => {
     type: string;
   };
 
+  const {saveLearned} = useLearned();
   const [loading, setLoading] = useState<boolean>(true);
   const [currentIndex, setCurrentIndex] = useState<number>(index);
   const {settings, setSettings} = useSettings();
@@ -90,7 +92,6 @@ const ContentScreen = ({route, navigation}: any) => {
     let randomIndex;
     do {
       randomIndex = Math.floor(Math.random() * defaultImageCount);
-      console.log(prevImageIndexRef.current, randomIndex);
     } while (randomIndex === prevImageIndexRef.current);
 
     prevImageIndexRef.current = randomIndex; // 선택된 인덱스를 저장
@@ -148,6 +149,7 @@ const ContentScreen = ({route, navigation}: any) => {
           });
         }
 
+        saveLearned(category, items[currentIndex].chapter, currentIndex);
         await TrackPlayer.play();
       } catch (error) {
         console.error('Error while initializing TrackPlayer: ', error);
@@ -195,9 +197,10 @@ const ContentScreen = ({route, navigation}: any) => {
         });
       }
 
+      saveLearned(category, items[index].chapter, index);
       await TrackPlayer.play();
     },
-    [items],
+    [category, items, saveLearned],
   );
 
   // playback queue ended

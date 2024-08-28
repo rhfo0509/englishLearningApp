@@ -6,7 +6,7 @@ import {Item, LastLearned, getLastLearned} from '../lib/lastLearned';
 const useLastLearned = () => {
   const [lastLearned, setLastLearned] = useState<LastLearned | null>(null);
 
-  const loadLastLearned = useCallback(async () => {
+  const loadLastLearned = async () => {
     try {
       const data = await AsyncStorage.getItem('lastLearned');
       if (data) {
@@ -15,21 +15,23 @@ const useLastLearned = () => {
     } catch (error) {
       console.error('Failed to load last learned data: ', error);
     }
-  }, []);
+  };
 
-  const saveLastLearned = useCallback(
-    async (category: number, items: Item[], title: string, index: number) => {
-      try {
-        await AsyncStorage.setItem(
-          'lastLearned',
-          JSON.stringify({category, items, title, index}),
-        );
-      } catch (error) {
-        console.error('Failed to save last learned data: ', error);
-      }
-    },
-    [],
-  );
+  const saveLastLearned = async (
+    category: number,
+    items: Item[],
+    title: string,
+    index: number,
+  ) => {
+    try {
+      await AsyncStorage.setItem(
+        'lastLearned',
+        JSON.stringify({category, items, title, index}),
+      );
+    } catch (error) {
+      console.error('Failed to save last learned data: ', error);
+    }
+  };
 
   // useEffect(() => {
   //   const unsubscribe = subscribeAuth(async user => {
