@@ -37,7 +37,7 @@ function convertExcelToJSON(buffer, type, version, category) {
               : [],
           };
           for (const [lang, i] of Object.entries(LANGUAGES)) {
-            entry[lang] = row[i].trim();
+            entry[lang] = row[i]?.trim();
           }
           return entry;
         }),
