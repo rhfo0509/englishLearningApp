@@ -65,7 +65,9 @@ async function uploadJSONToFirebase(json, type) {
       ? `${json.category}.json`
       : +type === 1
       ? "chapter.json"
-      : "category.json";
+      : +type === 0
+      ? "category.json"
+      : "data.json";
   const destination =
     +type == 3
       ? "assets/"
