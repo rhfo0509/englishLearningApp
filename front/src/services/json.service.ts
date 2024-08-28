@@ -30,5 +30,5 @@ export async function checkJSONVersion(
   const remoteJson = await readRemoteJSON(remoteJSONPath);
   const remoteVersion = remoteJson.version;
 
-  return {localVersion, remoteVersion, remoteJson};
+  return {localVersion, localJSON, remoteVersion, remoteJson};
 }

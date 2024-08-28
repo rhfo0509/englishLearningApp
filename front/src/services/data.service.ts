@@ -91,10 +91,10 @@ export async function fetchLearningData(
   const localDirPath = `${RNFS.DocumentDirectoryPath}/${remoteDirPath}`;
 
   try {
-    const {localVersion, remoteVersion, remoteJson} = await checkJSONVersion(
-      localJSONPath,
-      remoteJSONPath,
-    );
+    startTime = Date.now();
+
+    const {localVersion, localJSON, remoteVersion, remoteJson} =
+      await checkJSONVersion(localJSONPath, remoteJSONPath);
     if (localVersion !== remoteVersion) {
       const isSucceeded = await updateLearningData(
         remoteDirPath,
@@ -111,9 +111,13 @@ export async function fetchLearningData(
         return null;
       }
     } else {
-      updateProgress(50);
-      const localJSON = await readLocalJSON(localJSONPath);
       updateProgress(100);
+      let elapsedTime = Date.now() - startTime;
+      console.log(
+        `elapsed time: ${Math.floor(elapsedTime / 1000)}s ${
+          elapsedTime % 1000
+        }ms`,
+      );
       return localJSON.data;
     }
   } catch (error) {
