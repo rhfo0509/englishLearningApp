@@ -25,6 +25,7 @@
     "react-native": "0.74.4",
     "react-native-asset": "^2.1.1",
     "react-native-config": "^1.5.3",
+    "react-native-exit-app": "^2.0.0",
     "react-native-fast-image": "^8.6.3",
     "react-native-fs": "^2.20.0",
     "react-native-gesture-handler": "^2.18.1",

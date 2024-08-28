@@ -8,7 +8,6 @@ import {
   ScrollView,
   ActivityIndicator,
   FlatList,
-  Alert,
   BackHandler,
 } from 'react-native';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
@@ -16,12 +15,14 @@ import {useFocusEffect} from '@react-navigation/native';
 import LinearGradient from 'react-native-linear-gradient';
 import Toast from 'react-native-toast-message';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import ExitApp from 'react-native-exit-app';
 
 import Header from '../components/Header';
 import Profile from '../components/Profile';
 import useLastLearned from '../hooks/useLastLearned';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useBookmarkedCategories from '../hooks/useBookmarkedCategories';
+import Popup from '../components/Popup';
 
 interface Category {
   recommend: number;
@@ -69,6 +70,7 @@ const learningButtons = [
 ];
 
 const HomeScreen = ({navigation}: any) => {
+  const [popupVisible, setPopupVisible] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [recommended, setRecommended] = useState<Category[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -139,19 +141,7 @@ const HomeScreen = ({navigation}: any) => {
   useFocusEffect(
     useCallback(() => {
       const handleBackPress = () => {
-        Alert.alert('EXIT', 'Are you sure you want to exit?', [
-          {
-            text: 'Cancel',
-            onPress: () => null,
-            style: 'cancel',
-          },
-          {
-            text: 'Exit',
-            onPress: () => {
-              BackHandler.exitApp();
-            },
-          },
-        ]);
+        setPopupVisible(true);
         return true;
       };
 
@@ -314,6 +304,18 @@ const HomeScreen = ({navigation}: any) => {
           />
         </View>
       </ScrollView>
+      <Popup
+        visible={popupVisible}
+        title="확인"
+        message="앱을 종료하시겠습니까?"
+        cancelText="Cancel"
+        confirmText="Exit"
+        onCancel={() => setPopupVisible(false)}
+        onConfirm={() => {
+          setPopupVisible(false);
+          ExitApp.exitApp();
+        }}
+      />
     </SafeAreaView>
   );
 };

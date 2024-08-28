@@ -80,12 +80,12 @@ const Settings = () => {
               <TouchableOpacity
                 style={styles.button}
                 onPress={() => setVisible(false)}>
-                <Text style={[styles.buttonText, {color: '#d9534f'}]}>
-                  Cancel
-                </Text>
+                <Text style={{color: '#1f6feb'}}>Cancel</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={handleSave}>
-                <Text style={styles.buttonText}>Save</Text>
+              <TouchableOpacity
+                style={[styles.button, {backgroundColor: '#1f6feb'}]}
+                onPress={handleSave}>
+                <Text style={{color: '#fff'}}>Save</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: 'bold',
+    fontWeight: '500',
     marginBottom: 24,
   },
   item: {
@@ -139,14 +139,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: '100%',
+    gap: 12,
   },
   button: {
     flex: 1,
     alignItems: 'center',
-    padding: 8,
-  },
-  buttonText: {
-    fontSize: 16,
-    color: '#1f6feb',
+    paddingVertical: 12,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: '#1f6feb',
   },
 });
