@@ -44,10 +44,10 @@ const Settings = () => {
         onRequestClose={() => setVisible(false)}>
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.title}>Settings</Text>
+            <Text style={styles.title}>설정</Text>
 
             <View style={styles.item}>
-              <Text style={styles.label}>Voice Speed</Text>
+              <Text style={styles.label}>속도</Text>
               <Slider
                 style={styles.slider}
                 minimumValue={8}
@@ -60,7 +60,7 @@ const Settings = () => {
             </View>
 
             <View style={styles.item}>
-              <Text style={styles.label}>Language</Text>
+              <Text style={styles.label}>언어</Text>
               <Picker
                 selectedValue={language}
                 onValueChange={language => setLanguage(language)}
