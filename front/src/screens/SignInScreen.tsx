@@ -269,7 +269,7 @@ export default SignInScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#eeeff3',
     paddingHorizontal: 16,
   },
   content: {
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   title: {
-    color: '#fff',
+    color: '#333',
     fontSize: 32,
     fontWeight: 'bold',
     textAlign: 'center',

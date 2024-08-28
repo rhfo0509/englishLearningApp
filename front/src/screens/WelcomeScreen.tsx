@@ -23,6 +23,7 @@ import {useUser} from '../contexts/UserContext';
 import {createUser} from '../lib/user';
 import {signOut} from '../lib/auth';
 import {LANGUAGES} from '../common/constants';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 
 const WelcomeScreen = ({route, navigation}: any) => {
   const {uid} = route.params;
@@ -79,8 +80,10 @@ const WelcomeScreen = ({route, navigation}: any) => {
     }
   };
 
-  const handleCancel = () => {
-    signOut();
+  const handleCancel = async () => {
+    // signOut();
+    await GoogleSignin.revokeAccess();
+    await GoogleSignin.signOut();
     navigation.goBack();
   };
 
@@ -117,7 +120,8 @@ const WelcomeScreen = ({route, navigation}: any) => {
           <Picker
             selectedValue={language}
             style={styles.picker}
-            onValueChange={setLanguage}>
+            onValueChange={setLanguage}
+            dropdownIconColor="#aaa">
             <Picker.Item label="Select a language" value="" />
             {LANGUAGES.map(language => (
               <Picker.Item
@@ -135,11 +139,11 @@ const WelcomeScreen = ({route, navigation}: any) => {
           {loading ? (
             <ActivityIndicator size={22} color="#fff" />
           ) : (
-            <Text style={styles.buttonText}>Next</Text>
+            <Text style={[styles.buttonText, {color: '#fff'}]}>Next</Text>
           )}
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.button, {backgroundColor: '#000'}]}
+          style={[styles.button, {backgroundColor: '#eeeff3'}]}
           onPress={handleCancel}
           disabled={loading}>
           <Text style={styles.buttonText}>Cancel</Text>
@@ -154,7 +158,7 @@ export default WelcomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#eeeff3',
     paddingHorizontal: 16,
     justifyContent: 'center',
   },
@@ -164,17 +168,17 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 48,
-    borderColor: '#ccc',
+    borderColor: '#b0b0b0',
     borderWidth: 2,
     borderRadius: 8,
     paddingHorizontal: 16,
     marginTop: 16,
-    color: '#fff',
+    color: '#333',
     fontSize: 16,
   },
   pickerContainer: {
     height: 48,
-    borderColor: '#ccc',
+    borderColor: '#b0b0b0',
     borderWidth: 2,
     borderRadius: 8,
     justifyContent: 'center',
@@ -195,7 +199,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonText: {
-    color: '#fff',
+    color: '#333',
     fontSize: 16,
     fontWeight: '500',
   },
