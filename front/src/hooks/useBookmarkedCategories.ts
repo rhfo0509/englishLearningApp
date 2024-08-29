@@ -25,7 +25,7 @@ const useBookmarkedCategories = () => {
     const isBookmarked = bookmarkedCategories.includes(category);
     const updated = isBookmarked
       ? bookmarkedCategories.filter(item => item !== category)
-      : [...bookmarkedCategories, category];
+      : [category, ...bookmarkedCategories];
 
     try {
       await AsyncStorage.setItem(
