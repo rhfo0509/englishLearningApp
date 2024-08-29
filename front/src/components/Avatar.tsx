@@ -4,7 +4,9 @@ import {Image} from 'react-native';
 const Avatar = ({source, size = 32}: {source: string; size: number}) => {
   return (
     <Image
-      source={source !== '' ? {uri: source} : require('../assets/user.png')}
+      source={
+        source !== '' ? {uri: source} : require('../assets/default_image.png')
+      }
       resizeMode="cover"
       style={{
         width: size,
