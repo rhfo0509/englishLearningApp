@@ -157,13 +157,15 @@ const ListScreen = ({route, navigation}: any) => {
           })
         }>
         <View style={styles.itemContent}>
-          <View>
+          <View style={{flex: 8}}>
             <Text style={styles.ko}>{item.ko}</Text>
             <Text style={styles.type}>{item.type}</Text>
           </View>
-          <Text style={styles.progress}>
-            {learnedItemCount.length} / {allItems.length}
-          </Text>
+          <View style={{flex: 1}}>
+            <Text style={styles.progress}>
+              {learnedItemCount.length} / {allItems.length}
+            </Text>
+          </View>
         </View>
       </TouchableOpacity>
     );
