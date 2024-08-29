@@ -14,6 +14,7 @@ export interface Item {
 
 export interface LastLearned {
   category: number;
+  chapter: number;
   items: Item[];
   title: string;
   index: number;

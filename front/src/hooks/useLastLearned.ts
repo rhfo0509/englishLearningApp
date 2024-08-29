@@ -19,6 +19,7 @@ const useLastLearned = () => {
 
   const saveLastLearned = async (
     category: number,
+    chapter: number,
     items: Item[],
     title: string,
     index: number,
@@ -26,7 +27,7 @@ const useLastLearned = () => {
     try {
       await AsyncStorage.setItem(
         'lastLearned',
-        JSON.stringify({category, items, title, index}),
+        JSON.stringify({category, chapter, items, title, index}),
       );
     } catch (error) {
       console.error('Failed to save last learned data: ', error);

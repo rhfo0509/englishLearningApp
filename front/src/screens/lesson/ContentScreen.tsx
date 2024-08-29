@@ -40,12 +40,14 @@ interface Item {
 const ContentScreen = ({route, navigation}: any) => {
   const {
     category,
+    chapter,
     items,
     title,
     index = Math.floor(Math.random() * items.length),
     type,
   } = route.params as {
     category: number;
+    chapter: number;
     items: Item[];
     title: string;
     index: number;
@@ -197,10 +199,10 @@ const ContentScreen = ({route, navigation}: any) => {
         });
       }
 
-      saveLearned(category, items[index].chapter, index);
+      saveLearned(category, chapter, index);
       await TrackPlayer.play();
     },
-    [category, items, saveLearned],
+    [category, chapter, items, saveLearned],
   );
 
   // playback queue ended
@@ -340,11 +342,20 @@ const ContentScreen = ({route, navigation}: any) => {
     }
 
     const listener = navigation.addListener('beforeRemove', () => {
-      saveLastLearned(category, items, title, currentIndex);
+      saveLastLearned(category, chapter, items, title, currentIndex);
     });
 
     return () => navigation.removeListener('beforeRemove', listener);
-  }, [category, currentIndex, items, navigation, saveLastLearned, title, type]);
+  }, [
+    category,
+    chapter,
+    currentIndex,
+    items,
+    navigation,
+    saveLastLearned,
+    title,
+    type,
+  ]);
 
   const {bookmarks = [], toggleBookmark} = useBookmarks(category);
 
