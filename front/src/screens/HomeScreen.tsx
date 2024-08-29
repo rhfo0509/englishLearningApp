@@ -196,6 +196,28 @@ const HomeScreen = ({navigation}: any) => {
     );
   };
 
+  const renderRecommendedButtons = () => {
+    return recommended.map((item, index) => (
+      <TouchableOpacity
+        key={index}
+        style={styles.recommendedButtonWrapper} // A wrapper to handle touchable area
+        onPress={() =>
+          navigation.navigate('LessonStack', {
+            screen: 'LessonList',
+            params: {category: item.category, title: item.ko},
+          })
+        }>
+        <LinearGradient
+          start={{x: 0, y: 0}}
+          end={{x: 1, y: 1}}
+          colors={['#1f6feb', '#53c1ff']} // Adjust the gradient colors as needed
+          style={styles.recommendedButton}>
+          <Text style={styles.recommendedButtonText}>{item.ko}</Text>
+        </LinearGradient>
+      </TouchableOpacity>
+    ));
+  };
+
   const renderLearningButtons = () => {
     return learningButtons.map((button, index) => {
       const filteredCategories = categories
@@ -205,14 +227,14 @@ const HomeScreen = ({navigation}: any) => {
       return (
         <TouchableOpacity
           key={index}
-          style={styles.learningButton}
+          style={styles.learningButtonWrapper}
           onPress={() =>
             navigation.navigate('LessonStack', {
               screen: 'LessonCategory',
               params: {categories: filteredCategories, title: button.title},
             })
           }>
-          <View style={styles.iconContainer}>
+          <View style={styles.learningIcon}>
             <Image source={button.image} />
           </View>
           <LinearGradient
@@ -220,11 +242,11 @@ const HomeScreen = ({navigation}: any) => {
             end={{x: 1, y: 0}}
             colors={['#1f6feb', '#53c1ff']}
             style={[
-              styles.gradient,
+              styles.learningButton,
               {borderTopLeftRadius: 0, borderTopRightRadius: 0},
             ]}>
-            <Text style={styles.buttonText}>{button.title}</Text>
-            <Text style={styles.buttonSubText}>
+            <Text style={styles.learningButtonText}>{button.title}</Text>
+            <Text style={styles.learningButtonSubText}>
               {filteredCategories.length} Categories
             </Text>
           </LinearGradient>
@@ -282,14 +304,9 @@ const HomeScreen = ({navigation}: any) => {
             <Icon name="recommend" size={36} />
             <Text style={styles.titleText}>Recommended</Text>
           </View>
-          <FlatList
-            data={recommended}
-            renderItem={({item, index}) =>
-              renderItem({item, index, showStar: false})
-            }
-            keyExtractor={item => item.category.toString()}
-            scrollEnabled={false}
-          />
+          <View style={styles.recommendedContainer}>
+            {renderRecommendedButtons()}
+          </View>
         </View>
         <View>
           <View style={styles.title}>
@@ -360,7 +377,30 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
-  learningButton: {
+  recommendedContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  recommendedButtonWrapper: {
+    width: '48%',
+    marginBottom: 16,
+    borderRadius: 8,
+  },
+  recommendedButton: {
+    height: 100,
+    padding: 16,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  recommendedButtonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontWeight: '500',
+    fontSize: 16,
+  },
+  learningButtonWrapper: {
     flex: 1,
     width: 140,
     height: 160,
@@ -369,26 +409,26 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#fff',
   },
-  gradient: {
+  learningIcon: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 12,
+    height: 100,
+  },
+  learningButton: {
     flex: 1,
     justifyContent: 'center',
     borderRadius: 24,
     padding: 12,
     gap: 8,
   },
-  iconContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 12,
-    height: 100,
-  },
-  buttonText: {
+  learningButtonText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 15,
     textAlign: 'center',
   },
-  buttonSubText: {
+  learningButtonSubText: {
     color: '#fff',
     fontSize: 12,
     textAlign: 'center',
