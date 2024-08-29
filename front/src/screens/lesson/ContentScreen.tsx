@@ -327,7 +327,7 @@ const ContentScreen = ({route, navigation}: any) => {
   };
 
   const toggleVoiceSpeed = async () => {
-    const newVoiceSpeed = voiceSpeed === 8 ? 10 : voiceSpeed === 10 ? 12 : 8;
+    const newVoiceSpeed = voiceSpeed === 6 ? 8 : voiceSpeed === 8 ? 10 : 6;
     setVoiceSpeed(newVoiceSpeed);
     await TrackPlayer.setRate(newVoiceSpeed / 10);
   };

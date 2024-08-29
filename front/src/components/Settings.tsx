@@ -50,7 +50,7 @@ const Settings = () => {
               <Text style={styles.label}>속도</Text>
               <Slider
                 style={styles.slider}
-                minimumValue={8}
+                minimumValue={6}
                 maximumValue={12}
                 step={2}
                 value={voiceSpeed}
