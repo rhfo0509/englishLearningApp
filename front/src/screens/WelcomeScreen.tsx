@@ -121,7 +121,7 @@ const WelcomeScreen = ({route, navigation}: any) => {
             selectedValue={language}
             style={styles.picker}
             onValueChange={setLanguage}
-            dropdownIconColor="#aaa">
+            dropdownIconColor="#1f6feb">
             <Picker.Item label="Select a language" value="" />
             {LANGUAGES.map(language => (
               <Picker.Item
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 48,
-    borderColor: '#b0b0b0',
+    borderColor: '#1f6feb',
     borderWidth: 2,
     borderRadius: 8,
     paddingHorizontal: 16,
@@ -178,14 +178,14 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     height: 48,
-    borderColor: '#b0b0b0',
+    borderColor: '#1f6feb',
     borderWidth: 2,
     borderRadius: 8,
     justifyContent: 'center',
     marginTop: 16,
   },
   picker: {
-    color: '#aaa',
+    color: '#333',
     fontSize: 16,
     height: 48,
   },
