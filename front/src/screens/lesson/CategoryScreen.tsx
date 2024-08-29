@@ -1,10 +1,11 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useLayoutEffect} from 'react';
+import React, {useEffect, useLayoutEffect} from 'react';
 import LinearGradient from 'react-native-linear-gradient';
 import IIcon from 'react-native-vector-icons/Ionicons';
 
 import Header from '../../components/Header';
 import useBookmarkedCategories from '../../hooks/useBookmarkedCategories';
+import useLearned from '../../hooks/useLearned';
 
 interface Category {
   recommend: number;
@@ -21,12 +22,14 @@ interface Category {
   ru: string;
   es: string;
   pt: string;
+  count: number;
 }
 
 const CategoryScreen = ({route, navigation}: any) => {
   const {categories, title} = route.params;
   const {bookmarkedCategories, toggleBookmarkedCategory} =
     useBookmarkedCategories();
+  const {learned, loadLearned} = useLearned();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -34,8 +37,21 @@ const CategoryScreen = ({route, navigation}: any) => {
     });
   }, [navigation, title]);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadLearned();
+    });
+
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const renderItem = ({item, index}: {item: Category; index: number}) => {
     const isBookmarked = bookmarkedCategories.includes(item.category);
+    const learnedItemCount = Object.values(learned[item.category] || {}).reduce(
+      (a, c) => a + c.length,
+      0,
+    );
 
     return (
       <TouchableOpacity
@@ -46,23 +62,36 @@ const CategoryScreen = ({route, navigation}: any) => {
             title: item.ko,
           })
         }>
-        <View style={{flexDirection: 'row'}}>
+        <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
           <LinearGradient
             colors={['#1f6feb', '#53c1ff']}
             style={styles.indexContainer}>
             <Text style={styles.indexText}>{index + 1}</Text>
           </LinearGradient>
-          <Text style={styles.itemText}>{item.ko}</Text>
+          <View>
+            <Text style={styles.itemText}>{item.ko}</Text>
+          </View>
         </View>
-        <TouchableOpacity
-          hitSlop={12}
-          onPress={() => toggleBookmarkedCategory(item.category)}>
-          <IIcon
-            name={isBookmarked ? 'star' : 'star-outline'}
-            size={24}
-            color="#ffd700"
-          />
-        </TouchableOpacity>
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 4,
+          }}>
+          <Text style={styles.progressText}>
+            {item.count ? Math.round((learnedItemCount / item.count) * 100) : 0}
+            % ···
+          </Text>
+          <TouchableOpacity
+            hitSlop={12}
+            onPress={() => toggleBookmarkedCategory(item.category)}>
+            <IIcon
+              name={isBookmarked ? 'star' : 'star-outline'}
+              size={24}
+              color="#ffd700"
+            />
+          </TouchableOpacity>
+        </View>
       </TouchableOpacity>
     );
   };
@@ -112,5 +141,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     lineHeight: 32,
+  },
+  progressText: {
+    color: '#1f6feb',
+    fontWeight: '500',
   },
 });

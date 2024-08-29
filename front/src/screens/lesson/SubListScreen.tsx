@@ -1,9 +1,10 @@
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useEffect, useLayoutEffect} from 'react';
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {useFocusEffect} from '@react-navigation/native';
 import IIcon from 'react-native-vector-icons/Ionicons';
+
 import Header from '../../components/Header';
 import useBookmarks from '../../hooks/useBookmarks';
+import useLearned from '../../hooks/useLearned';
 
 interface Item {
   chapter: number;
@@ -17,6 +18,7 @@ interface Item {
 const SubListScreen = ({route, navigation}: any) => {
   const {category, title, items} = route.params;
   const {bookmarks, loadBookmarks} = useBookmarks(category);
+  const {learned, loadLearned} = useLearned();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -24,20 +26,27 @@ const SubListScreen = ({route, navigation}: any) => {
     });
   }, [navigation, title]);
 
-  useFocusEffect(
-    useCallback(() => {
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
       loadBookmarks();
-    }, [loadBookmarks]),
-  );
+      loadLearned();
+    });
+
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const renderItem = ({item, index}: {item: Item; index: number}) => {
     const isBookmarked = bookmarks.some(
       bookmark =>
         bookmark.num === item.num && bookmark.chapter === item.chapter,
     );
+
+    const isLearned = learned[category]?.[item.chapter]?.includes(item.num);
+
     return (
       <TouchableOpacity
-        style={styles.item}
+        style={[styles.item, isLearned && {opacity: 0.3}]}
         onPress={() =>
           navigation.navigate('LessonContent', {
             category,

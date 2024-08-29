@@ -7,6 +7,7 @@ import IIcon from 'react-native-vector-icons/Ionicons';
 import Header from '../../components/Header';
 import {fetchLearningData} from '../../services/data.service';
 import ProgressBar from '../../components/ProgressBar';
+import useLearned from '../../hooks/useLearned';
 
 interface Chapter {
   num: number;
@@ -41,6 +42,7 @@ const ListScreen = ({route, navigation}: any) => {
   const [progress, setProgress] = useState<number>(0);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [items, setItems] = useState<Item[]>([]);
+  const {learned, loadLearned} = useLearned();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,7 +51,7 @@ const ListScreen = ({route, navigation}: any) => {
   }, [navigation, title]);
 
   useEffect(() => {
-    // 챕터 리스트
+    // 챕터 리스트 로드
     (async () => {
       try {
         const result = await AsyncStorage.getItem('chapters');
@@ -70,7 +72,7 @@ const ListScreen = ({route, navigation}: any) => {
   }, [category]);
 
   useEffect(() => {
-    // 학습 데이터 리스트
+    // 학습 데이터 리스트 로드
     (async () => {
       try {
         const result = await fetchLearningData(
@@ -87,20 +89,44 @@ const ListScreen = ({route, navigation}: any) => {
     })();
   }, [category, navigation]);
 
-  const renderItem = ({item, index}: {item: Chapter; index: number}) => (
-    <TouchableOpacity
-      style={styles.item}
-      onPress={() =>
-        navigation.navigate('LessonSubList', {
-          category,
-          title: item.ko,
-          items: items.filter(item => item.chapter === index),
-        })
-      }>
-      <Text style={styles.itemCategory}>{item.ko}</Text>
-      <Text style={styles.itemText}>{item.type}</Text>
-    </TouchableOpacity>
-  );
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadLearned();
+    });
+
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const renderItem = ({item}: {item: Chapter}) => {
+    const allItems = items.filter(i => i.chapter === item.chapter);
+    const learnedItemCount = allItems.filter(i =>
+      learned[category]?.[i.chapter]?.includes(i.num),
+    );
+
+    return (
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() =>
+          navigation.navigate('LessonSubList', {
+            category,
+            chapter: item.chapter,
+            title: item.ko,
+            items: allItems,
+          })
+        }>
+        <View style={styles.itemContent}>
+          <View>
+            <Text style={styles.itemCategory}>{item.ko}</Text>
+            <Text style={styles.itemText}>{item.type}</Text>
+          </View>
+          <Text style={styles.progressText}>
+            {learnedItemCount.length} / {allItems.length}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   if (loading) {
     return (
@@ -204,6 +230,11 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginVertical: 8,
   },
+  itemContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   itemCategory: {
     fontSize: 16,
     fontWeight: '500',
@@ -212,6 +243,10 @@ const styles = StyleSheet.create({
   itemText: {
     color: '#666',
     marginTop: 4,
+  },
+  progressText: {
+    color: '#1f6feb',
+    fontWeight: '500',
   },
   loading: {
     flex: 1,

@@ -39,6 +39,7 @@ interface Category {
   ru: string;
   es: string;
   pt: string;
+  count: number;
 }
 
 const learningButtons = [
@@ -109,12 +110,15 @@ const HomeScreen = ({navigation}: any) => {
     })();
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
       loadLastLearned();
       loadBookmarkedCategories();
-    }, [loadBookmarkedCategories, loadLastLearned]),
-  );
+    });
+
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleContinueLearning = () => {
     if (lastLearned) {
