@@ -21,7 +21,7 @@ const Popup = ({
   confirmText = 'OK',
 }: PopupProps) => {
   return (
-    <Modal transparent={true} visible={visible}>
+    <Modal animationType="fade" transparent={true} visible={visible}>
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           {title ? <Text style={styles.title}>{title}</Text> : null}

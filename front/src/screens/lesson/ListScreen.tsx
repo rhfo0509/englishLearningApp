@@ -1,12 +1,5 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-  Alert,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
@@ -17,6 +10,7 @@ import {fetchLearningData} from '../../services/data.service';
 import ProgressBar from '../../components/ProgressBar';
 import useLearned from '../../hooks/useLearned';
 import {checkJSONVersion, writeLocalJSON} from '../../services/json.service';
+import Popup from '../../components/Popup';
 
 interface Chapter {
   num: number;
@@ -47,11 +41,23 @@ interface Item {
 
 const ListScreen = ({route, navigation}: any) => {
   const {category, title} = route.params;
+  const [popupVisible, setPopupVisible] = useState<boolean>(false);
+  const [successPopupVisible, setSuccessPopupVisible] =
+    useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
   const [progress, setProgress] = useState<number>(0);
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const {learned, loadLearned} = useLearned();
+
+  const [Json, setJson] = useState<any>(null);
+  const remoteJSONPath = `learning/${category}/${category}.json`;
+  const remoteDirPath = remoteJSONPath.slice(
+    0,
+    remoteJSONPath.lastIndexOf('/'),
+  );
+  const localJSONPath = `${RNFS.DocumentDirectoryPath}/${remoteJSONPath}`;
+  const localDirPath = `${RNFS.DocumentDirectoryPath}/${remoteDirPath}`;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -82,13 +88,6 @@ const ListScreen = ({route, navigation}: any) => {
 
   useEffect(() => {
     // 학습 데이터 리스트 로드
-    const remoteJSONPath = `learning/${category}/${category}.json`;
-    const remoteDirPath = remoteJSONPath.slice(
-      0,
-      remoteJSONPath.lastIndexOf('/'),
-    );
-    const localJSONPath = `${RNFS.DocumentDirectoryPath}/${remoteJSONPath}`;
-    const localDirPath = `${RNFS.DocumentDirectoryPath}/${remoteDirPath}`;
 
     (async () => {
       try {
@@ -96,60 +95,18 @@ const ListScreen = ({route, navigation}: any) => {
           await checkJSONVersion(localJSONPath, remoteJSONPath);
 
         if (localVersion !== remoteVersion) {
-          const confirmed = await new Promise<boolean>(resolve => {
-            Alert.alert(
-              '',
-              '학습 데이터를 다운로드하시겠습니까? (통신 요금이 발생할 수 있으므로 Wi-Fi 환경에서 다운로드하는 것을 권장합니다.)',
-              [
-                {
-                  text: '아니요',
-                  style: 'cancel',
-                  onPress: () => resolve(false),
-                },
-                {
-                  text: '네',
-                  onPress: () => resolve(true),
-                },
-              ],
-              {cancelable: false},
-            );
-          });
-
-          if (!confirmed) {
-            navigation.goBack();
-            return;
-          }
-
-          try {
-            const isSucceed = await fetchLearningData(
-              remoteDirPath,
-              localDirPath,
-              category,
-              setProgress,
-            );
-            if (isSucceed) {
-              await writeLocalJSON(localJSONPath, remoteJson);
-              setItems(remoteJson.data);
-
-              Alert.alert(
-                '',
-                '모든 데이터가 성공적으로 다운로드되었습니다. 학습을 진행하세요!',
-                [{text: "Let's go!"}],
-              );
-            }
-          } catch (error) {
-            console.error('Error during data update:', error);
-          }
+          setJson(remoteJson);
+          setPopupVisible(true);
         } else {
           setItems(localJSON.data);
+          setLoading(false);
         }
       } catch (error) {
         console.error('Error while checking JSON versions:', error);
-      } finally {
         setLoading(false);
       }
     })();
-  }, [category, navigation]);
+  }, [category, localJSONPath, navigation, remoteJSONPath]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -159,6 +116,28 @@ const ListScreen = ({route, navigation}: any) => {
     return unsubscribe;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const handleConfirm = async () => {
+    setPopupVisible(false);
+
+    try {
+      const isSucceed = await fetchLearningData(
+        remoteDirPath,
+        localDirPath,
+        category,
+        setProgress,
+      );
+      if (isSucceed) {
+        await writeLocalJSON(localJSONPath, Json);
+        setItems(Json.data);
+        setSuccessPopupVisible(true);
+      }
+    } catch (error) {
+      console.error('Error during data update:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const renderItem = ({item}: {item: Chapter}) => {
     const allItems = items.filter(i => i.chapter === item.chapter);
@@ -198,6 +177,18 @@ const ListScreen = ({route, navigation}: any) => {
           <Text>학습 데이터 불러오는 중</Text>
           <Text>잠시만 기다려주세요...</Text>
         </View>
+        <Popup
+          visible={popupVisible}
+          title="알림"
+          message="학습 데이터를 다운로드하시겠습니까? (통신 요금이 발생할 수 있으므로 Wi-Fi 환경에서 다운로드하는 것을 권장합니다.)"
+          cancelText="No"
+          confirmText="Download"
+          onCancel={() => {
+            setPopupVisible(false);
+            navigation.goBack();
+          }}
+          onConfirm={handleConfirm}
+        />
       </View>
     );
   }
@@ -250,6 +241,15 @@ const ListScreen = ({route, navigation}: any) => {
         renderItem={renderItem}
         keyExtractor={item => item.num.toString()}
         showsVerticalScrollIndicator={false}
+      />
+      <Popup
+        visible={successPopupVisible}
+        title="알림"
+        message="모든 데이터가 성공적으로 다운로드되었습니다. 학습을 진행하세요!"
+        confirmText="Let's Go!"
+        onConfirm={() => {
+          setSuccessPopupVisible(false);
+        }}
       />
     </View>
   );
