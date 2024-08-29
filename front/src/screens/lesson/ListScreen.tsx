@@ -1,5 +1,13 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  Alert,
+} from 'react-native';
+import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LinearGradient from 'react-native-linear-gradient';
 import IIcon from 'react-native-vector-icons/Ionicons';
@@ -8,7 +16,7 @@ import Header from '../../components/Header';
 import {fetchLearningData} from '../../services/data.service';
 import ProgressBar from '../../components/ProgressBar';
 import useLearned from '../../hooks/useLearned';
-import useLastLearned from '../../hooks/useLastLearned';
+import {checkJSONVersion, writeLocalJSON} from '../../services/json.service';
 
 interface Chapter {
   num: number;
@@ -44,7 +52,6 @@ const ListScreen = ({route, navigation}: any) => {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const {learned, loadLearned} = useLearned();
-  const {lastLearned, loadLastLearned} = useLastLearned();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -75,16 +82,69 @@ const ListScreen = ({route, navigation}: any) => {
 
   useEffect(() => {
     // 학습 데이터 리스트 로드
+    const remoteJSONPath = `learning/${category}/${category}.json`;
+    const remoteDirPath = remoteJSONPath.slice(
+      0,
+      remoteJSONPath.lastIndexOf('/'),
+    );
+    const localJSONPath = `${RNFS.DocumentDirectoryPath}/${remoteJSONPath}`;
+    const localDirPath = `${RNFS.DocumentDirectoryPath}/${remoteDirPath}`;
+
     (async () => {
       try {
-        const result = await fetchLearningData(
-          category,
-          navigation,
-          setProgress,
-        );
-        setItems(result);
+        const {localVersion, localJSON, remoteVersion, remoteJson} =
+          await checkJSONVersion(localJSONPath, remoteJSONPath);
+
+        if (localVersion !== remoteVersion) {
+          const confirmed = await new Promise<boolean>(resolve => {
+            Alert.alert(
+              '',
+              '학습 데이터를 다운로드하시겠습니까? (통신 요금이 발생할 수 있으므로 Wi-Fi 환경에서 다운로드하는 것을 권장합니다.)',
+              [
+                {
+                  text: '아니요',
+                  style: 'cancel',
+                  onPress: () => resolve(false),
+                },
+                {
+                  text: '네',
+                  onPress: () => resolve(true),
+                },
+              ],
+              {cancelable: false},
+            );
+          });
+
+          if (!confirmed) {
+            navigation.goBack();
+            return;
+          }
+
+          try {
+            const isSucceed = await fetchLearningData(
+              remoteDirPath,
+              localDirPath,
+              category,
+              setProgress,
+            );
+            if (isSucceed) {
+              await writeLocalJSON(localJSONPath, remoteJson);
+              setItems(remoteJson.data);
+
+              Alert.alert(
+                '',
+                '모든 데이터가 성공적으로 다운로드되었습니다. 학습을 진행하세요!',
+                [{text: "Let's go!"}],
+              );
+            }
+          } catch (error) {
+            console.error('Error during data update:', error);
+          }
+        } else {
+          setItems(localJSON.data);
+        }
       } catch (error) {
-        console.error('Error while fetching JSON file', error);
+        console.error('Error while checking JSON versions:', error);
       } finally {
         setLoading(false);
       }
@@ -94,7 +154,6 @@ const ListScreen = ({route, navigation}: any) => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       loadLearned();
-      loadLastLearned();
     });
 
     return unsubscribe;
@@ -106,10 +165,6 @@ const ListScreen = ({route, navigation}: any) => {
     const learnedItemCount = allItems.filter(i =>
       learned[category]?.[i.chapter]?.includes(i.num),
     );
-
-    const isLastLearned =
-      lastLearned?.category === category &&
-      lastLearned?.chapter === item.chapter;
 
     return (
       <TouchableOpacity
