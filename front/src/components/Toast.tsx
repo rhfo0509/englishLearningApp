@@ -16,7 +16,7 @@ const toastConfig = {
       }}
       contentContainerStyle={{paddingHorizontal: 15}}
       text1Style={{
-        fontSize: 16,
+        fontSize: 14,
         color: '#fff',
       }}
     />
@@ -30,7 +30,7 @@ const toastConfig = {
       }}
       contentContainerStyle={{paddingHorizontal: 15}}
       text1Style={{
-        fontSize: 16,
+        fontSize: 14,
         color: '#fff',
       }}
     />
@@ -44,7 +44,7 @@ const toastConfig = {
       }}
       contentContainerStyle={{paddingHorizontal: 15}}
       text1Style={{
-        fontSize: 16,
+        fontSize: 14,
         color: '#fff',
       }}
     />

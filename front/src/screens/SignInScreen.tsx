@@ -66,10 +66,9 @@ const SignInScreen = ({navigation, route}: any) => {
         setUser(profile);
       }
     } catch (error: any) {
-      console.error(error);
       Toast.show({
         type: 'error',
-        text1: 'Google Sign In failed. Please try again later',
+        text1: 'Google Sign In failed. Please try again later.',
         position: 'bottom',
         visibilityTime: 1500,
       });
