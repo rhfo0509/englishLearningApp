@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     lineHeight: 72,
   },
   logo: {
-    width: 100,
+    width: 120,
     height: 40,
   },
 });
