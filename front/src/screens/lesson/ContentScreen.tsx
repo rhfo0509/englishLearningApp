@@ -163,11 +163,13 @@ const ContentScreen = ({route, navigation}: any) => {
   // 화면 벗어나는 경우 settings 저장 및 TrackPlayer reset
   useEffect(() => {
     const listener = navigation.addListener('beforeRemove', async () => {
-      setSettings({...settings, repeatMode, shuffleMode});
+      if (type !== 'single') {
+        setSettings({...settings, repeatMode, shuffleMode});
+      }
       await TrackPlayer.reset();
     });
     return () => navigation.removeListener('beforeRemove', listener);
-  }, [navigation, repeatMode, setSettings, settings, shuffleMode]);
+  }, [navigation, repeatMode, setSettings, settings, shuffleMode, type]);
 
   // play and pause
   const togglePlayback = useCallback(async () => {
