@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ImageBackground,
   // Keyboard,
   // TextInput,
   // View,
@@ -169,11 +170,21 @@ const SignInScreen = ({navigation, route}: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Image source={require('../assets/icon.png')} />
-        <Text style={styles.title}>EnglishEcho</Text>
-      </View>
-      {/* <View style={styles.form}>
+      <ImageBackground
+        style={styles.background} //View를 꽉채우도록
+        source={require('../assets/login_background.png')} //이미지경로
+        resizeMode="cover">
+        {/* 구글 로그인 버튼 추가 */}
+        <View style={styles.buttonContainer}>
+          <GoogleSigninButton
+            style={{width: '100%', height: 64}}
+            size={GoogleSigninButton.Size.Wide}
+            color={GoogleSigninButton.Color.Light}
+            onPress={handleGoogleSignIn}
+            disabled={loading}
+          />
+        </View>
+        {/* <View style={styles.form}>
         <TextInput
           placeholder="Email"
           placeholderTextColor="#aaa"
@@ -229,18 +240,7 @@ const SignInScreen = ({navigation, route}: any) => {
           )}
         </TouchableOpacity> */}
 
-      {/* 구글 로그인 버튼 추가 */}
-      <View style={styles.buttonContainer}>
-        <GoogleSigninButton
-          style={{width: '100%', height: 64}}
-          size={GoogleSigninButton.Size.Wide}
-          color={GoogleSigninButton.Color.Light}
-          onPress={handleGoogleSignIn}
-          disabled={loading}
-        />
-      </View>
-
-      {/* <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.button, {backgroundColor: '#000'}]}
           onPress={() => {
             setForm({
@@ -260,6 +260,7 @@ const SignInScreen = ({navigation, route}: any) => {
           </Text>
         </TouchableOpacity>
       </View> */}
+      </ImageBackground>
     </SafeAreaView>
   );
 };
@@ -269,24 +270,29 @@ export default SignInScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#eeeff3',
-    paddingHorizontal: 16,
   },
-  content: {
+  background: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  title: {
-    color: '#333',
-    fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 16,
+    width: '100%',
+    height: '100%',
+    justifyContent: 'flex-end',
   },
   buttonContainer: {
+    marginHorizontal: 16,
     marginBottom: 32,
   },
+  // content: {
+  //   flex: 1,
+  //   justifyContent: 'center',
+  //   alignItems: 'center',
+  // },
+  // title: {
+  //   color: '#333',
+  //   fontSize: 32,
+  //   fontWeight: 'bold',
+  //   textAlign: 'center',
+  //   marginVertical: 16,
+  // },
   // form: {
   //   width: '100%',
   // },
