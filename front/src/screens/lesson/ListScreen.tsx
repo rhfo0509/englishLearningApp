@@ -8,6 +8,7 @@ import Header from '../../components/Header';
 import {fetchLearningData} from '../../services/data.service';
 import ProgressBar from '../../components/ProgressBar';
 import useLearned from '../../hooks/useLearned';
+import useLastLearned from '../../hooks/useLastLearned';
 
 interface Chapter {
   num: number;
@@ -43,6 +44,7 @@ const ListScreen = ({route, navigation}: any) => {
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const {learned, loadLearned} = useLearned();
+  const {lastLearned, loadLastLearned} = useLastLearned();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -92,6 +94,7 @@ const ListScreen = ({route, navigation}: any) => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       loadLearned();
+      loadLastLearned();
     });
 
     return unsubscribe;
@@ -103,6 +106,10 @@ const ListScreen = ({route, navigation}: any) => {
     const learnedItemCount = allItems.filter(i =>
       learned[category]?.[i.chapter]?.includes(i.num),
     );
+
+    const isLastLearned =
+      lastLearned?.category === category &&
+      lastLearned?.chapter === item.chapter;
 
     return (
       <TouchableOpacity
@@ -117,10 +124,10 @@ const ListScreen = ({route, navigation}: any) => {
         }>
         <View style={styles.itemContent}>
           <View>
-            <Text style={styles.itemCategory}>{item.ko}</Text>
-            <Text style={styles.itemText}>{item.type}</Text>
+            <Text style={styles.ko}>{item.ko}</Text>
+            <Text style={styles.type}>{item.type}</Text>
           </View>
-          <Text style={styles.progressText}>
+          <Text style={styles.progress}>
             {learnedItemCount.length} / {allItems.length}
           </Text>
         </View>
@@ -235,16 +242,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  itemCategory: {
+  ko: {
     fontSize: 16,
     fontWeight: '500',
     color: '#333',
   },
-  itemText: {
+  type: {
     color: '#666',
     marginTop: 4,
   },
-  progressText: {
+  progress: {
     color: '#1f6feb',
     fontWeight: '500',
   },

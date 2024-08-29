@@ -66,10 +66,10 @@ const CategoryScreen = ({route, navigation}: any) => {
           <LinearGradient
             colors={['#1f6feb', '#53c1ff']}
             style={styles.indexContainer}>
-            <Text style={styles.indexText}>{index + 1}</Text>
+            <Text style={styles.index}>{index + 1}</Text>
           </LinearGradient>
           <View>
-            <Text style={styles.itemText}>{item.ko}</Text>
+            <Text style={styles.ko}>{item.ko}</Text>
           </View>
         </View>
         <View
@@ -78,7 +78,7 @@ const CategoryScreen = ({route, navigation}: any) => {
             alignItems: 'center',
             gap: 4,
           }}>
-          <Text style={styles.progressText}>
+          <Text style={styles.progress}>
             {item.count ? Math.round((learnedItemCount / item.count) * 100) : 0}
             % ···
           </Text>
@@ -133,16 +133,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: 16,
   },
-  indexText: {
+  index: {
     color: '#fff',
     fontWeight: 'bold',
   },
-  itemText: {
+  ko: {
     fontSize: 16,
     color: '#333',
     lineHeight: 32,
   },
-  progressText: {
+  progress: {
     color: '#1f6feb',
     fontWeight: '500',
   },
